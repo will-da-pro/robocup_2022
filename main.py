@@ -18,6 +18,7 @@ ev3 = EV3Brick()
 # Write your program here.
 def startup():
     ev3.speaker.say("Initialising Startup")
-    ev3.speaker.say("DEEZ NUTS")
+    ev3.speaker.say("ahhhhhaaaaahhh")
+    
     
     
