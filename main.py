@@ -8,7 +8,7 @@ from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 
 
-# This program requires LEGO EV3 MicroPython v2.0 or higher.
+# This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
 # Click "Open user guide" on the EV3 extension tab for more information.
 
 
@@ -18,7 +18,10 @@ ev3 = EV3Brick()
 # Write your program here.
 def startup():
     ev3.speaker.say("Initialising Startup")
-    ev3.speaker.say("ahhhhhaaaaahhh")
+    ev3.speaker.say("ONLY JO MAMA CAN ACCESS")
+    ev3.speaker.say("ARE YOU JO MAMA?? Y/N")
+    ev3.speaker.say("YOU NILLY SUSAN!!!!!!!! lol this is silly")
+    
     
     
     
