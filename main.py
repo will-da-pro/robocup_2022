@@ -15,13 +15,11 @@ from pybricks.media.ev3dev import SoundFile, ImageFile
 # Create your objects here.
 ev3 = EV3Brick()
 
+motorA = Motor(Port.A)
+motorB = Motor(Port.B)
 # Write your program here.
 def startup():
     ev3.speaker.say("Initialising Startup")
     ev3.speaker.say("ONLY JO MAMA CAN ACCESS")
     ev3.speaker.say("ARE YOU JO MAMA?? Y/N")
     ev3.speaker.say("YOU NILLY SUSAN!!!!!!!! lol this is silly")
-    
-    
-    
-    
