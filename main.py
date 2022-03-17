@@ -17,13 +17,27 @@ ev3 = EV3Brick()
 
 motorA = Motor(Port.A)
 motorB = Motor(Port.B)
-colorA = ColorSensor(Port.C)
-colorB = ColorSensor(Port.D)
+colorA = ColorSensor.reflection(ColorSensor(Port.C))
+colorB = ColorSensor.reflection(ColorSensor(Port.D))
 ultraS = UltrasonicSensor(Port.E)
+driveB = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104)
+
+color = ColorSensor.reflection() 
 # Write your program here.
+def findPath():
+    while True:
+        driveB.turn(1, True)
+        if 
+        
+        
 def move():
     while True:
+        if colorA and colorB == color:
+            driveB.drive(1)
+        elif not colorA and not colorB == color:
+            findPath()
+        while colorA and colorB == color:
+            pass
 def startup():
     ev3.speaker.say("Initialising Startup")
-    
     
