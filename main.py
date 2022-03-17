@@ -15,11 +15,11 @@ from pybricks.media.ev3dev import SoundFile, ImageFile
 # Create your objects here.
 ev3 = EV3Brick()
 
-motorA = Motor(Port.A)
-motorB = Motor(Port.B)
-colorA = ColorSensor(Port.C)
-colorB = ColorSensor(Port.D)
-ultraS = UltrasonicSensor(Port.E)
+motorA = Motor(Port.B)
+motorB = Motor(Port.D)
+colorA = ColorSensor(Port.1)
+colorB = ColorSensor(Port.4)
+ultraS = UltrasonicSensor(Port.3)
 # Write your program here.
 def move():
     while True:
