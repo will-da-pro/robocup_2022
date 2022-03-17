@@ -17,8 +17,10 @@ ev3 = EV3Brick()
 
 motorA = Motor(Port.A)
 motorB = Motor(Port.B)
+colorA = ColorSensor(Port.C)
+colorB = ColorSensor(Port.D)
+ultraS = UltrasonicSensor(Port.E)
 # Write your program here.
 def startup():
     ev3.speaker.say("Initialising Startup")
-    ev3.speaker.say("test")
-
+    
