@@ -32,11 +32,11 @@ def findPath():
         
 def move():
     while True:
-        if colorA and colorB == color:
+        if colorA and colorB == reflection: 
             driveB.drive(1)
-        elif not colorA and not colorB == color:
+        elif not colorA and not colorB == reflection:
             findPath()
-        while colorA and colorB == color:
+        while colorA and colorB == reflection:
             pass
 def startup():
     ev3.speaker.say("Initialising Startup")
