@@ -21,6 +21,9 @@ colorA = ColorSensor(Port.C)
 colorB = ColorSensor(Port.D)
 ultraS = UltrasonicSensor(Port.E)
 # Write your program here.
+def move():
+    while True:
 def startup():
     ev3.speaker.say("Initialising Startup")
+    
     
