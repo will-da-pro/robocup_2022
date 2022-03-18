@@ -1,4 +1,4 @@
-#MRS OLLERTON LOVES 8
+#MRS OLLERTON LOVES 8 y bain bruh
 #!/usr/bin/env pybricks-micropython
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
@@ -21,10 +21,11 @@ motorB = Motor(Port.B)
 colorA = ColorSensor.reflection(ColorSensor(Port.S1))
 colorB = ColorSensor.reflection(ColorSensor(Port.S4))
 ultraS = UltrasonicSensor(Port.S3)
-driveB = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104)
+driveB = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104) #to check next week
 
 BLACK = 0 - 20
 WHITE = 20 - 90
+SILVER = 90 - 100
 DRIVE_SPEED = 100
 # Write your program here.
 def findPath():
