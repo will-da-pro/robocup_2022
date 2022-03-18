@@ -17,9 +17,9 @@ ev3 = EV3Brick()
 
 motorA = Motor(Port.A)
 motorB = Motor(Port.B)
-colorA = ColorSensor.reflection(ColorSensor(Port.C))
-colorB = ColorSensor.reflection(ColorSensor(Port.D))
-ultraS = UltrasonicSensor(Port.E)
+colorA = ColorSensor.reflection(ColorSensor(Port.S1))
+colorB = ColorSensor.reflection(ColorSensor(Port.S4))
+ultraS = UltrasonicSensor(Port.S3)
 driveB = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104)
 
 color = ColorSensor.reflection() 
