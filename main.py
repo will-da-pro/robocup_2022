@@ -26,26 +26,30 @@ driveB = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104)
 BLACK = 0 - 20
 WHITE = 20 - 90
 DRIVE_SPEED = 100
-
-deviation = line_sensor.reflection() - threshold
-turn_rate = PROPORTIONAL_GAIN * deviation
-robot.drive(DRIVE_SPEED, turn_rate)
-
-color = ColorSensor.reflection() 
 # Write your program here.
 def findPath():
+    time = 0
     while True:
+        if time >= 360:
+            return False
         driveB.turn(1, True)
-        if 
+        if colorA == BLACK or colorB == BLACK:
+            return True
+        time += 1
+            
         
         
 def move():
     while True:
-        if colorA and colorB == reflection: 
+        if colorA == BLACK and colorB == BLACK: 
             driveB.drive(1)
-        elif not colorA and not colorB == reflection:
-            findPath()
-        while colorA and colorB == reflection:
+        elif not colorA == BLACK and not colorB == BLACK:
+            path = findPath()
+            if path:
+                pass
+            else:
+                break
+        while colorA == BLACK and colorB == BLACK:
             pass
 def startup():
     ev3.speaker.say("Initialising Startup")
