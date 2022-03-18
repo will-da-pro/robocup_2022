@@ -22,6 +22,14 @@ colorB = ColorSensor.reflection(ColorSensor(Port.S4))
 ultraS = UltrasonicSensor(Port.S3)
 driveB = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104)
 
+BLACK = 0 - 20
+WHITE = 20 - 90
+DRIVE_SPEED = 100
+
+deviation = line_sensor.reflection() - threshold
+turn_rate = PROPORTIONAL_GAIN * deviation
+robot.drive(DRIVE_SPEED, turn_rate)
+
 color = ColorSensor.reflection() 
 # Write your program here.
 def findPath():
