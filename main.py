@@ -29,6 +29,7 @@ SILVER = 90 - 100
 DRIVE_SPEED = 100
 # Write your program here.
 def findPath():
+    driveB.stop()
     time = 0
     while True:
         if time >= 360:
@@ -43,7 +44,7 @@ def findPath():
 def move():
     while True:
         if colorA == BLACK and colorB == BLACK: 
-            driveB.drive(1)
+            driveB.drive(DRIVE_SPEED)
         elif not colorA == BLACK and not colorB == BLACK:
             path = findPath()
             if path:
