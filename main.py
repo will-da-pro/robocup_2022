@@ -17,15 +17,15 @@ from pybricks.media.ev3dev import SoundFile, ImageFile
 ev3 = EV3Brick()
 
 motorA = Motor(Port.A)
-motorB = Motor(Port.B)
+motorB = Motor(Port.D)
 colorA = ColorSensor.reflection(ColorSensor(Port.S1))
 colorB = ColorSensor.reflection(ColorSensor(Port.S4))
 ultraS = UltrasonicSensor(Port.S3)
-driveB = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104) #to check next week
+robot = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104) #to check next week
 
-BLACK = 0 - 20
-WHITE = 20 - 90
-SILVER = 90 - 100
+BLACK = reflection(0 - 20)
+WHITE = reflection(20 - 90)
+SILVER = reflection(90 - 100)
 DRIVE_SPEED = 100
 # Write your program here.
 def findPath():
@@ -55,4 +55,16 @@ def move():
             pass
 def startup():
     ev3.speaker.say("Initialising Startup")
-    
+def obstacle():
+    if ultraS.distance() < 100:
+        wait(10)
+        robot.straight(-100)
+        robot.turn(120)
+        robot.straight(300)
+        robot.turn(45)
+        while colourB == WHITE
+        robot.straight
+    elif colourB == BLACK:
+        
+        
+        
