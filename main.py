@@ -53,8 +53,12 @@ def move():
                 break
         while lColour == BLACK and rColour == BLACK:
             pass
+
+
 def startup():
     ev3.speaker.say("Initialising Startup")
+
+
 def obstacle():
     if ultraS.distance() < 100:
         wait(10)
@@ -66,3 +70,6 @@ def obstacle():
             robot.straight(300)
     elif rColour == BLACK:
         robot.stop()
+
+robot.startup()
+robot.move()
