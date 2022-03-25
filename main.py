@@ -17,8 +17,8 @@ ev3 = EV3Brick()
 
 motorA = Motor(Port.A)
 motorB = Motor(Port.D)
-colorA = ColorSensor.reflection(ColorSensor(Port.S1))
-colorB = ColorSensor.reflection(ColorSensor(Port.S4))
+colourA = ColorSensor.reflection(ColorSensor(Port.S1))
+colourB = ColorSensor.reflection(ColorSensor(Port.S4))
 ultraS = UltrasonicSensor(Port.S3)
 robot = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104) #to check next week
 
@@ -28,13 +28,13 @@ SILVER = 90 - 100
 DRIVE_SPEED = 100
 # Write your program here.
 def findPath():
-    driveB.stop()
+    robot.stop()
     time = 0
     while True:
         if time >= 360:
             return False
-        driveB.turn(1, True)
-        if colorA == BLACK or colorB == BLACK:
+        robot.turn(1, True)
+        if colourA == BLACK or colourB == BLACK:
             return True
         time += 1
             
@@ -42,15 +42,15 @@ def findPath():
         
 def move():
     while True:
-        if colorA == BLACK and colorB == BLACK:
-            driveB.drive(DRIVE_SPEED)
-        elif not colorA == BLACK and not colorB == BLACK:
+        if colourA == BLACK and colourB == BLACK:
+            robot.drive(DRIVE_SPEED)
+        elif not colourA == BLACK and not colourB == BLACK:
             path = findPath()
             if path:
                 pass
             else:
                 break
-        while colorA == BLACK and colorB == BLACK:
+        while colourA == BLACK and colourB == BLACK:
             pass
 def startup():
     ev3.speaker.say("Initialising Startup")
