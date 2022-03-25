@@ -17,6 +17,7 @@ ev3 = EV3Brick()
 
 motorA = Motor(Port.A)
 motorB = Motor(Port.D)
+claw = Motor(Port.C)
 colourA = ColorSensor.reflection(ColorSensor(Port.S1))
 colourB = ColorSensor.reflection(ColorSensor(Port.S4))
 ultraS = UltrasonicSensor(Port.S3)
