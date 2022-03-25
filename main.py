@@ -15,13 +15,13 @@ from pybricks.media.ev3dev import SoundFile, ImageFile
 # Create your objects here.
 ev3 = EV3Brick()
 
-motorA = Motor(Port.A)
-motorB = Motor(Port.D)
+lMotor = Motor(Port.A)
+rMotor = Motor(Port.D)
 claw = Motor(Port.C)
-colourA = ColorSensor.reflection(ColorSensor(Port.S1))
-colourB = ColorSensor.reflection(ColorSensor(Port.S4))
+lColour = ColorSensor.reflection(ColorSensor(Port.S1))
+rColour = ColorSensor.reflection(ColorSensor(Port.S4))
 ultraS = UltrasonicSensor(Port.S3)
-robot = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104) #to check next week
+robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=104) #to check next week
 
 BLACK = 0 - 20
 WHITE = 20 - 90
@@ -35,7 +35,7 @@ def findPath():
         if time >= 360:
             return False
         robot.turn(1, True)
-        if colourA == BLACK or colourB == BLACK:
+        if lColour == BLACK or rColour == BLACK:
             return True
         time += 1
             
@@ -43,15 +43,15 @@ def findPath():
         
 def move():
     while True:
-        if colourA == BLACK and colourB == BLACK:
+        if lColour == BLACK and rColour == BLACK:
             robot.drive(DRIVE_SPEED)
-        elif not colourA == BLACK and not colourB == BLACK:
+        elif not lColour == BLACK and not rColour == BLACK:
             path = findPath()
             if path:
                 pass
             else:
                 break
-        while colourA == BLACK and colourB == BLACK:
+        while lColour == BLACK and rColour == BLACK:
             pass
 def startup():
     ev3.speaker.say("Initialising Startup")
@@ -62,7 +62,7 @@ def obstacle():
         robot.turn(120)
         robot.straight(300)
         robot.turn(45)
-        while colourB == WHITE:
+        while rColour == WHITE:
             robot.straight(300)
-    elif colourB == BLACK:
+    elif rColour == BLACK:
         robot.stop()
