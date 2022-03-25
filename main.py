@@ -22,9 +22,9 @@ colorB = ColorSensor.reflection(ColorSensor(Port.S4))
 ultraS = UltrasonicSensor(Port.S3)
 robot = DriveBase(motorA, motorB, wheel_diameter=55.5, axle_track=104) #to check next week
 
-BLACK = reflection(0 - 20)
-WHITE = reflection(20 - 90)
-SILVER = reflection(90 - 100)
+BLACK = 0 - 20
+WHITE = 20 - 90
+SILVER = 90 - 100
 DRIVE_SPEED = 100
 # Write your program here.
 def findPath():
@@ -42,7 +42,7 @@ def findPath():
         
 def move():
     while True:
-        if colorA == BLACK and colorB == BLACK: 
+        if colorA == BLACK and colorB == BLACK:
             driveB.drive(DRIVE_SPEED)
         elif not colorA == BLACK and not colorB == BLACK:
             path = findPath()
@@ -61,9 +61,7 @@ def obstacle():
         robot.turn(120)
         robot.straight(300)
         robot.turn(45)
-        while colourB == WHITE
-        robot.straight
+        while colourB == WHITE:
+            robot.straight(300)
     elif colourB == BLACK:
-        
-        
-        
+        robot.stop()
