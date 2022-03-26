@@ -1,7 +1,6 @@
 #!/usr/bin/env pybricks-micropython
 from pybricks.hubs import EV3Brick
-from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
-                                 InfraredSensor, UltrasonicSensor, GyroSensor)
+from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor, InfraredSensor, UltrasonicSensor, GyroSensor)
 from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
@@ -16,16 +15,15 @@ from pybricks.media.ev3dev import SoundFile, ImageFile
 ev3 = EV3Brick()
 
 
+
+lMotor = Motor(Port.A)
+rMotor = Motor(Port.D)
 claw = Motor(Port.C)
 ultraS = UltrasonicSensor(Port.S3)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=104) #to check next week
 
 
 SILVER = 90 - 100
-
-lMotor = Motor(Port.A)
-rMotor = Motor(Port.D)
-    
 DRIVE_SPEED = 100
 
 
@@ -50,7 +48,7 @@ def calib():
     
 
 
-robot.calib()
+ev3.calib()
 
 #def findPath():
  #   robot.stop()
