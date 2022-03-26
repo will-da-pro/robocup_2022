@@ -50,7 +50,7 @@ def calib():
     
 
 
-
+robot.calib()
 
 #def findPath():
  #   robot.stop()
