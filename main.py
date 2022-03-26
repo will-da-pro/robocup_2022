@@ -85,4 +85,16 @@ def obstacle():
     elif rColour == BLACK:
         robot.stop()
 
-ev3.move(300)
+
+while True:
+    ev3.move()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
