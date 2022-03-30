@@ -25,9 +25,11 @@ ultraS = UltrasonicSensor(Port.S3)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=120) #to check next week
 
 
+
 SILVER = 90 - 100
 DRIVE_SPEED = 100
-
+WHITE = 0
+BLACK = 1
 
 # Write your program here.
 
@@ -66,6 +68,7 @@ path = findPath()
 
 def move():
     while True:
+
         if ultraS.distance() < 100:
             obstacle()
         elif lColour == BLACK and rColour == BLACK:
@@ -89,18 +92,17 @@ def obstacle():
     if rColour == BLACK:
         robot.stop()
 
-go = move()
         
 
-hub.system.set_stop_button(None)
+ev3.set_stop_button(None)
 # Check the button for 5 seconds.
 watch = StopWatch()
 while watch.time() < 5000:
-    if hub.button.pressed():
+    if ev3.button.pressed():
         calib()
 
 # Enable the stop button again.
-hub.system.set_stop_button(Button.CENTER)
+ev3.set_stop_button(Button.CENTER)
 # Now you can press the stop button as usual.
 wait(5000)
 
