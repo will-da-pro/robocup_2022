@@ -16,11 +16,13 @@ ev3 = EV3Brick()
 
 
 
+lColour = ColorSensor(Port.S1)
+rColour = ColorSensor(Port.S4)
 lMotor = Motor(Port.A)
 rMotor = Motor(Port.D)
 claw = Motor(Port.C)
 ultraS = UltrasonicSensor(Port.S3)
-robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=104) #to check next week
+robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=120) #to check next week
 
 
 SILVER = 90 - 100
@@ -30,8 +32,7 @@ DRIVE_SPEED = 100
 # Write your program here.
 
 def calib():
-    lColour = ColorSensor(Port.S1)
-    rColour = ColorSensor(Port.S4)
+    
     while not any(ev3.buttons.pressed()):
         continue
     wait(1000)
@@ -85,7 +86,7 @@ def obstacle():
     robot.turn(45)
     while rColour == WHITE:
         robot.straight(300)
-    elif rColour == BLACK:
+    if rColour == BLACK:
         robot.stop()
 
 go = move()
