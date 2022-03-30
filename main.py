@@ -45,7 +45,7 @@ def calib():
     BLACK = color_sensor.reflection(Port.S1)
     ev3.speaker.beep()
     print("black colour:", BLACK)
-    
+
 
 
 
@@ -86,9 +86,21 @@ def obstacle():
         robot.stop()
 
 
+hub.system.set_stop_button(None)
+# Check the button for 5 seconds.
+watch = StopWatch()
+while watch.time() < 5000:
+    if hub.button.pressed():
+        calib()
+
+# Enable the stop button again.
+hub.system.set_stop_button(Button.CENTER)
+# Now you can press the stop button as usual.
+wait(5000)
+
+
 while True:
-    ev3.move()
-    
+    move()
     
     
     
