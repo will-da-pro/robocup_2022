@@ -59,13 +59,17 @@ def findPath():
         if lColour == BLACK or rColour == BLACK:
             return True
         time += 1       
-        
+
+
+path = findPath()
+
 def move():
     while True:
-        if lColour == BLACK and rColour == BLACK:
+        if ultraS.distance() < 100:
+            obstacle()
+        elif lColour == BLACK and rColour == BLACK:
             robot.drive(DRIVE_SPEED)
         elif not lColour == BLACK and not rColour == BLACK:
-            path = findPath()
             if path:
                 pass
             else:
@@ -74,17 +78,18 @@ def move():
             pass
 
 def obstacle():
-    if ultraS.distance() < 100:
-        wait(10)
-        robot.straight(-100)
-        robot.turn(120)
+    wait(10)
+    robot.straight(-100)
+    robot.turn(120)
+    robot.straight(300)
+    robot.turn(45)
+    while rColour == WHITE:
         robot.straight(300)
-        robot.turn(45)
-        while rColour == WHITE:
-            robot.straight(300)
     elif rColour == BLACK:
         robot.stop()
 
+go = move()
+        
 
 hub.system.set_stop_button(None)
 # Check the button for 5 seconds.
@@ -100,11 +105,7 @@ wait(5000)
 
 
 while True:
-    move()
-    
-    
-    
-    
+    go
     
     
     
