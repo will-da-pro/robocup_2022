@@ -103,9 +103,8 @@ hub.system.set_stop_button(Button.CENTER)
 # Now you can press the stop button as usual.
 wait(5000)
 
+move()
 
-while True:
-    go
     
     
     
