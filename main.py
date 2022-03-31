@@ -54,14 +54,14 @@ def calib():
 
 def findPath():
     robot.stop()
-    time = 0
+    runTime = 0
     while True:
-        if time >= 360:
+        if runTime >= 360:
             return False
         robot.turn(10)
         if lColour == BLACK or rColour == BLACK:
             return True
-        time += 1       
+        runTime += 1       
 
 
 path = findPath()
