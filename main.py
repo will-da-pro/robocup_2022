@@ -94,16 +94,12 @@ def obstacle():
 
         
 
-ev3.set_stop_button(None)
 # Check the button for 5 seconds.
 watch = StopWatch()
 while watch.time() < 5000:
-    if ev3.button.pressed():
+    if ev3.button.pressed(UP):
         calib()
 
-# Enable the stop button again.
-ev3.set_stop_button(Button.CENTER)
-# Now you can press the stop button as usual.
 wait(5000)
 
 move()
