@@ -58,7 +58,7 @@ def findPath():
     while True:
         if time >= 360:
             return False
-        robot.turn(1, True)
+        robot.turn(1, Stop.HOLD, True)
         if lColour == BLACK or rColour == BLACK:
             return True
         time += 1       
