@@ -16,7 +16,7 @@ import time
 ev3 = EV3Brick()
 
 
-
+btn = Button.CENTER()
 lColour = ColorSensor(Port.S1)
 rColour = ColorSensor(Port.S4)
 lMotor = Motor(Port.A)
@@ -75,31 +75,28 @@ def move():
         elif lColour == BLACK and rColour == BLACK:
             robot.drive(DRIVE_SPEED)
         elif not lColour == BLACK and not rColour == BLACK:
+            path = findPath()
             if path:
                 pass
             else:
                 break
-        while lColour == BLACK and rColour == BLACK:
-            pass
 
 def obstacle():
     wait(10)
     robot.straight(-100)
     robot.turn(120)
     robot.straight(300)
-    robot.turn(45)
-    while rColour == WHITE:
-        robot.straight(300)
-    if rColour == BLACK:
-        robot.stop()
+    while lColour == BLACK and rColour == BLACK:
+        pass
 
         
 
 # Check the button for 5 seconds.
 time = time.perf_counter()
 while time <= 5000:
-    if ev3.button.pressed(UP):
+    if btn():
         calib()
+        break
 
 wait(5000)
 
