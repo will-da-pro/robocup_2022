@@ -5,6 +5,7 @@ from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
+import time
 
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
@@ -95,8 +96,8 @@ def obstacle():
         
 
 # Check the button for 5 seconds.
-watch = StopWatch()
-while watch.time() < 5000:
+time = time.perf_counter()
+while time <= 5000:
     if ev3.button.pressed(UP):
         calib()
 
