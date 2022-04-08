@@ -16,7 +16,6 @@ import time
 ev3 = EV3Brick()
 
 
-btn = Button.CENTER()
 lColour = ColorSensor(Port.S1)
 rColour = ColorSensor(Port.S4)
 lMotor = Motor(Port.A)
@@ -36,17 +35,17 @@ BLACK = 1
 
 def calib():
     
-    while not any(ev3.buttons.pressed()):
-        continue
-    wait(1000)
-    WHITE = color_sensor.reflection(Port.S1)
+    while not ev3.buttons.pressed():
+        pass
+    wait(10)
+    WHITE = ColorSensor.reflection(Port.S1)
     ev3.speaker.beep()
     print("white colour:", WHITE)
     
-    while not any(ev3.buttons.pressed()):
-        continue
-    wait(1000)
-    BLACK = color_sensor.reflection(Port.S1)
+    while not ev3.buttons.pressed():
+        pass
+    wait(10)
+    BLACK = ColorSensor.reflection(Port.S1)
     ev3.speaker.beep()
     print("black colour:", BLACK)
 
@@ -62,10 +61,7 @@ def findPath():
         robot.turn(10)
         if lColour == BLACK or rColour == BLACK:
             return True
-        runTime += 1       
-
-
-path = findPath()
+        runTime += 1    
 
 def move():
     while True:
@@ -73,8 +69,16 @@ def move():
         if ultraS.distance() < 100:
             obstacle()
         elif lColour == BLACK and rColour == BLACK:
-            robot.drive(DRIVE_SPEED)
-        elif not lColour == BLACK and not rColour == BLACK:
+            robot.drive(DRIVE_SPEED, 0)
+        elif lColour == BLACK:
+            robot.drive(DRIVE_SPEED, -12)
+            while rColour != BLACK:
+                pass
+        elif rColour == BLACK:
+            robot.drive(DRIVE_SPEED, 12)
+            while lColour != BLACK:
+                pass
+        else:
             path = findPath()
             if path:
                 pass
@@ -90,17 +94,15 @@ def obstacle():
         pass
 
         
-
+ev3.speaker.beep()
 # Check the button for 5 seconds.
-time = time.perf_counter()
-while time <= 5000:
-    if btn():
+time = time.time()
+while time != 400:
+    if ev3.buttons.pressed():
+        ev3.speaker.beep()
         calib()
+        move()
         break
-
-wait(5000)
-
-move()
 
     
     
