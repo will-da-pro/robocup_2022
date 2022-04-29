@@ -24,11 +24,12 @@ claw = Motor(Port.C)
 ultraS = UltrasonicSensor(Port.S3)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=120) #to check next week
 
+ultraSLimit = 100
 
-
-SILVER = 90 - 100
+SILVER = 90
 DRIVE_SPEED = 100
-WHITE = 0
+TURN_DRIVE_SPEED = 50
+WHITE = 50
 BLACK = 20
 
 # Write your program here.
@@ -43,24 +44,25 @@ def findPath():
         if (runTime >= 360):
             return False
         robot.turn(10)
-        if (lColour <= BLACK or rColour <= BLACK):
+        if (lColour.reflection() <= BLACK or rColour.reflection() <= BLACK):
             return True
         runTime += 1    
 
 def move():
     while True:
 
-        if (ultraS.distance() <= 100):
-            obstacle()
-        elif lColour <= BLACK and rColour <= BLACK:
+        if (ultraS.distance() < ultraSLimit):
+            #obstacle()
+            pass
+        if lColour.reflection() >= BLACK and rColour.reflection() >= BLACK:
             robot.drive(DRIVE_SPEED, 0)
-        elif lColour <= BLACK:
-            robot.drive(DRIVE_SPEED, -12)
-            while rColour >= BLACK:
+        elif lColour.reflection() <= BLACK:
+            robot.drive(TURN_DRIVE_SPEED, -100)
+            while lColour.reflection() <= BLACK:
                 pass
-        elif rColour <= BLACK:
-            robot.drive(DRIVE_SPEED, 12)
-            while lColour >= BLACK:
+        elif rColour.reflection() <= BLACK:
+            robot.drive(TURN_DRIVE_SPEED, 100)
+            while rColour.reflection() <= BLACK:
                 pass
         else:
             path = findPath()
@@ -74,11 +76,11 @@ def obstacle():
     robot.straight(-100)
     robot.turn(120)
     robot.straight(300)
-    while lColour <= BLACK and rColour <= BLACK:
+    while lColour.reflection() <= BLACK and rColour.reflection() <= BLACK:
         pass
 
         
-ev3.speaker.say("Hello there")
+ev3.speaker.say("MR DHARMA")
 
 move()
 
