@@ -6,6 +6,17 @@ from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 import time
+import logging
+import logging.handlers
+import os
+ 
+handler = logging.handlers.WatchedFileHandler(
+os.environ.get("LOGFILE", "/var/log/latest.log"))
+formatter = logging.Formatter(logging.BASIC_FORMAT)
+handler.setFormatter(formatter)
+root = logging.getLogger()
+root.setLevel(os.environ.get("LOGLEVEL", "INFO"))
+root.addHandler(handler)
 
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
