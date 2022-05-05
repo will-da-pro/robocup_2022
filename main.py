@@ -28,14 +28,17 @@ ultraSLimit = 100
 
 SILVER = 90
 DRIVE_SPEED = 100
-TURN_DRIVE_SPEED = 50
+TURN_DRIVE_SPEED = 60
 WHITE = 50
 BLACK = 20
 
 # Write your program here.
 
 
-
+def turn(side, degrees):
+    while side.reflection() <= BLACK:
+        robot.drive(TURN_DRIVE_SPEED, degrees)
+        degrees *= 1.3
 
 def findPath():
     robot.stop()
@@ -57,13 +60,9 @@ def move():
         if lColour.reflection() >= BLACK and rColour.reflection() >= BLACK:
             robot.drive(DRIVE_SPEED, 0)
         elif lColour.reflection() <= BLACK:
-            robot.drive(TURN_DRIVE_SPEED, -100)
-            while lColour.reflection() <= BLACK:
-                pass
+            turn(lColour, -60)
         elif rColour.reflection() <= BLACK:
-            robot.drive(TURN_DRIVE_SPEED, 100)
-            while rColour.reflection() <= BLACK:
-                pass
+            turn(rColour, 60)
         else:
             path = findPath()
             if path:
