@@ -14,6 +14,7 @@ import time
 
 # Create your objects here.
 ev3 = EV3Brick()
+time = time.time()
 
 
 lColour = ColorSensor(Port.S1)
@@ -36,9 +37,11 @@ BLACK = 20
 
 
 def turn(side, degrees):
+    startTime = time
     while side.reflection() <= BLACK:
         robot.drive(TURN_DRIVE_SPEED, degrees)
-        degrees *= 1.3
+        if time - startTime >= 0.1:
+            robot.drive(TURN_DRIVE_SPEED * (time - startTime) * 2) 
 
 def findPath():
     robot.stop()
