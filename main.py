@@ -60,12 +60,12 @@ def move():
         if (ultraS.distance() < ultraSLimit):
             #obstacle()
             pass
-        if lColour.reflection() >= BLACK and rColour.reflection() >= BLACK:
-            robot.drive(DRIVE_SPEED, 0)
-        elif lColour.reflection() <= BLACK:
-            turn(lColour, -60)
-        elif rColour.reflection() <= BLACK:
-            turn(rColour, 60)
+        if lColour.reflection() >= WHITE and rColour.reflection() >= WHITE:
+            lMotor.run(100) and rMotor.run(100)
+        elif lColour.reflection() <= BLACK and rColour.reflection() >= WHITE:
+            lMotor.run(-50) and rMotor.run(100)
+        elif lColour.reflection() >= WHITE and rColour.reflection() <=BLACK:
+            lMotor
         else:
             path = findPath()
             if path:
