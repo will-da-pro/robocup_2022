@@ -14,7 +14,7 @@ import time
 
 # Create your objects here.
 ev3 = EV3Brick()
-time = time.time()
+time_secs = time
 
 
 lColour = ColorSensor(Port.S1)
@@ -37,11 +37,13 @@ BLACK = 20
 
 
 def turn(side, degrees):
-    startTime = time
+    startTime = time_secs.time()
+    print(str(time_secs.time()) + ", "+ str(startTime))
     while side.reflection() <= BLACK:
         robot.drive(TURN_DRIVE_SPEED, degrees)
-        if time - startTime >= 0.1:
-            robot.drive(TURN_DRIVE_SPEED * (time - startTime) * 2) 
+        if time_secs.time() - startTime >= 0.2:
+            print("Worked!")
+            robot.drive(TURN_DRIVE_SPEED, degrees * 2.3) 
 
 def findPath():
     robot.stop()
@@ -82,7 +84,7 @@ def obstacle():
         pass
 
         
-ev3.speaker.say("MR DHARMA")
+ev3.speaker.say("HELLLO MR DHARMA")
 
 move()
 
