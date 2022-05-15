@@ -36,6 +36,7 @@ DRIVE_SPEED = 100
 TURN_DRIVE_SPEED = 60
 WHITE = 50
 BLACK = 20
+helloMessages = ["Hello there!", "Hello mr Dharma", "YOU NILLY SUSAN!!!"]
 
 # Write your program here.
 
@@ -100,16 +101,8 @@ def move():
 
 def startMessage():
     #Arguments should be 1 and the number of possible outcomes
-    rand = random.randint(1, 3)
-    match rand:
-        case 1:
-            ev3.speaker.say("HELLLO MR DHARMA")
-        case 2: 
-            ev3.speaker.say("YOU NILLY SUSAN")
-        case 3:
-            ev3.speaker.say("HELLO THERE")
-        case _:
-            logging.error("Invalid start message. Did you update the random variable?")
+    rand = random.randint(0, len(helloMessages) - 1)
+    ev3.speaker.say(helloMessages[rand])
         
 startMessage()
 #Start movement
