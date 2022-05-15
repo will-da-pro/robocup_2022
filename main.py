@@ -99,7 +99,7 @@ def move():
                 break
 
 def startMessage():
-    #Arguments should be 1 and the number of messages
+    #Arguments should be 1 and the number of possible outcomes
     rand = random.randint(1, 3)
     match rand:
         case 1:
