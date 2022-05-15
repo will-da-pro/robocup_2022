@@ -8,6 +8,8 @@ from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 import time
+import random
+import logging
 
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
@@ -96,9 +98,20 @@ def move():
                 #If no path is found then the function will break
                 break
 
+def startMessage():
+    #Arguments should be 1 and the number of messages
+    rand = random.randint(1, 3)
+    match rand:
+        case 1:
+            ev3.speaker.say("HELLLO MR DHARMA")
+        case 2: 
+            ev3.speaker.say("YOU NILLY SUSAN")
+        case 3:
+            ev3.speaker.say("HELLO THERE")
+        case _:
+            logging.error("Invalid start message. Did you update the random variable?")
         
-ev3.speaker.say("HELLLO MR DHARMA")
-
+startMessage()
 #Start movement
 move()
 
