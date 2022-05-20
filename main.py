@@ -65,9 +65,9 @@ def move():
         if lColour.reflection() >= BLACK and rColour.reflection() >= BLACK:
             robot.drive(DRIVE_SPEED, 0)
         elif lColour.reflection() <= BLACK:
-            turn(lColour, -100)
+            turn(lColour, -150)
         elif rColour.reflection() <= BLACK:
-            turn(rColour, 100)
+            turn(rColour, 150)
         else:
             path = findPath()
             if path:
