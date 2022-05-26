@@ -36,58 +36,75 @@ DRIVE_SPEED = 100
 TURN_DRIVE_SPEED = 60
 WHITE = 50
 BLACK = 20
-helloMessages = ["Hello there!", "Hello mr Dharma", "YOU NILLY SUSAN!!!"]
+helloMessages = ["Hello there!", "Hello mr Dharma", "YOU NILLY SUSAN!!!", "Hello mr Hu"]
 
 # Write your program here.
 
+class movement:
+    def __init__(self, leftMotor, rightMotor, leftSensor, rightSensor, robot):
+        self.lMotor = leftMotor
+        self.rMotor = rightMotor
+		self.lColor = leftSensor
+		self.rColor = rightSensor
+		self.robot = robot		
+        
 #Runs when one of the colour sensors detects black
-def turn(side, degrees):
-    #Starts a timer
-    startTime = time_secs.time()
-    while side.reflection() <= BLACK:
-        robot.drive(TURN_DRIVE_SPEED, degrees)
-        #Afer 0.2 seconds, it starts turning faster.
-        if time_secs.time() - startTime >= 0.2:
-            robot.drive(TURN_DRIVE_SPEED, degrees * 2.3) 
+	def turn(self, side, degrees):
+	    #Starts a timer
+	    startTime = time_secs.time()
+	    while side.reflection() <= BLACK:
+	        robot.drive(TURN_DRIVE_SPEED, degrees)
+	        #Afer 0.2 seconds, it starts turning faster.
+	        if time_secs.time() - startTime >= 0.2:
+	            robot.drive(TURN_DRIVE_SPEED, degrees * 2.3) 
 
-#Rotates until a path is detected.             
-def findPath():
-    robot.stop()
-    #Each time the robot turns, it will increase this variable
-    runTime = 0
-    while True:
-        #If the robot has failed to locate a path after turning 360 degrees, it will return false stopping the program
-        if (runTime >= 36):
-            return False
-        robot.turn(10)
-        #If either sensor detects white, it will return to the move function and continue normally
-        if (lColour.reflection() >= BLACK or rColour.reflection() >= BLACK):
-            return True
-        runTime += 1 
+	#Rotates until a path is detected.             
+	def findPath(self):
+	    robot.stop()
+	    #Each time the robot turns, it will increase this variable
+	    runTime = 0
+	    while True:
+	        #If the robot has failed to locate a path after turning 360 degrees, it will return false stopping the program
+	        if (runTime >= 36):
+	            return False
+	        robot.turn(10)
+	        #If either sensor detects white, it will return to the move function and continue normally
+	        if (lColour.reflection() >= BLACK or rColour.reflection() >= BLACK):
+	            return True
+	        runTime += 1 
 
-#Runs if an obstacle is detected
-def obstacle():
-    wait(5)
-    robot.straight(-100)
-    robot.turn(120)
-    robot.straight(300)
-    while lColour.reflection() <= BLACK and rColour.reflection() <= BLACK:
-        pass
+	#Runs if an obstacle is detected
+	def obstacle(self):
+	    wait(5)
+	    robot.straight(-100)
+	    robot.turn(120)
+	    robot.straight(300)
+	    while lColour.reflection() <= BLACK and rColour.reflection() <= BLACK:
+	        pass
+			
+def isBlack(self, side):
+	if side.reflection() <= BLACK:
+		return true
+	else:
+		return false
 
+			
 #Handles all movement
 def move():
     while True:
+		leftIsBlack = isBlack(lColor)
+		rightIsBlack = isBlack(rColor)
         if (ultraS.distance() < ultraSLimit):
             #obstacle()
             pass
         #If both sensors detect white, the robot moves in a straight line
-        if lColour.reflection() >= BLACK and rColour.reflection() >= BLACK:
+        if !leftIsBlack and !rightIsBlack:
             robot.drive(DRIVE_SPEED, 0)
         #If the left sensor detects black, then the robot will turn left
-        elif lColour.reflection() <= BLACK:
+        elif leftIsBlack:
             turn(lColour, -60)
         #If the right sensor detects black, then the robot will turn right
-        elif rColour.reflection() <= BLACK:
+        elif rightIsBlack:
             turn(rColour, 60)
         #If both sensors detect black, then the find path function will run
         else:
