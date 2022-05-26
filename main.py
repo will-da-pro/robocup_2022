@@ -32,14 +32,14 @@ DRIVE_SPEED = 100
 TURN_DRIVE_SPEED = 60
 WHITE = 50
 BLACK = 20
+helloMessages = ["Hello there!", "Hello mr Dharma", "YOU NILLY SUSAN!!!", "Hello mr Hu"]
 
-# Write your program here.
-
-
+# Write your program here.	
+        
+#Runs when one of the colour sensors detects black
 def turn(side, degrees):
     startTime = time_secs.time()
-    print(str(time_secs.time()) + ", "+ str(startTime))
-    while side.reflection() <= BLACK:
+    while isBlack(side):
         robot.drive(TURN_DRIVE_SPEED, degrees)
         if time_secs.time() - startTime >= 0.2:
             print("Worked!")
@@ -52,22 +52,45 @@ def findPath():
         if (runTime >= 360):
             return False
         robot.turn(10)
-        if (lColour.reflection() <= BLACK or rColour.reflection() <= BLACK):
+        #If either sensor detects white, it will return to the move function and continue normally
+        if (isBlack(lColor) or isBlack(rColor):
             return True
-        runTime += 1    
+        runTime += 1 
 
+#Runs if an obstacle is detected
+def obstacle():
+    wait(5)
+    robot.straight(-100)
+    robot.turn(120)
+    robot.straight(300)
+    while isBlack(lColor) and isBlack(rColor):
+        pass
+			
+def isBlack(side):
+	if side.reflection() <= BLACK:
+		return true
+	else:
+		return false
+
+			
+#Handles all movement
 def move():
     while True:
-
+		    leftIsBlack = isBlack(lColor)
+		    rightIsBlack = isBlack(rColor)
         if (ultraS.distance() < ultraSLimit):
             
             pass
-        if lColour.reflection() >= BLACK and rColour.reflection() >= BLACK:
+        #If both sensors detect white, the robot moves in a straight line
+        if !leftIsBlack and !rightIsBlack:
             robot.drive(DRIVE_SPEED, 0)
-        elif lColour.reflection() <= BLACK:
-            turn(lColour, -150)
-        elif rColour.reflection() <= BLACK:
-            turn(rColour, 150)
+        #If the left sensor detects black, then the robot will turn left
+        elif leftIsBlack:
+            turn(lColour, -60)
+        #If the right sensor detects black, then the robot will turn right
+        elif rightIsBlack:
+            turn(rColour, 60)
+        #If both sensors detect black, then the find path function will run
         else:
             path = findPath()
             if path:
