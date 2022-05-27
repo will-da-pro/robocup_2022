@@ -1,2 +1,23 @@
-language = "Python"
-run = "python3 main.py"
+# The command that is executed when the run button is clicked.
+run = ['run', 'main.py']
+
+# The default file opened in the editor.
+entrypoint = "src/main.py"
+
+# Setting environment variables
+[env]
+FOO="foo"
+
+# Packager configuration for the Universal Package Manager
+# See https://github.com/replit/upm for supported languages.
+[packager]
+language = "python"
+
+# Per language configuration: language.<lang name> 
+[languages.python]
+# The glob pattern to match files for this programming language
+pattern = "**/*.py"
+
+    # LSP configuration for code intelligence
+    [languages.python.languageServer]
+    start = ["python-analyzer"]
