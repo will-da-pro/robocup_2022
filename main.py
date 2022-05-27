@@ -41,10 +41,12 @@ def turn(side, degrees):
     startTime = time_secs.time()
     while isBlack(side):
         robot.drive(TURN_DRIVE_SPEED, degrees)
+        #TODO Create variable for state
         if time_secs.time() - startTime >= 0.2:
             print("Worked!")
-            lMotor.turn(degrees)
-            rMotor.turn(degrees - degrees*2)
+            robot.stop()
+            lMotor.run(degrees)
+            rMotor.run(degrees - degrees*2)
 
 def findPath():
     robot.stop()
