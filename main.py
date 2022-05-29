@@ -35,6 +35,9 @@ WHITE = 50
 BLACK = 20
 helloMessages = ["Hello there!", "Hello mr Dharma", "YOU NILLY SUSAN!!!", "Hello mr Hu", "GET RICKROLLED!!!"]
 
+#State variables
+fastTurning = False
+
 # Write your program here.
 #Runs when one of the colour sensors detects black
 def turn(side, degrees):
@@ -43,6 +46,7 @@ def turn(side, degrees):
         robot.drive(TURN_DRIVE_SPEED, degrees)
         #TODO Create variable for state
         if time_secs.time() - startTime >= 0.2:
+
             print("Worked!")
             robot.stop()
             lMotor.run(degrees)
