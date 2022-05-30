@@ -44,13 +44,13 @@ def turn(side, degrees):
     startTime = time_secs.time()
     while isBlack(side):
         robot.drive(TURN_DRIVE_SPEED, degrees)
-        #TODO Create variable for state
         if time_secs.time() - startTime >= 0.2:
-
-            print("Worked!")
-            robot.stop()
+			if (not fastTurning):
+            	robot.stop()
+				fastTurning = True
             lMotor.run(degrees)
             rMotor.run(degrees - degrees*2)
+	fastTurning = False
 
 def findPath():
     robot.stop()
@@ -66,11 +66,10 @@ def findPath():
 
 #Runs if an obstacle is detected
 def obstacle():
-    wait(5)
-    robot.straight(-100)
-    robot.turn(120)
-    robot.straight(300)
-    while lColor.reflection() <= BLACK and rColor.reflection() <= BLACK:
+    ev3.speaker.say("Obstacle detected")
+    robot.turn(-90)
+    robot.curve(UltraS, 180)
+    while not isBlack(lColor) and not isBlack(rColor):
         pass
 			
 def isBlack(side):
