@@ -41,15 +41,15 @@ fastTurning = False
 # Write your program here.
 #Runs when one of the colour sensors detects black
 def turn(side, degrees):
-    startTime = time_secs.time()
-    while isBlack(side):
-        robot.drive(TURN_DRIVE_SPEED, degrees)
-        if time_secs.time() - startTime >= 0.2:
+	startTime = time_secs.time()
+	while isBlack(side):
+		robot.drive(TURN_DRIVE_SPEED, degrees)
+		if (time_secs.time() - startTime >= 0.2):
 			if (not fastTurning):
-            	robot.stop()
+				robot.stop()
 				fastTurning = True
-            lMotor.run(degrees)
-            rMotor.run(degrees - degrees*2)
+			lMotor.run(degrees)
+			rMotor.run(degrees - degrees*2)
 	fastTurning = False
 
 def findPath():
