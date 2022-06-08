@@ -41,38 +41,38 @@ fastTurning = False
 # Write your program here.
 #Runs when one of the colour sensors detects black
 def turn(side, degrees):
-    fastTurning = False
-    startTime = time_secs.time()
-    while isBlack(side):
+	fastTurning = False
+	startTime = time_secs.time()
+	while isBlack(side):
 		robot.drive(TURN_DRIVE_SPEED, degrees)
-		if (time_secs.time() - startTime >= 0.2):
-			if (not fastTurning):
-				lMotor.stop()
-                rMotor.stop()
-                fastTurning = True
-            lMotor.run(degrees)
-            rMotor.run(degrees - degrees*2)
-    fastTurning = False
+		if (time_secs.time() - startTime >= 0.15):
+			if not fastTurning:
+				robot.stop()
+				fastTurning = True
+				ev3.speaker.beep()
+			robot.drive(TURN_DRIVE_SPEED/10, 90)
+	robot.stop()
+	fastTurning = False
 
 def findPath():
-    robot.stop()
-    runTime = 0
-    while True:
-        if (runTime >= 360):
-            return False
-        robot.turn(10)
-        #If either sensor detects white, it will return to the move function and continue normally
-        if (isBlack(lColor) or isBlack(rColor)):
-            return True
-        runTime += 1 
+	robot.stop()
+	runTime = 0
+	while True:
+		if (runTime >= 360):
+			return False
+		robot.turn(10)
+		#If either sensor detects white, it will return to the move function and continue normally
+		if (isBlack(lColor) or isBlack(rColor)):
+			return True
+		runTime += 1 
 
 #Runs if an obstacle is detected
 def obstacle():
-    ev3.speaker.say("Obstacle detected")
-    robot.turn(-90)
-    robot.curve(UltraS, 180)
-    while not isBlack(lColor) and not isBlack(rColor):
-        pass
+	ev3.speaker.say("Obstacle detected")
+	robot.turn(-90)
+	robot.curve(ultraS, 180)
+	while not isBlack(lColor) and not isBlack(rColor):
+		pass
 			
 def isBlack(side):
 	if side.reflection() <= BLACK:
@@ -83,39 +83,40 @@ def isBlack(side):
 			
 #Handles all movement
 def move():
-    while True:
-        leftIsBlack = isBlack(lColor)
-        rightIsBlack = isBlack(rColor)
-        if (ultraS.distance() < ultraSLimit):
-            pass
-        #If both sensors detect white, the robot moves in a straight line
-        if (not leftIsBlack and not rightIsBlack):
-            robot.drive(DRIVE_SPEED, 0)
-        #If the left sensor detects black, then the robot will turn left
-        elif (leftIsBlack):
-            turn(lColor, -60)
-        #If the right sensor detects black, then the robot will turn right
-        elif (rightIsBlack):
-            turn(rColor, 60)
-        #If both sensors detect black, then the find path function will run
-        else:
-            path = findPath()
-            if path:
-                pass
-            else:
-                break
+	while True:
+		leftIsBlack = isBlack(lColor)
+		rightIsBlack = isBlack(rColor)
+		if (ultraS.distance() < ultraSLimit):
+			pass
+		#If both sensors detect white, the robot moves in a straight line
+		if (not leftIsBlack and not rightIsBlack):
+			robot.drive(DRIVE_SPEED, 0)
+		#If the left sensor detects black, then the robot will turn left
+		elif (leftIsBlack):
+			turn(lColor, -60)
+		#If the right sensor detects black, then the robot will turn right
+		elif (rightIsBlack):
+			turn(rColor, 60)
+		#If both sensors detect black, then the find path function will run
+		else:
+			ev3.speaker.beep()
+			path = findPath()
+			if path:
+				pass
+			else:
+				break
 
 def startMessage():
-    #Arguments should be 1 and the number of possible outcomes
-    rand = random.randint(0, len(helloMessages) - 1)
-    ev3.speaker.say(helloMessages[rand])
-    
+	#Arguments should be 1 and the number of possible outcomes
+	rand = random.randint(0, len(helloMessages) - 1)
+	ev3.speaker.say(helloMessages[rand])
+	
 startMessage()
 
 move()
 
-    
-    
-    
-    
-    
+	
+	
+	
+	
+	
