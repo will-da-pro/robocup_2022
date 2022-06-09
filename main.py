@@ -1,6 +1,6 @@
 #!/usr/bin/env pybricks-micropython
 from pybricks.hubs import EV3Brick
-from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor, InfraredSensor, UltrasonicSensor, GyroSensor)
+from pybricks.ev3devices import (TouchSensor, ColorSensor, InfraredSensor, UltrasonicSensor, GyroSensor, Motor)
 from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
@@ -50,8 +50,8 @@ def turn(side, degrees):
 				robot.stop()
 				fastTurning = True
 				ev3.speaker.beep()
-			robot.drive(TURN_DRIVE_SPEED/10, 90)
-	robot.stop()
+				rMotor.run(-degrees * 2)
+				lMotor.run(degrees * 2)
 	fastTurning = False
 
 def findPath():
@@ -93,10 +93,10 @@ def move():
 			robot.drive(DRIVE_SPEED, 0)
 		#If the left sensor detects black, then the robot will turn left
 		elif (leftIsBlack):
-			turn(lColor, -60)
+			turn(lColor, -150)
 		#If the right sensor detects black, then the robot will turn right
 		elif (rightIsBlack):
-			turn(rColor, 60)
+			turn(rColor, 150)
 		#If both sensors detect black, then the find path function will run
 		else:
 			ev3.speaker.beep()
