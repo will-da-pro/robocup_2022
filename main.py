@@ -89,16 +89,26 @@ def move():
 		if (ultraS.distance() < ultraSLimit):
 			pass
 		#If both sensors detect white, the robot moves in a straight line
-		if (not leftIsBlack and not rightIsBlack):
+		#if (not leftIsBlack and not rightIsBlack):
 			robot.drive(DRIVE_SPEED, 0)
 		#If the left sensor detects black, then the robot will turn left
-		elif (leftIsBlack):
-			turn(lColor, -150)
+		#elif (leftIsBlack):
+			#turn(lColor, -140)
 		#If the right sensor detects black, then the robot will turn right
-		elif (rightIsBlack):
-			turn(rColor, 150)
+		#elif (rightIsBlack):
+			#turn(rColor, 140)
 		#If both sensors detect black, then the find path function will run
-		else:
+		#Amount to multiply output by
+		multiplier = 1
+		compensator = 0
+		#finds the difference between the reflections
+		error = lColor.reflection() - rColor.reflection()
+		#gets degrees to turn by
+		output = int(multiplier * (error - compensator))
+		#output may need to be limited to within -180, 180
+		robot.drive(100,output)
+		c = 1
+		if c == 0:
 			ev3.speaker.beep()
 			path = findPath()
 			if path:
