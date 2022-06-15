@@ -90,7 +90,7 @@ def move():
 			pass
 		#If both sensors detect white, the robot moves in a straight line
 		#if (not leftIsBlack and not rightIsBlack):
-			robot.drive(DRIVE_SPEED, 0)
+			#robot.drive(DRIVE_SPEED, 0)
 		#If the left sensor detects black, then the robot will turn left
 		#elif (leftIsBlack):
 			#turn(lColor, -140)
@@ -99,14 +99,20 @@ def move():
 			#turn(rColor, 140)
 		#If both sensors detect black, then the find path function will run
 		#Amount to multiply output by
-		multiplier = 1
+		if leftIsBlack and rightIsBlack:
+			ev3.speaker.beep()
+			if lColor.reflection() <= rColor.reflection():
+				robot.drive(TURN_DRIVE_SPEED, -180)
+			else:
+				robot.drive(TURN_DRIVE_SPEED, 180)
+		multiplier = 2.2
 		compensator = 0
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
 		#gets degrees to turn by
 		output = int(multiplier * (error - compensator))
 		#output may need to be limited to within -180, 180
-		robot.drive(100,output)
+		robot.drive(DRIVE_SPEED, output)
 		c = 1
 		if c == 0:
 			ev3.speaker.beep()
