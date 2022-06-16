@@ -99,18 +99,23 @@ def move():
 			#turn(rColor, 140)
 		#If both sensors detect black, then the find path function will run
 		#Amount to multiply output by
-		if leftIsBlack and rightIsBlack:
-			ev3.speaker.beep()
-			if lColor.reflection() <= rColor.reflection():
-				robot.drive(TURN_DRIVE_SPEED, -180)
-			else:
-				robot.drive(TURN_DRIVE_SPEED, 180)
-		multiplier = 2.2
-		compensator = 0
+		multiplier = 2
+		compensator = 5
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
+		if leftIsBlack and rightIsBlack:
+			turnValue = 0
+			ev3.speaker.beep()
+			if error <= compensator and error >= -compensator:
+				robot.drive(TURN_DRIVE_SPEED, turnValue * 2)
+			elif lColor.reflection() <= rColor.reflection():
+				turnValue = -300
+				robot.drive(TURN_DRIVE_SPEED, turnValue)
+			else:
+				turnValue = 300
+				robot.drive(TURN_DRIVE_SPEED, turnValue)
 		#gets degrees to turn by
-		output = int(multiplier * (error - compensator))
+		output = int(multiplier * (error))
 		#output may need to be limited to within -180, 180
 		robot.drive(DRIVE_SPEED, output)
 		c = 1
