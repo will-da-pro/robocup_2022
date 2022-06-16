@@ -99,7 +99,7 @@ def move():
 			#turn(rColor, 140)
 		#If both sensors detect black, then the find path function will run
 		#Amount to multiply output by
-		multiplier = 2
+		multiplier = 1.5
 		compensator = 5
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
