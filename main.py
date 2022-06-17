@@ -24,9 +24,9 @@ lMotor = Motor(Port.A)
 rMotor = Motor(Port.D)
 claw = Motor(Port.C)
 ultraS = UltrasonicSensor(Port.S3)
-robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=120) #incorrect, but will stay with it...
+robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=115) #fixed
 
-ultraSLimit = 100
+ultraSLimit = 80
 
 SILVER = 90
 DRIVE_SPEED = 100
@@ -69,13 +69,13 @@ def findPath():
 #Runs if an obstacle is detected
 def obstacle():
 	robot.stop()
-	ev3.speaker.say("Obstacle detected")
-	distance = ultraS.distance()
+	ev3.speaker.beep(frequency=400, duration=1000)
+	robot.straight(-50)
 	robot.turn(-90)
-	robot.curve(distance, 180, Stop.HOLD, wait=False)
+	robot.drive(TURN_DRIVE_SPEED, 20)	#robot.curve(distance, 180, Stop.HOLD, wait=False)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
-	robot.turn(-90)
+	robot.turn(-60)
 			
 def isBlack(side):
 	if side.reflection() <= BLACK:
@@ -113,7 +113,7 @@ def move():
 			#	robot.drive(TURN_DRIVE_SPEED, turnValue * 2)
 			if lColor.reflection() <= rColor.reflection():
 				robot.turn(30)
-				robot.straight(40)
+				robot.straight(50)
 			else:
 				robot.turn(-30)
 				robot.straight(40)
