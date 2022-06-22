@@ -26,7 +26,7 @@ claw = Motor(Port.C)
 ultraS = UltrasonicSensor(Port.S3)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=115) #fixed
 
-ultraSLimit = 80
+ultraSLimit = 90
 
 SILVER = 90
 DRIVE_SPEED = 100
@@ -67,14 +67,14 @@ def findPath():
 		runTime += 1 
 
 #Runs if an obstacle is detected
-def obstacle():
+def obstacle(distance, speed):
 	robot.stop()
 	ev3.speaker.beep(frequency=400, duration=1000)
 	robot.straight(-50)
 	robot.turn(-90)
 	robot.drive(TURN_DRIVE_SPEED, 20)	#robot.curve(distance, 180, Stop.HOLD, wait=False)
 	while not isBlack(lColor) and not isBlack(rColor):
-		pass
+		pass;
 	robot.turn(-60)
 			
 def isBlack(side):
@@ -83,14 +83,25 @@ def isBlack(side):
 	else:
 		return False
 
+def rescue():
+	robot.stop()
+	ev3.speaker.say("time for rescue")
+	if ultraS.distance() != None:
+		pass
+	else:
+		robot.straight(250)
+		robot.turn(360)
+		ev3.speaker.beep()
 			
 #Handles all movement
 def move():
 	while True:
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
+		if lColor.reflection() > 90 or rColor.reflection() > 90:
+			rescue()
 		if (ultraS.distance() < ultraSLimit):
-			obstacle()
+			obstacle(ultraS.distance, TURN_DRIVE_SPEED)
 		#If both sensors detect white, the robot moves in a straight line
 		#if (not leftIsBlack and not rightIsBlack):
 			#robot.drive(DRIVE_SPEED, 0)
