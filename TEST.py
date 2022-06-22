@@ -1,4 +1,3 @@
-#!/usr/bin/env pybricks-micropython
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (TouchSensor, ColorSensor, InfraredSensor, UltrasonicSensor, GyroSensor, Motor)
 from pybricks.parameters import Port, Stop, Direction, Button, Color
@@ -24,16 +23,16 @@ lMotor = Motor(Port.A)
 rMotor = Motor(Port.D)
 claw = Motor(Port.C)
 ultraS = UltrasonicSensor(Port.S3)
-robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=115) #fixed
+robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=120) #to check next week
 
-ultraSLimit = 90
+ultraSLimit = 100
 
 SILVER = 90
 DRIVE_SPEED = 100
 TURN_DRIVE_SPEED = 60
 WHITE = 50
-BLACK = 20
-helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth"]
+BLACK = 10
+helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM"]
 
 #State variables
 fastTurning = False
@@ -67,15 +66,12 @@ def findPath():
 		runTime += 1 
 
 #Runs if an obstacle is detected
-def obstacle(distance, speed):
-	robot.stop()
-	ev3.speaker.beep(frequency=400, duration=1000)
-	robot.straight(-50)
+def obstacle():
+	ev3.speaker.say("Obstacle detected")
 	robot.turn(-90)
-	robot.drive(TURN_DRIVE_SPEED, 20)	#robot.curve(distance, 180, Stop.HOLD, wait=False)
+	robot.curve(ultraS, 180)
 	while not isBlack(lColor) and not isBlack(rColor):
-		pass;
-	robot.turn(-60)
+		pass
 			
 def isBlack(side):
 	if side.reflection() <= BLACK:
@@ -83,25 +79,14 @@ def isBlack(side):
 	else:
 		return False
 
-def rescue():
-	robot.stop()
-	ev3.speaker.say("time for rescue")
-	if ultraS.distance() != None:
-		pass
-	else:
-		robot.straight(250)
-		robot.turn(360)
-		ev3.speaker.beep()
 			
 #Handles all movement
 def move():
 	while True:
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
-		if lColor.reflection() > 90 or rColor.reflection() > 90:
-			rescue()
 		if (ultraS.distance() < ultraSLimit):
-			obstacle(ultraS.distance, TURN_DRIVE_SPEED)
+			pass
 		#If both sensors detect white, the robot moves in a straight line
 		#if (not leftIsBlack and not rightIsBlack):
 			#robot.drive(DRIVE_SPEED, 0)
@@ -113,21 +98,17 @@ def move():
 			#turn(rColor, 140)
 		#If both sensors detect black, then the find path function will run
 		#Amount to multiply output by
-		multiplier = 2.1
+		multiplier = 1.5
 		compensator = 5
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
 		if leftIsBlack and rightIsBlack:
 			turnValue = 0
 			ev3.speaker.beep()
-			#if error <= compensator and error >= -compensator:
-			#	robot.drive(TURN_DRIVE_SPEED, turnValue * 2)
-			if lColor.reflection() <= rColor.reflection():
-				robot.turn(30)
-				robot.straight(50)
+			if rColor <= WHITE and rColor >= BLACK:
+				robot.turn(50)
 			else:
-				robot.turn(-30)
-				robot.straight(40)
+				robot.turn(-50)
 		#gets degrees to turn by
 		output = int(multiplier * (error))
 		#output may need to be limited to within -180, 180
