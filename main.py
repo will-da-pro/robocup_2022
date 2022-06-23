@@ -24,7 +24,7 @@ lMotor = Motor(Port.A)
 rMotor = Motor(Port.D)
 claw = Motor(Port.C)
 ultraS = UltrasonicSensor(Port.S3)
-robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=115) #fixed
+robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=120) #fixed
 
 ultraSLimit = 90
 
@@ -87,27 +87,31 @@ def rescue():
 	robot.stop()
 	startAngle = robot.angle()
 	ev3.speaker.say("time for rescue")
-	robot.straight(20)
+	robot.straight(170)
 	robot.turn(90)
-	robot.turn(-180)
+	robot.drive(0, -20)
+	ev3.speaker.beep()
 	while True:
-		if ultraS.distance() < 250:
+		if ultraS.distance() < 500:
 			robot.stop()
 			ev3.speaker.say("Capsule detected")
-			angle = startAngle - robot.angle()
 			distance = ultraS.distance()
+			robot.turn(-20) 
+			angle = startAngle - robot.angle()
 			robot.straight(distance-90)
-			#TODO claw grab
+			claw.run_angle(20, 45)
 			robot.straight(90)
+			claw.run_angle(20, -45)
 			robot.turn(180)
 			robot.straight(distance)
-			robot.turn(-angle)
-			robot.straight(90)
+			robot.turn(angle)
+			robot.straight(170)
 			robot.turn(90)
-			robot.drive(100)
-			#TODO claw release
-			robot.drive(-100)
+			robot.straight(100)
+			claw.run_angle(20, 45)
+			robot.straight(-100)
 			robot.turn(-90)
+			break
 	ev3.speaker.say("capsule rescued")
 			
 #Handles all movement
@@ -131,20 +135,19 @@ def move():
 		#If both sensors detect black, then the find path function will run
 		#Amount to multiply output by
 		multiplier = 2.1
-		compensator = 5
+		compensator = 7
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
 		if leftIsBlack and rightIsBlack:
-			turnValue = 0
 			ev3.speaker.beep()
-			#if error <= compensator and error >= -compensator:
-			#	robot.drive(TURN_DRIVE_SPEED, turnValue * 2)
-			if lColor.reflection() <= rColor.reflection():
+			if error <= compensator and error >= -compensator:
+				robot.drive(TURN_DRIVE_SPEED, 0)
+			elif lColor.reflection() <= rColor.reflection():
 				robot.turn(30)
 				robot.straight(50)
 			else:
 				robot.turn(-30)
-				robot.straight(40)
+				robot.straight(50)
 		#gets degrees to turn by
 		output = int(multiplier * (error))
 		#output may need to be limited to within -180, 180
