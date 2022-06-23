@@ -33,7 +33,7 @@ DRIVE_SPEED = 100
 TURN_DRIVE_SPEED = 60
 WHITE = 50
 BLACK = 20
-helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth"]
+helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages is more life"]
 
 #State variables
 fastTurning = False
@@ -85,13 +85,30 @@ def isBlack(side):
 
 def rescue():
 	robot.stop()
+	startAngle = robot.angle()
 	ev3.speaker.say("time for rescue")
-	if ultraS.distance() != None:
-		pass
-	else:
-		robot.straight(250)
-		robot.turn(360)
-		ev3.speaker.beep()
+	robot.straight(20)
+	robot.turn(90)
+	robot.turn(-180)
+	while True:
+		if ultraS.distance() < 250:
+			robot.stop()
+			ev3.speaker.say("Capsule detected")
+			angle = startAngle - robot.angle()
+			distance = ultraS.distance()
+			robot.straight(distance-90)
+			#TODO claw grab
+			robot.straight(90)
+			robot.turn(180)
+			robot.straight(distance)
+			robot.turn(-angle)
+			robot.straight(90)
+			robot.turn(90)
+			robot.drive(100)
+			#TODO claw release
+			robot.drive(-100)
+			robot.turn(-90)
+	ev3.speaker.say("capsule rescued")
 			
 #Handles all movement
 def move():
