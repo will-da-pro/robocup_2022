@@ -15,7 +15,7 @@ import random
 
 # Create your objects here.
 ev3 = EV3Brick()
-time_secs = time
+timeSecs = time
 
 
 lColor = ColorSensor(Port.S1)
@@ -29,11 +29,11 @@ clawTurn = 220
 
 ultraSLimit = 90
 
-SILVER = 90
-DRIVE_SPEED = 100
-TURN_DRIVE_SPEED = 60
-WHITE = 50
-BLACK = 20
+silver = 90
+driveSpeed = 100
+turnDriveSpeed = 60
+white = 50
+black = 20
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "cum in ur mum"]
 #State variables
 fastTurning = False
@@ -42,10 +42,10 @@ fastTurning = False
 #Runs when one of the colour sensors detects black
 def turn(side, degrees):
 	fastTurning = False
-	startTime = time_secs.time()
+	startTime = timeSecs.time()
 	while isBlack(side):
-		robot.drive(TURN_DRIVE_SPEED, degrees)
-		if (time_secs.time() - startTime >= 0.15):
+		robot.drive(turnDriveSpeed, degrees)
+		if (timeSecs.time() - startTime >= 0.15):
 			if not fastTurning:
 				robot.stop()
 				fastTurning = True
@@ -72,13 +72,13 @@ def obstacle(distance, speed):
 	ev3.speaker.beep(frequency=400, duration=1000)
 	robot.straight(-50)
 	robot.turn(-90)
-	robot.drive(TURN_DRIVE_SPEED, 20)	#robot.curve(distance, 180, Stop.HOLD, wait=False)
+	robot.drive(turnDriveSpeed, 20)	#robot.curve(distance, 180, Stop.HOLD, wait=False)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass;
 	robot.turn(-60)
 			
 def isBlack(side):
-	if side.reflection() <= BLACK:
+	if side.reflection() <= black:
 		return True
 	else:
 		return False
@@ -95,7 +95,7 @@ def rescue():
 		if ultraS.distance() < 400:
 			robot.stop()
 			#gets distance of capsule from robot
-			distance = ultraS.distance() - 100
+			distance = ultraS.distance() - 110
 			ev3.speaker.say("Capsule detected")
 			#to compensate for distance errors
 			robot.turn(-15) 
@@ -112,8 +112,8 @@ def rescue():
 			robot.turn(-90)
 			robot.straight(100)
 			claw.run_angle(180, -clawTurn)
-			robot.drive(-DRIVE_SPEED, 0)
-			while lColor.reflection() > BLACK and rColor.reflection() > BLACK:
+			robot.drive(-driveSpeed, 0)
+			while lColor.reflection() > black and rColor.reflection() > black:
 				pass
 			robot.straight(40)
 			robot.turn(-80)
@@ -128,7 +128,7 @@ def move():
 		if lColor.reflection() > 90 or rColor.reflection() > 90:
 			rescue()
 		if (ultraS.distance() < ultraSLimit):
-			obstacle(ultraS.distance, TURN_DRIVE_SPEED)
+			obstacle(ultraS.distance, turnDriveSpeed)
 		#If both sensors detect white, the robot moves in a straight line
 		#if (not leftIsBlack and not rightIsBlack):
 			#robot.drive(DRIVE_SPEED, 0)
@@ -147,7 +147,7 @@ def move():
 		if leftIsBlack and rightIsBlack:
 			ev3.speaker.beep()
 			if error <= compensator and error >= -compensator:
-				robot.drive(TURN_DRIVE_SPEED, 0)
+				robot.drive(turnDriveSpeed, 0)
 			elif lColor.reflection() <= rColor.reflection():
 				robot.turn(30)
 				robot.straight(40)
@@ -157,7 +157,7 @@ def move():
 		#gets degrees to turn by
 		output = int(multiplier * (error))
 		#output may need to be limited to within -180, 180
-		robot.drive(DRIVE_SPEED, output)
+		robot.drive(driveSpeed, output)
 		c = 1
 		if c == 0:
 			ev3.speaker.beep()
