@@ -24,7 +24,7 @@ lMotor = Motor(Port.A)
 rMotor = Motor(Port.D)
 claw = Motor(Port.C)
 ultraS = UltrasonicSensor(Port.S3)
-robot = DriveBase(lMotor, rMotor, wheel_diameter=55.5, axle_track=120) #fixed
+robot = DriveBase(lMotor, rMotor, wheel_diameter=70, axle_track=130) #fixed
 
 ultraSLimit = 90
 
@@ -33,8 +33,7 @@ DRIVE_SPEED = 100
 TURN_DRIVE_SPEED = 60
 WHITE = 50
 BLACK = 20
-helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages is more life"]
-
+helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "cum in ur mum"]
 #State variables
 fastTurning = False
 
@@ -92,23 +91,26 @@ def rescue():
 	robot.drive(0, -20)
 	ev3.speaker.beep()
 	while True:
-		if ultraS.distance() < 500:
+		if ultraS.distance() < 400:
 			robot.stop()
+			#gets distance of capsule from robot
+			distance = ultraS.distance() - 100
 			ev3.speaker.say("Capsule detected")
-			distance = ultraS.distance()
-			robot.turn(-20) 
+			#to compensate for distance errors
+			robot.turn(-10) 
+			#gets the angle that the robot is turned compared to the starting angle
 			angle = startAngle - robot.angle()
-			robot.straight(distance-90)
-			claw.run_angle(20, 45)
-			robot.straight(90)
-			claw.run_angle(20, -45)
-			robot.turn(180)
-			robot.straight(distance)
+			#moves by the distance of the can
+			robot.straight(distance + 5)
+			#opens the claw
+			claw.run_angle(180, 150)
+			#goes back the distance of the can
+			robot.straight(-distance)
 			robot.turn(angle)
-			robot.straight(170)
-			robot.turn(90)
+			robot.straight(-170)
+			robot.turn(-90)
 			robot.straight(100)
-			claw.run_angle(20, 45)
+			claw.run_angle(180, -150)
 			robot.straight(-100)
 			robot.turn(-90)
 			break
@@ -144,10 +146,10 @@ def move():
 				robot.drive(TURN_DRIVE_SPEED, 0)
 			elif lColor.reflection() <= rColor.reflection():
 				robot.turn(30)
-				robot.straight(50)
+				robot.straight(40)
 			else:
 				robot.turn(-30)
-				robot.straight(50)
+				robot.straight(40)
 		#gets degrees to turn by
 		output = int(multiplier * (error))
 		#output may need to be limited to within -180, 180
