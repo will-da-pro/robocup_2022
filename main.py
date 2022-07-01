@@ -25,6 +25,7 @@ rMotor = Motor(Port.D)
 claw = Motor(Port.C)
 ultraS = UltrasonicSensor(Port.S3)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=70, axle_track=130) #fixed
+clawTurn = 220
 
 ultraSLimit = 90
 
@@ -88,7 +89,7 @@ def rescue():
 	ev3.speaker.say("time for rescue")
 	robot.straight(170)
 	robot.turn(90)
-	robot.drive(0, -20)
+	robot.drive(0, -40)
 	ev3.speaker.beep()
 	while True:
 		if ultraS.distance() < 400:
@@ -97,22 +98,25 @@ def rescue():
 			distance = ultraS.distance() - 100
 			ev3.speaker.say("Capsule detected")
 			#to compensate for distance errors
-			robot.turn(-10) 
+			robot.turn(-15) 
 			#gets the angle that the robot is turned compared to the starting angle
 			angle = startAngle - robot.angle()
 			#moves by the distance of the can
-			robot.straight(distance + 5)
+			robot.straight(distance)
 			#opens the claw
-			claw.run_angle(180, 150)
+			claw.run_angle(180, clawTurn)
 			#goes back the distance of the can
 			robot.straight(-distance)
 			robot.turn(angle)
 			robot.straight(-170)
 			robot.turn(-90)
 			robot.straight(100)
-			claw.run_angle(180, -150)
-			robot.straight(-100)
-			robot.turn(-90)
+			claw.run_angle(180, -clawTurn)
+			robot.drive(-DRIVE_SPEED, 0)
+			while lColor.reflection() > BLACK and rColor.reflection() > BLACK:
+				pass
+			robot.straight(40)
+			robot.turn(-80)
 			break
 	ev3.speaker.say("capsule rescued")
 			
