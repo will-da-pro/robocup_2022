@@ -5,7 +5,7 @@ from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
-import time
+import time as timeSecs
 import random
 
 
@@ -15,28 +15,31 @@ import random
 
 # Create your objects here.
 ev3 = EV3Brick()
-timeSecs = time
 
-
+#sensors
 lColor = ColorSensor(Port.S1)
 rColor = ColorSensor(Port.S4)
+ultraS = UltrasonicSensor(Port.S3)
+ultraSLimit = 90
+
+#motors
 lMotor = Motor(Port.A)
 rMotor = Motor(Port.D)
 claw = Motor(Port.C)
-ultraS = UltrasonicSensor(Port.S3)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=70, axle_track=130) #fixed
 clawTurn = 220
 
-ultraSLimit = 90
-
-silver = 90
+#drive speed variables
 driveSpeed = 100
 turnDriveSpeed = 60
+
+#colors
+silver = 90
 white = 50
 black = 20
+
+#other variables
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "cum in ur mum"]
-#State variables
-fastTurning = False
 
 # Write your program here.
 #Runs when one of the colour sensors detects black
