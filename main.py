@@ -41,8 +41,8 @@ white = 50
 black = 25
 
 #other variables
-leftArray = []
-rightArray = []
+leftList = []
+rightList = []
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "cum in ur mum"]
 
 # Write your program here.
@@ -96,6 +96,9 @@ def isBlack(side):
 def rescue():
 	robot.stop()
 	print("[" + str(timeSecs.time()) + "]: Rescue initiated")
+	print(robot.angle())
+	print(-(robot.angle() % 90))
+	robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
 	ev3.speaker.say("time for rescue")
 	robot.straight(170)
@@ -127,18 +130,18 @@ def rescue():
 			robot.straight(-(distance*1/4 + accDistance))
 			robot.turn(angle + turnDistance)
 			robot.straight(-220)
-			robot.turn(-90)
+			robot.turn(-100)
 			robot.straight(100)
 			claw.run_angle(180, -clawTurn)
 			robot.drive(-driveSpeed, 0)
 			while lColor.reflection() > black and rColor.reflection() > black:
 				pass
 			robot.straight(40)
-			robot.turn(-90)
+			robot.turn(-80)
 			break
 	
 	print("[" + str(timeSecs.time()) + "]: Capsule rescued")
-	ev3.speaker.say("capsule rescued")
+	ev3.speaker.say("capsule rescued dad is the best")
 			
 #Handles all movement
 def move():
@@ -150,20 +153,50 @@ def move():
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		#Amount to multiply output by
-		multiplier = 1.7
+		multiplier = 2.1
 		compensator = 7
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
 		if leftIsBlack and rightIsBlack:
+#			leftAverage = sum(leftList)/20
+#			rightAverage = sum(rightList)/20
+#			print(leftList)
+#			print(leftAverage)
+#			print(rightList)
+#			print(rightAverage)
+#			if leftAverage - rightAverage <= compensator:
+#				robot.drive(driveSpeed, 0)
+#			elif leftAverage <= rightAverage:
+#				robot.turn(30)
+#				robot.straight(50)
+#				robot.drive(turnDriveSpeed, 0)
+#			else:
+#				robot.turn(-30)
+#				robot.straight(50)
+#				robot.drive(turnDriveSpeed, 0)
+			robot.stop()
+			robot.straight(10)
+
+			error = lColor.reflection() - rColor.reflection()
+				
 			if error <= compensator and error >= -compensator:
 				robot.drive(turnDriveSpeed, 0)
-			elif (lColor.reflection() <= rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+			elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 				robot.turn(30)
 				robot.straight(50)
-				robot.drive(turnDriveSpeed, 0)
-			elif (lColor.reflection() >= rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+				robot.drive(0, 60)
+				while lColor.reflection() > black:
+					pass
+				robot.stop()
+				robot.turn(-20)
+			elif (lColor.reflection() > rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 				robot.turn(-30)
 				robot.straight(50)
+				robot.drive(0, -60)
+				while rColor.reflection() > black:
+					pass
+				robot.stop()
+				robot.turn(20)
 			else:
 				robot.drive(turnDriveSpeed, 0)
 		#gets degrees to turn by
@@ -178,6 +211,17 @@ def move():
 				pass
 			else:
 				break
+#		if len(rightList) < 20:
+#			leftList.append(lColor.reflection())
+#			rightList.append(rColor.reflection())
+#		else:
+#			leftList.pop(0)
+#			rightList.pop(0)
+#			leftList.append(lColor.reflection())
+#			rightList.append(rColor.reflection())
+#		print(leftList)
+#		print(rightList)
+
 
 def startMessage():
 	#Arguments should be 1 and the number of possible outcomes
