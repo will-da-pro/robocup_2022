@@ -19,16 +19,16 @@ from math import sqrt, asin
 ev3 = EV3Brick()
 
 #sensors
-lColor = ColorSensor(Port.S1)
-rColor = ColorSensor(Port.S4)
+rColor = ColorSensor(Port.S1)
+lColor = ColorSensor(Port.S4)
 ultraS = UltrasonicSensor(Port.S3)
 ultraSLimit = 90
 
 #motors
-lMotor = Motor(Port.A)
-rMotor = Motor(Port.D)
+rMotor = Motor(Port.A)
+lMotor = Motor(Port.D)
 claw = Motor(Port.C)
-robot = DriveBase(lMotor, rMotor, wheel_diameter=70, axle_track=130) #fixed
+robot = DriveBase(lMotor, rMotor, wheel_diameter=70, axle_track=155) #fixed
 clawTurn = 220
 
 #drive speed variables
@@ -43,7 +43,7 @@ black = 25
 #other variables
 leftList = []
 rightList = []
-helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "cum in ur mum"]
+helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "cum in ur mum", "it's getting pretty long", "Mike Oxlong", "Kimmy Head", "Master baiter"]
 
 # Write your program here.
 #Runs when one of the colour sensors detects black
@@ -82,6 +82,7 @@ def obstacle(distance, speed):
 	robot.straight(-50)
 	robot.turn(-90)
 	robot.drive(driveSpeed, 35)	#robot.curve(distance, 180, Stop.HOLD, wait=False)
+	wait(30)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass;
 	robot.turn(-60)
@@ -102,7 +103,7 @@ def rescue():
 	startAngle = robot.angle()
 	ev3.speaker.say("time for rescue")
 	robot.straight(170)
-	robot.turn(90)
+	robot.turn(150)
 	robot.drive(0, -40)
 	ev3.speaker.beep()
 	while True:
@@ -129,7 +130,7 @@ def rescue():
 			#goes back the distance of the can
 			robot.straight(-(distance*1/4 + accDistance))
 			robot.turn(angle + turnDistance)
-			robot.straight(-220)
+			robot.straight(-180)
 			robot.turn(-100)
 			robot.straight(100)
 			claw.run_angle(180, -clawTurn)
@@ -153,8 +154,13 @@ def move():
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		#Amount to multiply output by
-		multiplier = 2.1
 		compensator = 7
+		#if angle >= 8:
+		multiplier = 2
+		#driveSpeed = 70
+		#else:
+			#multiplier = 2
+			#driveSpeed = 100
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
 		if leftIsBlack and rightIsBlack:
@@ -175,10 +181,12 @@ def move():
 #				robot.straight(50)
 #				robot.drive(turnDriveSpeed, 0)
 			robot.stop()
-			robot.straight(10)
+			robot.straight(-10)
 
 			error = lColor.reflection() - rColor.reflection()
-				
+			
+			#if lColor.color() == Color.RED or rColor.color() == Color.RED:
+			#	quit()
 			if error <= compensator and error >= -compensator:
 				robot.drive(turnDriveSpeed, 0)
 			elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
@@ -228,8 +236,10 @@ def startMessage():
 	rand = random.randint(0, len(helloMessages) - 1)
 	ev3.speaker.say(helloMessages[rand])
 
+
 startMessage()
 move()
+#test()
 	
 	
 	
