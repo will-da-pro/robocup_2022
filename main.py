@@ -99,7 +99,7 @@ def rescue():
 	print("[" + str(timeSecs.time()) + "]: Rescue initiated")
 	print(robot.angle())
 	print(-(robot.angle() % 90))
-	robot.turn(-(robot.angle() % 90))
+	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
 	ev3.speaker.say("time for rescue")
 	robot.straight(170)
@@ -129,7 +129,7 @@ def rescue():
 			claw.run_angle(180, clawTurn)
 			#goes back the distance of the can
 			robot.straight(-(distance*1/4 + accDistance))
-			robot.turn(angle + turnDistance)
+			robot.turn(angle - turnDistance)
 			robot.straight(-180)
 			robot.turn(-100)
 			robot.straight(100)
@@ -156,7 +156,7 @@ def move():
 		#Amount to multiply output by
 		compensator = 7
 		#if angle >= 8:
-		multiplier = 2
+		multiplier = 2.2
 		#driveSpeed = 70
 		#else:
 			#multiplier = 2
@@ -164,24 +164,8 @@ def move():
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
 		if leftIsBlack and rightIsBlack:
-#			leftAverage = sum(leftList)/20
-#			rightAverage = sum(rightList)/20
-#			print(leftList)
-#			print(leftAverage)
-#			print(rightList)
-#			print(rightAverage)
-#			if leftAverage - rightAverage <= compensator:
-#				robot.drive(driveSpeed, 0)
-#			elif leftAverage <= rightAverage:
-#				robot.turn(30)
-#				robot.straight(50)
-#				robot.drive(turnDriveSpeed, 0)
-#			else:
-#				robot.turn(-30)
-#				robot.straight(50)
-#				robot.drive(turnDriveSpeed, 0)
 			robot.stop()
-			robot.straight(-10)
+			robot.straight(10)
 
 			error = lColor.reflection() - rColor.reflection()
 			
