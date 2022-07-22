@@ -165,7 +165,15 @@ def move():
 		error = lColor.reflection() - rColor.reflection()
 		if leftIsBlack and rightIsBlack:
 			robot.stop()
+
+			doubleGreen1 = (lColor.color == Color.GREEN and rColor.color == Color.GREEN)
+
 			robot.straight(10)
+
+			doubleGreen2 = (lColor.color == Color.GREEN and rColor.color == Color.GREEN)
+
+			if doubleGreen1 and doubleGreen2:
+				robot.straight(-20)
 
 			error = lColor.reflection() - rColor.reflection()
 			
