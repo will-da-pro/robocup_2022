@@ -41,39 +41,9 @@ white = 50
 black = 25
 
 #other variables
-leftList = []
-rightList = []
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "cum in ur mum", "it's getting pretty long", "Mike Oxlong", "Kimmy Head", "Master baiter"]
 
 # Write your program here.
-#Runs when one of the colour sensors detects black
-#unused
-def turn(side, degrees):
-	fastTurning = False
-	startTime = timeSecs.time()
-	while isBlack(side):
-		robot.drive(turnDriveSpeed, degrees)
-		if (timeSecs.time() - startTime >= 0.15):
-			if not fastTurning:
-				robot.stop()
-				fastTurning = True
-				ev3.speaker.beep()
-				rMotor.run(-degrees * 2)
-				lMotor.run(degrees * 2)
-	fastTurning = False
-
-#unused
-def findPath():
-	robot.stop()
-	runTime = 0
-	while True:
-		if (runTime >= 360):
-			return False
-		robot.turn(10)
-		#If either sensor detects white, it will return to the move function and continue normally
-		if (isBlack(lColor) or isBlack(rColor)):
-			return True
-		runTime += 1 
 
 #Runs if an obstacle is detected
 def obstacle(distance, speed):
@@ -109,7 +79,7 @@ def rescue():
 	while True:
 		if ultraS.distance() < 500:
 			robot.stop()
-			#print("[" + str(timeSecs.time()) + "]: Capsule detected")
+			print("[" + str(timeSecs.time()) + "]: Capsule detected")
 			#gets distance of capsule from robot
 			distance = ultraS.distance()
 			ev3.speaker.say("Capsule detected")
@@ -137,8 +107,10 @@ def rescue():
 			robot.drive(-driveSpeed, 0)
 			while lColor.reflection() > black and rColor.reflection() > black:
 				pass
-			robot.straight(40)
-			robot.turn(-80)
+			robot.drive(0, -60)
+				while rColor.reflection() > black:
+					pass
+			robot.stop()
 			break
 	
 	print("[" + str(timeSecs.time()) + "]: Capsule rescued")
@@ -155,16 +127,14 @@ def move():
 			obstacle(ultraS.distance, turnDriveSpeed)
 		#Amount to multiply output by
 		compensator = 7
-		#if angle >= 8:
 		multiplier = 2.2
-		#driveSpeed = 70
-		#else:
-			#multiplier = 2
-			#driveSpeed = 100
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
 		if leftIsBlack and rightIsBlack:
 			robot.stop()
+
+			if lColor.color() == Color.RED or rColor.color() == Color.RED:
+				quit()
 
 			doubleGreen1 = (lColor.color == Color.GREEN and rColor.color == Color.GREEN)
 
@@ -177,8 +147,6 @@ def move():
 
 			error = lColor.reflection() - rColor.reflection()
 			
-			#if lColor.color() == Color.RED or rColor.color() == Color.RED:
-			#	quit()
 			if error <= compensator and error >= -compensator:
 				robot.drive(turnDriveSpeed, 0)
 			elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
@@ -203,25 +171,6 @@ def move():
 		output = int(multiplier * (error))
 		#output may need to be limited to within -180, 180
 		robot.drive(driveSpeed, output)
-		c = 1
-		if c == 0:
-			ev3.speaker.beep()
-			path = findPath()
-			if path:
-				pass
-			else:
-				break
-#		if len(rightList) < 20:
-#			leftList.append(lColor.reflection())
-#			rightList.append(rColor.reflection())
-#		else:
-#			leftList.pop(0)
-#			rightList.pop(0)
-#			leftList.append(lColor.reflection())
-#			rightList.append(rColor.reflection())
-#		print(leftList)
-#		print(rightList)
-
 
 def startMessage():
 	#Arguments should be 1 and the number of possible outcomes
@@ -232,8 +181,3 @@ def startMessage():
 startMessage()
 move()
 #test()
-	
-	
-	
-	
-	
