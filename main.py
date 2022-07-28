@@ -28,7 +28,7 @@ ultraSLimit = 90
 rMotor = Motor(Port.A)
 lMotor = Motor(Port.D)
 claw = Motor(Port.C)
-robot = DriveBase(lMotor, rMotor, wheel_diameter=70, axle_track=155) #fixed
+robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=136) #fixed
 clawTurn = 220
 
 #drive speed variables
