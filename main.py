@@ -54,7 +54,7 @@ def obstacle(distance, speed):
 	robot.drive(driveSpeed, 35)	#robot.curve(distance, 180, Stop.HOLD, wait=False)
 	wait(30)
 	while not isBlack(lColor) and not isBlack(rColor):
-		pass;
+		pass
 	robot.turn(-60)
 	print("[" + str(timeSecs.time()) + "]: Obstacle passed")
 			
@@ -108,8 +108,8 @@ def rescue():
 			while lColor.reflection() > black and rColor.reflection() > black:
 				pass
 			robot.drive(0, -60)
-				while rColor.reflection() > black:
-					pass
+			while rColor.reflection() > black:
+				pass
 			robot.stop()
 			break
 	
