@@ -80,12 +80,7 @@ def rescue():
 		pass
 
 	startAngle2 = robot.angle()
-
-	while ultraS.distance() < 500:
-		pass
-
 	endAngle = robot.angle()
-
 	robot.stop()
 	turnDistance = (startAngle2 - endAngle) / 2
 	robot.turn(turnDistance) 
@@ -93,6 +88,7 @@ def rescue():
 	#gets distance of capsule from robot
 	distance = ultraS.distance()
 	ev3.speaker.say("Capsule detected")
+	robot.turn(-15)
 	#to compensate for distance errors
 	#sin = 32.5/distance
 	#turnDistance = asin(sin) * 100 * distance/200
@@ -102,7 +98,7 @@ def rescue():
 	#moves by the distance of the can
 	robot.straight(distance * 1/4)
 	robot.stop()
-	accDistance = ultraS.distance() - 40
+	accDistance = ultraS.distance()
 	robot.straight(accDistance)
 	#closes the claw
 	claw.run_angle(180, clawTurn)
