@@ -1,5 +1,4 @@
 #!/usr/bin/env pybricks-micropython
-from curses.ascii import isblank
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (TouchSensor, ColorSensor, InfraredSensor, UltrasonicSensor, GyroSensor, Motor)
 from pybricks.parameters import Port, Stop, Direction, Button, Color
@@ -19,16 +18,16 @@ from math import sqrt, asin
 ev3 = EV3Brick()
 
 #sensors
-rColor = ColorSensor(Port.S1)
-lColor = ColorSensor(Port.S4)
+lColor = ColorSensor(Port.S1)
+rColor = ColorSensor(Port.S4)
 ultraS = UltrasonicSensor(Port.S3)
-ultraSLimit = 90
+ultraSLimit = 50
 
 #motors
-rMotor = Motor(Port.A)
-lMotor = Motor(Port.D)
+lMotor = Motor(Port.A)
+rMotor = Motor(Port.D)
 claw = Motor(Port.B)
-robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=136) #fixed
+robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 220
 
 #drive speed variables
@@ -49,9 +48,9 @@ helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr 
 def obstacle(distance, speed):
 	robot.stop()
 	print("[" + str(timeSecs.time()) + "]: Obstacle detected")
-	robot.straight(-50)
+	robot.straight(-40)
 	robot.turn(-90)
-	robot.drive(driveSpeed, 35)	#robot.curve(distance, 180, Stop.HOLD, wait=False)
+	robot.drive(driveSpeed, 30)	
 	wait(30)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
@@ -73,45 +72,54 @@ def rescue():
 	startAngle = robot.angle()
 	ev3.speaker.say("time for rescue")
 	robot.straight(170)
-	robot.turn(150)
+	robot.turn(120)
 	robot.drive(0, -40)
 	ev3.speaker.beep()
-	while True:
-		if ultraS.distance() < 500:
-			robot.stop()
-			print("[" + str(timeSecs.time()) + "]: Capsule detected")
-			#gets distance of capsule from robot
-			distance = ultraS.distance()
-			ev3.speaker.say("Capsule detected")
-			#to compensate for distance errors
-			sin = 32.5/distance
-			turnDistance = asin(sin) * 100 * distance/200
-			#print("[" + str(timeSecs.time()) + "]: Turn distance is " + turnDistance)
-			robot.turn(-turnDistance) 
-			#gets the angle that the robot is turned compared to the starting angle
-			angle = startAngle - robot.angle()
-			#moves by the distance of the can
-			robot.straight(distance * 1/4)
-			robot.stop()
-			accDistance = ultraS.distance() - 40
-			robot.straight(accDistance)
-			#opens the claw
-			claw.run_angle(180, clawTurn)
-			#goes back the distance of the can
-			robot.straight(-(distance*1/4 + accDistance))
-			robot.turn(angle - turnDistance)
-			robot.straight(-180)
-			robot.turn(-100)
-			robot.straight(100)
-			claw.run_angle(180, -clawTurn)
-			robot.drive(-driveSpeed, 0)
-			while lColor.reflection() > black and rColor.reflection() > black:
-				pass
-			robot.drive(0, -60)
-			while rColor.reflection() > black:
-				pass
-			robot.stop()
-			break
+
+	while ultraS.distance() > 500:
+		pass
+
+	startAngle2 = robot.angle()
+
+	while ultraS.distance() < 500:
+		pass
+
+	endAngle = robot.angle()
+
+	robot.stop()
+	turnDistance = (startAngle2 - endAngle) / 2
+	robot.turn(turnDistance) 
+	print("[" + str(timeSecs.time()) + "]: Capsule detected")
+	#gets distance of capsule from robot
+	distance = ultraS.distance()
+	ev3.speaker.say("Capsule detected")
+	#to compensate for distance errors
+	#sin = 32.5/distance
+	#turnDistance = asin(sin) * 100 * distance/200
+	#print("[" + str(timeSecs.time()) + "]: Turn distance is " + turnDistance)
+	#gets the angle that the robot is turned compared to the starting angle
+	angle = startAngle - robot.angle()
+	#moves by the distance of the can
+	robot.straight(distance * 1/4)
+	robot.stop()
+	accDistance = ultraS.distance() - 40
+	robot.straight(accDistance)
+	#closes the claw
+	claw.run_angle(180, clawTurn)
+	#goes back the distance of the can
+	robot.straight(-(distance*1/4 + accDistance))
+	robot.turn(angle - turnDistance)
+	robot.straight(-180)
+	robot.turn(-100)
+	robot.straight(100)
+	claw.run_angle(180, -clawTurn)
+	robot.drive(-driveSpeed, 0)
+	while lColor.reflection() > black and rColor.reflection() > black:
+		pass
+	robot.drive(0, -60)
+	while rColor.reflection() > black:
+		pass
+	robot.stop()
 	
 	print("[" + str(timeSecs.time()) + "]: Capsule rescued")
 	ev3.speaker.say("capsule rescued dad is the best")
@@ -133,17 +141,17 @@ def move():
 		if leftIsBlack and rightIsBlack:
 			robot.stop()
 
-			if lColor.color() == Color.RED or rColor.color() == Color.RED:
-				quit()
+			#if lColor.color() == Color.RED or rColor.color() == Color.RED:
+			#	quit()
 
-			doubleGreen1 = (lColor.color == Color.GREEN and rColor.color == Color.GREEN)
+			#doubleGreen1 = (lColor.color == Color.GREEN and rColor.color == Color.GREEN)
 
 			robot.straight(10)
 
-			doubleGreen2 = (lColor.color == Color.GREEN and rColor.color == Color.GREEN)
+			#doubleGreen2 = (lColor.color == Color.GREEN and rColor.color == Color.GREEN)
 
-			if doubleGreen1 and doubleGreen2:
-				robot.straight(-20)
+			#if doubleGreen1 and doubleGreen2:
+			#	robot.straight(-20)
 
 			error = lColor.reflection() - rColor.reflection()
 			
@@ -153,18 +161,18 @@ def move():
 				robot.turn(30)
 				robot.straight(50)
 				robot.drive(0, 60)
-				while lColor.reflection() > black:
-					pass
-				robot.stop()
-				robot.turn(-20)
+				#while lColor.reflection() > black:
+				#	pass
+				#robot.stop()
+				#robot.turn(-20)
 			elif (lColor.reflection() > rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 				robot.turn(-30)
 				robot.straight(50)
 				robot.drive(0, -60)
-				while rColor.reflection() > black:
-					pass
-				robot.stop()
-				robot.turn(20)
+				#while rColor.reflection() > black:
+				#	pass
+				#robot.stop()
+				#robot.turn(20)
 			else:
 				robot.drive(turnDriveSpeed, 0)
 		#gets degrees to turn by
@@ -176,6 +184,10 @@ def startMessage():
 	#Arguments should be 1 and the number of possible outcomes
 	rand = random.randint(0, len(helloMessages) - 1)
 	ev3.speaker.say(helloMessages[rand])
+
+def test():
+	while True:
+		ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
 
 
 startMessage()
