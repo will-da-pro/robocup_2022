@@ -38,7 +38,8 @@ turnDriveSpeed = 60
 silver = 90
 white = 50
 black = 25
-
+green1 = 12
+green2 = 20
 #other variables
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "cum in ur mum", "it's getting pretty long", "Mike Oxlong", "Kimmy Head", "Master baiter"]
 
@@ -125,13 +126,13 @@ def move():
 	while True:
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
-		if lColor.reflection() > 90 or rColor.reflection() > 90:
+		if lColor.reflection() > 95 or rColor.reflection() > 98:
 			rescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		#Amount to multiply output by
-		compensator = 7
-		multiplier = 2.2
+		compensator = 2
+		multiplier = 3
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
 		if leftIsBlack and rightIsBlack:
@@ -161,7 +162,7 @@ def move():
 				#	pass
 				#robot.stop()
 				#robot.turn(-20)
-			elif (lColor.reflection() > rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+			elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 				robot.turn(-30)
 				robot.straight(50)
 				robot.drive(0, -60)
@@ -172,7 +173,7 @@ def move():
 			else:
 				robot.drive(turnDriveSpeed, 0)
 		#gets degrees to turn by
-		output = int(multiplier * (error))
+		output = int(multiplier * error)
 		#output may need to be limited to within -180, 180
 		robot.drive(driveSpeed, output)
 
@@ -186,6 +187,6 @@ def test():
 		ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
 
 
-startMessage()
+#startMessage()
 move()
 #test()
