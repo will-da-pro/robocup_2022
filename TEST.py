@@ -32,7 +32,6 @@ DRIVE_SPEED = 100
 TURN_DRIVE_SPEED = 60
 WHITE = 50
 BLACK = 10
-helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM"]
 
 #State variables
 fastTurning = False
