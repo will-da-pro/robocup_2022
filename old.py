@@ -43,6 +43,7 @@ black = 20
 green1 = 12
 green2 = 20
 #other variables
+helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "Mike Oxlong", "Kimmy Head"]
 #once completed rescue changes the variable to 1
 rescueComplete = False
 lastTurn = None
@@ -52,6 +53,7 @@ lastTurn = None
 #Runs if an obstacle is detected
 def obstacle(distance, speed):
 	robot.stop()
+	print("[" + str(timeSecs.time()) + "]: Obstacle detected")
 	robot.straight(-40)
 	robot.turn(-80)
 	robot.drive(towerDriveSpeed, 58)	
@@ -61,6 +63,7 @@ def obstacle(distance, speed):
 	robot.turn(-50)
 	robot.straight(10)
 	robot.turn(-20)
+	print("[" + str(timeSecs.time()) + "]: Obstacle passed")
 			
 def isBlack(side):
 	if side.reflection() <= black:
@@ -70,10 +73,12 @@ def isBlack(side):
 
 def rescue():
 	robot.stop()
+	print("[" + str(timeSecs.time()) + "]: Rescue initiated")
 	print(robot.angle())
 	print(-(robot.angle() % 90))
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
+	ev3.speaker.say("time for rescue")
 	robot.straight(170)
 	robot.turn(120)
 	robot.drive(0, -40)
@@ -87,8 +92,10 @@ def rescue():
 	robot.stop()
 	turnDistance = (startAngle2 - endAngle) / 2
 	robot.turn(turnDistance) 
+	print("[" + str(timeSecs.time()) + "]: Capsule detected")
 	#gets distance of capsule from robot
 	distance = ultraS.distance()
+	ev3.speaker.say("Capsule detected")
 	robot.turn(-15)
 	#to compensate for distance errors
 	#sin = 32.5/distance
@@ -119,6 +126,9 @@ def rescue():
 	robot.stop()
 
 	rescueComplete = True
+	
+	print("[" + str(timeSecs.time()) + "]: Capsule rescued")
+	ev3.speaker.say("capsule rescued")
 			
 #Handles all movement
 def move():
@@ -184,12 +194,19 @@ def move():
 		#output may need to be limited to within -180, 180
 		robot.drive(driveSpeed, output)
 
+def startMessage():
+	#Arguments should be 1 and the number of possible outcomes
+	rand = random.randint(0, len(helloMessages) - 1)
+	ev3.speaker.say(helloMessages[rand])
+
 def test():
 	while True:
 		ev3.speaker.beep(800, 0.1)
 		#ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
 
-testThread = threading.Thread(target=test)
-testThread.start()
+
+startMessage()
+#testThread = threading.Thread(target=test)
+#testThread.start()
 move()
 #test()
