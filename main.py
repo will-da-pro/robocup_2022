@@ -32,9 +32,9 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 200
 
 #drive speed variables
-driveSpeed = 100
+driveSpeed = 75 #125 normal  75 small
 turnDriveSpeed = 60
-towerDriveSpeed = 200
+towerDriveSpeed = 180
 
 #colors
 silver = 90
@@ -44,8 +44,9 @@ green1 = 12
 green2 = 20
 #other variables
 #once completed rescue changes the variable to 1
-rescueComplete = False
+rescueComplete = 0
 lastTurn = None
+ev3.speaker.set_volume(50000)
 
 # Write your program here.
 
@@ -70,6 +71,7 @@ def isBlack(side):
 
 def rescue():
 	robot.stop()
+	wait(100)
 	print(robot.angle())
 	print(-(robot.angle() % 90))
 	#robot.turn(-(robot.angle() % 90))
@@ -103,22 +105,29 @@ def rescue():
 	robot.straight(accDistance)
 	#closes the claw
 	claw.run_angle(400, clawTurn)
+
+	canDist = robot.distance()
+	robot.drive(100, 0)
+	while lColor.reflection() <= 30 and rColor.reflection() <= 30:
+		pass
+
+	robot.stop()
+
+	claw.run_angle(400, -clawTurn)
+
+	robot.straight(canDist - robot.distance())
+
 	#goes back the distance of the can
 	robot.straight(-(distance*1/4 + accDistance))
 	robot.turn(angle - turnDistance)
 	robot.straight(-180)
-	robot.turn(-100)
-	robot.straight(100)
-	claw.run_angle(400, -clawTurn)
-	robot.drive(-driveSpeed, 0)
-	while lColor.reflection() > black and rColor.reflection() > black:
+	robot.drive(0, 50)
+	while lColor.reflection() > black:
 		pass
-	robot.drive(0, -60)
-	while rColor.reflection() > black:
-		pass
+
 	robot.stop()
 
-	rescueComplete = True
+	rescueComplete = 1
 			
 #Handles all movement
 def move():
@@ -133,8 +142,8 @@ def move():
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		#Amount to multiply output by
-		compensator = 7
-		multiplier = 2.2
+		compensator = 2
+		multiplier = 3 #2.5 normal  2.8 small
 		
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
@@ -186,10 +195,11 @@ def move():
 
 def test():
 	while True:
-		ev3.speaker.beep(800, 0.1)
+		ev3.speaker.beep(ultraS.distance(), 1)
+		ev3.screen.print(ultraS.distance())
 		#ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
 
-testThread = threading.Thread(target=test)
-testThread.start()
+#testThread = threading.Thread(target=test)
+#testThread.start()
 move()
 #test()
