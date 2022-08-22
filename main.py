@@ -10,12 +10,9 @@ import random
 from math import sqrt, asin
 import threading
 
-
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
-# Click "Open user guide" on the EV3 extension tab for more information.
 
-
-# Create your objects here.
+#objects
 ev3 = EV3Brick()
 
 #sensors
@@ -42,13 +39,13 @@ white = 50
 black = 20
 green1 = 12
 green2 = 20
-#other variables
-#once completed rescue changes the variable to 1
-rescueComplete = 0
-lastTurn = None
-ev3.speaker.set_volume(50000)
 
-# Write your program here.
+#other variables
+rescueComplete = 0 #once completed rescue changes the variable to 1
+lastTurn = None
+ev3.speaker.set_volume(50000) #why...
+
+#program
 
 #Runs if an obstacle is detected
 def obstacle(distance, speed):
@@ -89,22 +86,14 @@ def rescue():
 	robot.stop()
 	turnDistance = (startAngle2 - endAngle) / 2
 	robot.turn(turnDistance) 
-	#gets distance of capsule from robot
-	distance = ultraS.distance()
+	distance = ultraS.distance() #gets distance of capsule from robot
 	robot.turn(-15)
-	#to compensate for distance errors
-	#sin = 32.5/distance
-	#turnDistance = asin(sin) * 100 * distance/200
-	#print("[" + str(timeSecs.time()) + "]: Turn distance is " + turnDistance)
-	#gets the angle that the robot is turned compared to the starting angle
-	angle = startAngle - robot.angle()
-	#moves by the distance of the can
-	robot.straight(distance * 1/4)
+	angle = startAngle - robot.angle() #to compensate for distance errors
+	robot.straight(distance * 1/4) #moves by the distance of the can
 	robot.stop()
 	accDistance = ultraS.distance()
 	robot.straight(accDistance)
-	#closes the claw
-	claw.run_angle(400, clawTurn)
+	claw.run_angle(400, clawTurn) 	#closes the claw
 
 	canDist = robot.distance()
 	robot.drive(100, 0)
@@ -148,7 +137,6 @@ def move():
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
 		if leftIsBlack and rightIsBlack:
-			#TODO: White lines
 			robot.stop()
 			robot.straight(10)
 
@@ -166,22 +154,13 @@ def move():
 				robot.turn(30)
 				robot.straight(60)
 				robot.drive(0, 40)
-				#while lColor.reflection() > black:
-				#	pass
-				#robot.stop()
-				#robot.turn(-20)
 			elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 				robot.turn(-30)
 				robot.straight(60)
 				robot.drive(0, -40)
-				#while rColor.reflection() > black:
-				#	pass
-				#robot.stop()
-				#robot.turn(20)
 			else:
 				robot.drive(turnDriveSpeed, 0)
-		#gets degrees to turn by
-		output = int(multiplier * error)
+		output = int(multiplier * error) #gets degrees to turn by
 
 		if error <= compensator and error >= -compensator:
 			error = 0
@@ -190,8 +169,7 @@ def move():
 			lastTurn = 0
 		else:
 			lastTurn = 1
-		#output may need to be limited to within -180, 180
-		robot.drive(driveSpeed, output)
+		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def test():
 	while True:
@@ -201,5 +179,5 @@ def test():
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
-move()
 #test()
+move()
