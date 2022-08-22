@@ -29,7 +29,7 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 200
 
 #drive speed variables
-driveSpeed = 75 #125 normal  75 small
+driveSpeed = 115 #125 normal  75 small
 turnDriveSpeed = 60
 towerDriveSpeed = 180
 
@@ -65,6 +65,28 @@ def isBlack(side):
 		return True
 	else:
 		return False
+
+def doubleBlack(compensator):
+	robot.stop()
+	#robot.straight(10)
+
+	error = lColor.reflection() - rColor.reflection()
+	
+	if error <= compensator and error >= -compensator:
+		return
+
+	elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+		robot.turn(40)
+		robot.straight(60)
+		robot.drive(0, 40)
+
+	elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+		robot.turn(-40)
+		robot.straight(60)
+		robot.drive(0, -40)
+
+	else:
+		return
 
 def rescue():
 	robot.stop()
@@ -110,11 +132,12 @@ def rescue():
 	robot.straight(-(distance*1/4 + accDistance))
 	robot.turn(angle - turnDistance)
 	robot.straight(-180)
-	robot.drive(0, 50)
-	while lColor.reflection() > black:
-		pass
+	#robot.drive(0, 50)
+	#while lColor.reflection() > black:
+	#	pass
 
-	robot.stop()
+	#robot.stop()
+	robot.turn(180)
 
 	rescueComplete = 1
 			
@@ -131,35 +154,13 @@ def move():
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		#Amount to multiply output by
-		compensator = 2
-		multiplier = 3 #2.5 normal  2.8 small
+		compensator = 0
+		multiplier = 3 #2.5 normal  3 small
 		
 		#finds the difference between the reflections
 		error = lColor.reflection() - rColor.reflection()
 		if leftIsBlack and rightIsBlack:
-			robot.stop()
-			robot.straight(10)
-
-			error = lColor.reflection() - rColor.reflection()
-			
-			if error <= compensator and error >= -compensator:
-				robot.drive(driveSpeed, 0)
-			#	print (lastTurn)
-			#	if lastTurn == 0:
-			#		error = -1000
-			#	else:
-			#		error = 1000
-
-			elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-				robot.turn(30)
-				robot.straight(60)
-				robot.drive(0, 40)
-			elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-				robot.turn(-30)
-				robot.straight(60)
-				robot.drive(0, -40)
-			else:
-				robot.drive(turnDriveSpeed, 0)
+			doubleBlack(compensator)
 		output = int(multiplier * error) #gets degrees to turn by
 
 		if error <= compensator and error >= -compensator:
