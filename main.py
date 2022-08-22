@@ -29,7 +29,7 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 200
 
 #drive speed variables
-driveSpeed = 115 #125 normal  75 small
+driveSpeed = 100 #125 normal  75 small
 turnDriveSpeed = 60
 towerDriveSpeed = 180
 
@@ -68,7 +68,7 @@ def isBlack(side):
 
 def doubleBlack(compensator):
 	robot.stop()
-	#robot.straight(10)
+	robot.straight(10)
 
 	error = lColor.reflection() - rColor.reflection()
 	
@@ -154,7 +154,7 @@ def move():
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		#Amount to multiply output by
-		compensator = 0
+		compensator = 2
 		multiplier = 3 #2.5 normal  3 small
 		
 		#finds the difference between the reflections
