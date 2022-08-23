@@ -36,7 +36,7 @@ towerDriveSpeed = 180
 #colors
 silver = 90
 white = 50
-black = 20
+black = 25
 green1 = 12
 green2 = 20
 
@@ -53,7 +53,7 @@ def obstacle(distance, speed):
 	robot.straight(-40)
 	robot.turn(-80)
 	robot.drive(towerDriveSpeed, 58)	
-	wait(30)
+	wait(50)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
 	robot.turn(-50)
@@ -66,55 +66,94 @@ def isBlack(side):
 	else:
 		return False
 
+def isWhite(side):
+	if side.reflection() >= black:
+		return True
+	else:
+		return False
+
 def doubleBlack(compensator):
 	robot.stop()
 	robot.straight(10)
 
 	error = lColor.reflection() - rColor.reflection()
+
+	iteration = 0
 	
-	if error <= compensator and error >= -compensator:
-		return
+	while lColor.reflection() < black and rColor.reflection() < black:
+		iteration += 1
 
-	elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-		robot.turn(40)
-		robot.straight(60)
-		robot.drive(0, 40)
+		if iteration >= 2:
+			whiteLine()
 
-	elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-		robot.turn(-40)
-		robot.straight(60)
-		robot.drive(0, -40)
+		if error <= compensator and error >= -compensator:
+			pass
+		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+			robot.turn(25)
+			robot.straight(40)
+			robot.drive(0, 40)
 
-	else:
-		return
+		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+			robot.turn(-25)
+			robot.straight(40)
+			robot.drive(0, -40)
+
+		else:
+			pass
+
+def doubleWhite(compensator):
+	iteration = 0
+	
+	while lColor.reflection() < black and rColor.reflection() < black:
+		robot.stop()
+		robot.straight(10)
+
+		error = lColor.reflection() - rColor.reflection()
+
+		iteration += 1
+
+		if iteration >= 2:
+			whiteLine()
+
+		if error <= compensator and error >= -compensator:
+			pass
+		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+			robot.turn(25)
+			robot.straight(40)
+			robot.drive(0, 40)
+
+		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+			robot.turn(-25)
+			robot.straight(40)
+			robot.drive(0, -40)
+
+		else:
+			pass
 
 def rescue():
 	robot.stop()
 	wait(100)
 	print(robot.angle())
-	print(-(robot.angle() % 90))
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
 	robot.straight(170)
 	robot.turn(120)
 	robot.drive(0, -40)
-	ev3.speaker.beep()
-
 	while ultraS.distance() > 500:
 		pass
 
 	startAngle2 = robot.angle()
+	distance = ultraS.distance()
 	endAngle = robot.angle()
 	robot.stop()
 	turnDistance = (startAngle2 - endAngle) / 2
-	robot.turn(turnDistance) 
-	distance = ultraS.distance() #gets distance of capsule from robot
+	robot.turn(turnDistance)  #gets distance of capsule from robot
 	robot.turn(-15)
 	angle = startAngle - robot.angle() #to compensate for distance errors
-	robot.straight(distance * 1/4) #moves by the distance of the can
+	robot.straight(distance) #moves by the distance of the can
 	robot.stop()
-	accDistance = ultraS.distance()
-	robot.straight(accDistance)
+	#accDistance = ultraS.distance()
+	#robot.straight(accDistance)
 	claw.run_angle(400, clawTurn) 	#closes the claw
 
 	canDist = robot.distance()
@@ -124,23 +163,67 @@ def rescue():
 
 	robot.stop()
 
+	robot.straight(20)
+
 	claw.run_angle(400, -clawTurn)
+
+	robot.straight(-20)
 
 	robot.straight(canDist - robot.distance())
 
 	#goes back the distance of the can
-	robot.straight(-(distance*1/4 + accDistance))
+	robot.straight(-(distance))
 	robot.turn(angle - turnDistance)
 	robot.straight(-180)
-	#robot.drive(0, 50)
-	#while lColor.reflection() > black:
-	#	pass
 
 	#robot.stop()
-	robot.turn(180)
+	robot.turn(60)
+
+	robot.drive(0, 75)
+	while lColor.reflection() > black:
+		pass
+
+	robot.stop()
 
 	rescueComplete = 1
 			
+
+def whiteLine():
+	while True:
+		leftIsWhite = isWhite(lColor)
+		rightIsWhite = isWhite(rColor)
+		if lColor.reflection() > 95 or rColor.reflection() > 98:
+			if rescueComplete == 1:
+				pass
+			else:
+				rescue()
+		if (ultraS.distance() < ultraSLimit):
+			obstacle(ultraS.distance, turnDriveSpeed)
+		compensator = 2 #Amount to multiply output by
+		multiplier = 3
+		error = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
+		if leftIsWhite and rightIsWhite:
+			robot.stop()
+			robot.straight(10)
+
+			error = lColor.reflection() - rColor.reflection()
+			
+			if error <= compensator and error >= -compensator:
+				robot.drive(turnDriveSpeed, 0)
+			elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+				robot.turn(25)
+				robot.straight(40)
+				robot.drive(0, 40)
+
+			elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+				robot.turn(-25)
+				robot.straight(40)
+				robot.drive(0, -40)
+
+			else:
+				robot.drive(turnDriveSpeed, 0)
+		output = int(multiplier * error) #gets degrees to turn by
+		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 #Handles all movement
 def move():
 	while True:
@@ -153,23 +236,12 @@ def move():
 				rescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		#Amount to multiply output by
-		compensator = 2
-		multiplier = 3 #2.5 normal  3 small
-		
-		#finds the difference between the reflections
-		error = lColor.reflection() - rColor.reflection()
+		compensator = 2 #Amount to multiply output by
+		multiplier = 3
+		error = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
-			doubleBlack(compensator)
+			doubleBlack()
 		output = int(multiplier * error) #gets degrees to turn by
-
-		if error <= compensator and error >= -compensator:
-			error = 0
-
-		if output < 0:
-			lastTurn = 0
-		else:
-			lastTurn = 1
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def test():
