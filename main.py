@@ -1,4 +1,5 @@
 #!/usr/bin/env pybricks-micropython
+import sys
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (TouchSensor, ColorSensor, InfraredSensor, UltrasonicSensor, GyroSensor, Motor)
 from pybricks.parameters import Port, Stop, Direction, Button, Color
@@ -39,6 +40,7 @@ white = 50
 black = 25
 green1 = 12
 green2 = 20
+red = 65
 
 #other variables
 rescueComplete = 0 #once completed rescue changes the variable to 1
@@ -127,13 +129,22 @@ def rescue():
 	while ultraS.distance() > 500:
 		pass
 
-	startAngle2 = robot.angle()
-	distance = ultraS.distance()
-	endAngle = robot.angle()
+	ev3.speaker.beep()
+
+	canStartAngle = robot.angle()
+
+	while ultraS.distance() < 500:
+		pass
+
 	robot.stop()
-	turnDistance = (startAngle2 - endAngle) / 2
-	robot.turn(turnDistance)  #gets distance of capsule from robot
-	robot.turn(-15)
+
+	ev3.speaker.beep()
+
+	canEndAngle = robot.angle()
+
+	robot.turn((canStartAngle - canEndAngle)/2)
+
+	distance = ultraS.distance()
 	angle = startAngle - robot.angle() #to compensate for distance errors
 	robot.straight(distance) #moves by the distance of the can
 	robot.stop()
@@ -158,7 +169,7 @@ def rescue():
 
 	#goes back the distance of the can
 	robot.straight(-(distance))
-	robot.turn(angle - turnDistance)
+	robot.turn(angle)
 	robot.straight(-180)
 
 	#robot.stop()
@@ -175,10 +186,11 @@ def rescue():
 
 def whiteLine():
 	ev3.speaker.beep()
+	print("whiteLine")
 	while True:
 		leftIsWhite = isWhite(lColor)
 		rightIsWhite = isWhite(rColor)
-		if lColor.reflection() > 95 or rColor.reflection() > 98:
+		if lColor.reflection() > 99 or rColor.reflection() > 99:
 			if rescueComplete == 1:
 				pass
 			else:
@@ -190,8 +202,16 @@ def whiteLine():
 		error = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
 		if leftIsWhite and rightIsWhite:
 			doubleWhite(compensator)
+		if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
+			redLine()
 		output = int(multiplier * error) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
+
+def redLine():
+	robot.stop()
+	if (lColor.color() == Color.RED or rColor.color() == Color.RED):
+		sys.exit()
+
 #Handles all movement
 def move():
 	ev3.speaker.beep()
@@ -199,7 +219,7 @@ def move():
 		compensator = 2 #Amount to multiply output by
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
-		if lColor.reflection() > 95 or rColor.reflection() > 98:
+		if lColor.reflection() > 99 or rColor.reflection() > 99:
 			if rescueComplete == 1:
 				pass
 			else:
@@ -210,14 +230,15 @@ def move():
 		error = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator)
+		if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
+			redLine()
 		output = int(multiplier * error) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def test():
 	while True:
-		ev3.speaker.beep(ultraS.distance(), 1)
-		ev3.screen.print(ultraS.distance())
-		#ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
+		#ev3.screen.print(ultraS.distance())
+		ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
