@@ -104,31 +104,16 @@ def doubleBlack(compensator):
 def doubleWhite(compensator):
 	iteration = 0
 	
-	while lColor.reflection() < black and rColor.reflection() < black:
+	while lColor.reflection() > black and rColor.reflection() > black:
 		robot.stop()
 		robot.straight(10)
 
-		error = lColor.reflection() - rColor.reflection()
+		error = rColor.reflection() - lColor.reflection()
 
 		iteration += 1
 
 		if iteration >= 2:
-			whiteLine()
-
-		if error <= compensator and error >= -compensator:
-			pass
-		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(25)
-			robot.straight(40)
-			robot.drive(0, 40)
-
-		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(-25)
-			robot.straight(40)
-			robot.drive(0, -40)
-
-		else:
-			pass
+			move()
 
 def rescue():
 	robot.stop()
@@ -189,6 +174,7 @@ def rescue():
 			
 
 def whiteLine():
+	ev3.speaker.beep()
 	while True:
 		leftIsWhite = isWhite(lColor)
 		rightIsWhite = isWhite(rColor)
@@ -201,32 +187,16 @@ def whiteLine():
 			obstacle(ultraS.distance, turnDriveSpeed)
 		compensator = 2 #Amount to multiply output by
 		multiplier = 3
-		error = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
+		error = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
 		if leftIsWhite and rightIsWhite:
-			robot.stop()
-			robot.straight(10)
-
-			error = lColor.reflection() - rColor.reflection()
-			
-			if error <= compensator and error >= -compensator:
-				robot.drive(turnDriveSpeed, 0)
-			elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-				robot.turn(25)
-				robot.straight(40)
-				robot.drive(0, 40)
-
-			elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-				robot.turn(-25)
-				robot.straight(40)
-				robot.drive(0, -40)
-
-			else:
-				robot.drive(turnDriveSpeed, 0)
+			doubleWhite(compensator)
 		output = int(multiplier * error) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 #Handles all movement
 def move():
+	ev3.speaker.beep()
 	while True:
+		compensator = 2 #Amount to multiply output by
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
 		if lColor.reflection() > 95 or rColor.reflection() > 98:
@@ -236,11 +206,10 @@ def move():
 				rescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		compensator = 2 #Amount to multiply output by
 		multiplier = 3
 		error = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
-			doubleBlack()
+			doubleBlack(compensator)
 		output = int(multiplier * error) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
