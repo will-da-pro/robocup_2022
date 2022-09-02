@@ -20,7 +20,7 @@ ev3 = EV3Brick()
 lColor = ColorSensor(Port.S1)
 rColor = ColorSensor(Port.S4)
 ultraS = UltrasonicSensor(Port.S3)
-ultraSLimit = 50
+ultraSLimit = 100
 
 #motors
 lMotor = Motor(Port.A)
@@ -30,7 +30,7 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 200
 
 #drive speed variables
-driveSpeed = 125 #125 normal  75 small
+driveSpeed = 105 #125 normal  75 small
 turnDriveSpeed = 60
 towerDriveSpeed = 180
 
@@ -42,6 +42,8 @@ green1 = 12
 green2 = 20
 red = 65
 
+rescueTime = timeSecs.time()
+
 #other variables
 rescueComplete = 0 #once completed rescue changes the variable to 1
 lastTurn = None
@@ -52,14 +54,14 @@ ev3.speaker.set_volume(50000) #why...
 #Runs if an obstacle is detected
 def obstacle(distance, speed):
 	robot.stop()
-	robot.straight(-40)
+	robot.straight(-10)
 	robot.turn(-80)
-	robot.drive(towerDriveSpeed, 58)	
+	robot.drive(towerDriveSpeed, 50)	
 	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
 	robot.turn(-50)
-	robot.straight(10)
+	robot.straight(20)
 	robot.turn(-20)
 			
 def isBlack(side):
@@ -162,7 +164,7 @@ def rescue():
 	claw.run_angle(400, clawTurn) 	#closes the claw
 
 	canDist = robot.distance()
-	robot.drive(100, 0)
+	robot.drive(1000000, 0)
 	while lColor.reflection() <= 30 and rColor.reflection() <= 30:
 		pass
 
@@ -179,7 +181,7 @@ def rescue():
 	#goes back the distance of the can
 	robot.straight(-(distance))
 	robot.turn(angle)
-	robot.straight(-180)
+	robot.straight(-200)
 
 	#robot.stop()
 	robot.turn(60)
@@ -191,6 +193,8 @@ def rescue():
 	robot.stop()
 
 	rescueComplete = 1
+
+	rescueTime = timeSecs.Time() + 500
 			
 
 def whiteLine():
@@ -200,14 +204,14 @@ def whiteLine():
 		leftIsWhite = isWhite(lColor)
 		rightIsWhite = isWhite(rColor)
 		if lColor.reflection() > 99 or rColor.reflection() > 99:
-			if rescueComplete == 1:
+			if rescueComplete == 1 or timeSecs.time < rescueTime:
 				pass
 			else:
 				rescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		compensator = 2 #Amount to multiply output by
-		multiplier = 4
+		multiplier = 4.5
 		error = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
 		if leftIsWhite and rightIsWhite:
 			doubleWhite(compensator)
@@ -235,7 +239,7 @@ def move():
 				rescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 7
+		multiplier = 2.7
 		error = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator)
