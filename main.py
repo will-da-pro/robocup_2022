@@ -30,7 +30,7 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 200
 
 #drive speed variables
-driveSpeed = 100 #125 normal  75 small
+driveSpeed = 125 #125 normal  75 small
 turnDriveSpeed = 60
 towerDriveSpeed = 180
 
@@ -55,7 +55,7 @@ def obstacle(distance, speed):
 	robot.straight(-40)
 	robot.turn(-80)
 	robot.drive(towerDriveSpeed, 58)	
-	wait(50)
+	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
 	robot.turn(-50)
@@ -85,19 +85,28 @@ def doubleBlack(compensator):
 	while lColor.reflection() < black and rColor.reflection() < black:
 		iteration += 1
 
-		if iteration >= 2:
+		if iteration >= 3:
 			whiteLine()
 
 		if error <= compensator and error >= -compensator:
 			pass
+
+		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 			robot.turn(25)
-			robot.straight(40)
+			robot.drive(60, 0)
+			while lColor.reflection() < black:
+				pass
+			robot.stop()
 			robot.drive(0, 40)
 
+		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 			robot.turn(-25)
-			robot.straight(40)
+			robot.drive(60, 0)
+			while rColor.reflection() < black:
+				pass
+			robot.stop()
 			robot.drive(0, -40)
 
 		else:
@@ -114,7 +123,7 @@ def doubleWhite(compensator):
 
 		iteration += 1
 
-		if iteration >= 2:
+		if iteration >= 3:
 			move()
 
 def rescue():
@@ -198,7 +207,7 @@ def whiteLine():
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		compensator = 2 #Amount to multiply output by
-		multiplier = 3
+		multiplier = 4
 		error = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
 		if leftIsWhite and rightIsWhite:
 			doubleWhite(compensator)
@@ -226,7 +235,7 @@ def move():
 				rescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 3
+		multiplier = 7
 		error = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator)
