@@ -77,18 +77,19 @@ def isWhite(side):
 		return False
 
 def doubleBlack(compensator):
-	robot.stop()
-	robot.straight(10)
 
 	error = lColor.reflection() - rColor.reflection()
 
 	iteration = 0
 	
 	while lColor.reflection() < black and rColor.reflection() < black:
-		iteration += 1
+		robot.stop()
+		robot.straight(10)
 
-		if iteration >= 3:
-			whiteLine()
+		#Uncomment for white line
+		#iteration += 1
+		#if iteration >= 3:
+		#	whiteLine()
 
 		if error <= compensator and error >= -compensator:
 			pass
@@ -215,8 +216,10 @@ def whiteLine():
 		error = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
 		if leftIsWhite and rightIsWhite:
 			doubleWhite(compensator)
-		if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
-			redLine()
+
+		# Uncomment for redline
+		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
+		#	redLine()
 		output = int(multiplier * error) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
@@ -239,19 +242,20 @@ def move():
 				rescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 2.7
+		multiplier = 2.5
 		error = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator)
-		if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
-			redLine()
+		#Uncomment for redline
+		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
+		#	redLine()
 		output = int(multiplier * error) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def test():
 	while True:
 		#ev3.screen.print(ultraS.distance())
-		ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
+		ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
