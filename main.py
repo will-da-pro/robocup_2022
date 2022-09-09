@@ -78,7 +78,7 @@ def isWhite(side):
 
 def doubleBlack(compensator):
 
-	error = lColor.reflection() - rColor.reflection()
+	diff = lColor.reflection() - rColor.reflection()
 
 	iteration = 0
 	
@@ -91,7 +91,7 @@ def doubleBlack(compensator):
 		#if iteration >= 3:
 		#	whiteLine()
 
-		if error <= compensator and error >= -compensator:
+		if diff <= compensator and diff >= -compensator:
 			pass
 
 		# Right turn
@@ -122,7 +122,7 @@ def doubleWhite(compensator):
 		robot.stop()
 		robot.straight(10)
 
-		error = rColor.reflection() - lColor.reflection()
+		diff = rColor.reflection() - lColor.reflection()
 
 		iteration += 1
 
@@ -157,7 +157,7 @@ def rescue():
 	robot.turn((canStartAngle - canEndAngle)/2)
 
 	distance = ultraS.distance()
-	angle = startAngle - robot.angle() #to compensate for distance errors
+	angle = startAngle - robot.angle() #to compensate for distance diffs
 	robot.straight(distance) #moves by the distance of the can
 	robot.stop()
 	#accDistance = ultraS.distance()
@@ -195,7 +195,7 @@ def rescue():
 
 	rescueComplete = 1
 
-	rescueTime = timeSecs.Time() + 500
+	rescueTime = timeSecs.process_time() + 500
 			
 
 def whiteLine():
@@ -205,7 +205,7 @@ def whiteLine():
 		leftIsWhite = isWhite(lColor)
 		rightIsWhite = isWhite(rColor)
 		if lColor.reflection() > 99 or rColor.reflection() > 99:
-			if rescueComplete == 1 or timeSecs.time < rescueTime:
+			if rescueComplete == 1 or timeSecs.process_time() < rescueTime:
 				pass
 			else:
 				rescue()
@@ -213,14 +213,14 @@ def whiteLine():
 			obstacle(ultraS.distance, turnDriveSpeed)
 		compensator = 2 #Amount to multiply output by
 		multiplier = 4.5
-		error = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
+		diff = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
 		if leftIsWhite and rightIsWhite:
 			doubleWhite(compensator)
 
 		# Uncomment for redline
 		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
 		#	redLine()
-		output = int(multiplier * error) #gets degrees to turn by
+		output = int(multiplier * diff) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def redLine():
@@ -236,26 +236,28 @@ def move():
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
 		if lColor.reflection() > 99 or rColor.reflection() > 99:
-			if rescueComplete == 1:
+			if rescueComplete == 1 or timeSecs.process_time() < rescueTime:
 				pass
 			else:
 				rescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		multiplier = 2.5
-		error = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
+		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator)
 		#Uncomment for redline
 		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
 		#	redLine()
-		output = int(multiplier * error) #gets degrees to turn by
+		output = int(multiplier * diff) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def test():
 	while True:
 		#ev3.screen.print(ultraS.distance())
 		ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
+		ev3.speaker.beep(1000, 0.01)
+		#ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
