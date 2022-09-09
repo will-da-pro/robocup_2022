@@ -42,8 +42,6 @@ green1 = 12
 green2 = 20
 red = 65
 
-rescueTime = timeSecs.time()
-
 #other variables
 rescueComplete = 0 #once completed rescue changes the variable to 1
 lastTurn = None
@@ -77,6 +75,8 @@ def isWhite(side):
 		return False
 
 def doubleBlack(compensator):
+
+	wait(50)
 
 	diff = lColor.reflection() - rColor.reflection()
 
@@ -135,7 +135,7 @@ def rescue():
 	print(robot.angle())
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
-	robot.straight(170)
+	robot.straight(120)
 	robot.turn(120)
 	robot.drive(0, -40)
 	while ultraS.distance() > 500:
@@ -149,6 +149,10 @@ def rescue():
 		pass
 
 	robot.stop()
+
+	ev3.speaker.beep()
+
+	robot.turn(20)
 
 	ev3.speaker.beep()
 
@@ -195,7 +199,17 @@ def rescue():
 
 	rescueComplete = 1
 
-	rescueTime = timeSecs.process_time() + 500
+	return timeSecs.process_time() + 50
+
+def checkRescue():
+	robot.stop()
+	robot.straight(50)
+	if lColor.reflection() < black and rColor.reflection() < black:
+		rescueTime = rescue()
+	else:
+		robot.straight(-50)
+		rescueTime = timeSecs.process_time() + 30
+	return rescueTime
 			
 
 def whiteLine():
@@ -230,16 +244,17 @@ def redLine():
 
 #Handles all movement
 def move():
+	rescueTime = timeSecs.process_time()
 	ev3.speaker.beep()
 	while True:
 		compensator = 2 #Amount to multiply output by
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
 		if lColor.reflection() > 99 or rColor.reflection() > 99:
-			if rescueComplete == 1 or timeSecs.process_time() < rescueTime:
+			if timeSecs.process_time() < rescueTime:
 				pass
 			else:
-				rescue()
+				rescueTime = checkRescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		multiplier = 2.5
@@ -255,11 +270,12 @@ def move():
 def test():
 	while True:
 		#ev3.screen.print(ultraS.distance())
-		ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
-		ev3.speaker.beep(1000, 0.01)
-		#ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
+		#ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
+		ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
+		ev3.speaker.beep(1200, 0.0001)
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
+
 #test()
 move()
