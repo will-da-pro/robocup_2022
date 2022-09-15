@@ -30,9 +30,9 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 200
 
 #drive speed variables
-driveSpeed = 105 #125 normal  75 small
+driveSpeed = 115 #125 normal  75 small
 turnDriveSpeed = 60
-towerDriveSpeed = 180
+towerDriveSpeed = 280
 
 #colors
 silver = 90
@@ -45,6 +45,7 @@ red = 65
 #other variables
 rescueComplete = 0 #once completed rescue changes the variable to 1
 lastTurn = None
+rescueTime = timeSecs.process_time()
 ev3.speaker.set_volume(50000) #why...
 
 #program
@@ -54,7 +55,7 @@ def obstacle(distance, speed):
 	robot.stop()
 	robot.straight(-10)
 	robot.turn(-80)
-	robot.drive(towerDriveSpeed, 50)	
+	robot.drive(towerDriveSpeed, 90)	
 	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
@@ -97,7 +98,7 @@ def doubleBlack(compensator):
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 			robot.turn(25)
-			robot.drive(60, 0)
+			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
 			robot.stop()
@@ -106,7 +107,7 @@ def doubleBlack(compensator):
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 			robot.turn(-25)
-			robot.drive(60, 0)
+			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
 			robot.stop()
@@ -184,18 +185,22 @@ def rescue():
 	robot.straight(canDist - robot.distance())
 
 	#goes back the distance of the can
-	robot.straight(-(distance))
+	robot.straight(-(distance - 20))
 	robot.turn(angle)
 	robot.straight(-200)
 
 	#robot.stop()
-	robot.turn(60)
+	robot.turn(90)
 
 	robot.drive(0, 75)
 	while lColor.reflection() > black:
 		pass
 
 	robot.stop()
+
+	robot.turn(-30)
+
+	robot.straight(20)
 
 	rescueComplete = 1
 
@@ -226,19 +231,20 @@ def whiteLine():
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		compensator = 2 #Amount to multiply output by
-		multiplier = 4.5
+		multiplier = 4.7
 		diff = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
 		if leftIsWhite and rightIsWhite:
 			doubleWhite(compensator)
 
 		# Uncomment for redline
-		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
-		#	redLine()
+		if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
+			redLine()
 		output = int(multiplier * diff) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def redLine():
 	robot.stop()
+	wait(100)
 	if (lColor.color() == Color.RED or rColor.color() == Color.RED):
 		sys.exit()
 
@@ -262,8 +268,8 @@ def move():
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator)
 		#Uncomment for redline
-		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
-		#	redLine()
+		if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
+			redLine()
 		output = int(multiplier * diff) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
