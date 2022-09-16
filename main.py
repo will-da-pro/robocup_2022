@@ -55,7 +55,7 @@ def obstacle(distance, speed):
 	robot.stop()
 	robot.straight(-10)
 	robot.turn(-80)
-	robot.drive(towerDriveSpeed, 90)	
+	robot.drive(towerDriveSpeed, 75)	
 	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
@@ -244,9 +244,10 @@ def whiteLine():
 
 def redLine():
 	robot.stop()
-	wait(100)
-	if (lColor.color() == Color.RED or rColor.color() == Color.RED):
-		sys.exit()
+	wait(300)
+	robot.straight(5)
+	#if (lColor.color() == Color.RED or rColor.color() == Color.RED):
+		#sys.exit()
 
 #Handles all movement
 def move():
@@ -270,6 +271,7 @@ def move():
 		#Uncomment for redline
 		if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
 			redLine()
+			pass
 		output = int(multiplier * diff) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
