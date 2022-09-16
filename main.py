@@ -175,7 +175,6 @@ def rescue():
 	while lColor.reflection() <= 30 and rColor.reflection() <= 30:
 		pass
 
-
 	robot.stop()
 
 	robot.straight(20)
@@ -288,9 +287,6 @@ def test():
 		#ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
 		
 		ev3.speaker.beep(10000, 0.01)
-
-def test2():
-	while True:
 
 
 def initiate():
