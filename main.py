@@ -31,7 +31,7 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 200
 
 #drive speed variables
-driveSpeed = 85 #115 normal  75 small
+driveSpeed = 115 #115 normal  85 small
 turnDriveSpeed = 60
 towerDriveSpeed = 280
 
@@ -89,16 +89,16 @@ def doubleBlack(compensator):
 		robot.straight(7.5)
 
 		#Uncomment for white line
-		iteration += 1
-		if iteration >= 2:
-			whiteLine()
+		#iteration += 1
+		#if iteration >= 2:
+		#	whiteLine()
 
 		if diff <= compensator and diff >= -compensator:
 			pass
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(15)
+			robot.turn(25) #15 small 25 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -107,7 +107,7 @@ def doubleBlack(compensator):
 
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(-15)
+			robot.turn(-25)
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -174,6 +174,7 @@ def rescue():
 	robot.drive(1000000, 0)
 	while lColor.reflection() <= 30 and rColor.reflection() <= 30:
 		pass
+
 
 	robot.stop()
 
@@ -279,17 +280,29 @@ def move():
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def test():
+	while len(ev3.buttons.pressed()) == 0:
+		pass
 	while True:
 		#ev3.screen.print(ultraS.distance())
 		#ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
 		#ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
-		print(ev3.buttons.pressed())
-		ev3.speaker.beep(1200, 0.0001)
+		
+		ev3.speaker.beep(10000, 0.01)
+
+def test2():
+	while True:
+
+
+def initiate():
+	ev3.speaker.beep()
+	while len(ev3.buttons.pressed()) == 0:
+		pass
+	move()
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
 
-ev3.speaker.play_file()
+#ev3.speaker.play_file("Never gonna give you up.mp3")
 
-test()
-move()
+#test()
+initiate()
