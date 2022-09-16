@@ -1,5 +1,6 @@
 #!/usr/bin/env pybricks-micropython
 import sys
+from timeit import repeat
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (TouchSensor, ColorSensor, InfraredSensor, UltrasonicSensor, GyroSensor, Motor)
 from pybricks.parameters import Port, Stop, Direction, Button, Color
@@ -30,7 +31,7 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 200
 
 #drive speed variables
-driveSpeed = 115 #125 normal  75 small
+driveSpeed = 85 #115 normal  75 small
 turnDriveSpeed = 60
 towerDriveSpeed = 280
 
@@ -85,19 +86,19 @@ def doubleBlack(compensator):
 	
 	while lColor.reflection() < black and rColor.reflection() < black:
 		robot.stop()
-		robot.straight(10)
+		robot.straight(7.5)
 
 		#Uncomment for white line
-		#iteration += 1
-		#if iteration >= 3:
-		#	whiteLine()
+		iteration += 1
+		if iteration >= 2:
+			whiteLine()
 
 		if diff <= compensator and diff >= -compensator:
 			pass
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(25)
+			robot.turn(15)
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -106,7 +107,7 @@ def doubleBlack(compensator):
 
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(-25)
+			robot.turn(-15)
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -121,13 +122,13 @@ def doubleWhite(compensator):
 	
 	while lColor.reflection() > black and rColor.reflection() > black:
 		robot.stop()
-		robot.straight(10)
+		robot.straight(7.5)
 
 		diff = rColor.reflection() - lColor.reflection()
 
 		iteration += 1
 
-		if iteration >= 3:
+		if iteration >= 2:
 			move()
 
 def rescue():
@@ -218,6 +219,7 @@ def checkRescue():
 			
 
 def whiteLine():
+	robot.straight(-1.5)
 	ev3.speaker.beep()
 	print("whiteLine")
 	while True:
@@ -231,7 +233,7 @@ def whiteLine():
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
 		compensator = 2 #Amount to multiply output by
-		multiplier = 4.7
+		multiplier = 2.5
 		diff = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
 		if leftIsWhite and rightIsWhite:
 			doubleWhite(compensator)
@@ -246,11 +248,12 @@ def redLine():
 	robot.stop()
 	wait(300)
 	robot.straight(5)
-	#if (lColor.color() == Color.RED or rColor.color() == Color.RED):
-		#sys.exit()
+	if (lColor.color() == Color.RED or rColor.color() == Color.RED):
+		sys.exit()
 
 #Handles all movement
 def move():
+	robot.straight(-1.5)
 	rescueTime = timeSecs.process_time()
 	ev3.speaker.beep()
 	while True:
@@ -264,7 +267,7 @@ def move():
 				rescueTime = checkRescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 2.5
+		multiplier = 2.5 #2.5normal 4.7small
 		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator)
@@ -279,11 +282,14 @@ def test():
 	while True:
 		#ev3.screen.print(ultraS.distance())
 		#ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
-		ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
+		#ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
+		print(ev3.buttons.pressed())
 		ev3.speaker.beep(1200, 0.0001)
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
 
-#test()
+ev3.speaker.play_file()
+
+test()
 move()
