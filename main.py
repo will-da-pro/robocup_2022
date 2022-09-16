@@ -174,7 +174,7 @@ def rescue():
 	robot.drive(1000000, 0)
 	while lColor.reflection() <= 30 and rColor.reflection() <= 30:
 		pass
-
+#
 	robot.stop()
 
 	robot.straight(20)
