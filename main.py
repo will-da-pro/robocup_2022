@@ -272,9 +272,9 @@ def move():
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator)
 		#Uncomment for redline
-		if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
-			redLine()
-			pass
+		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
+		#	redLine()
+		#	pass
 		output = int(multiplier * diff) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
