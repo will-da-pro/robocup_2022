@@ -1,4 +1,5 @@
 #!/usr/bin/env pybricks-micropython
+import random
 import sys
 from timeit import repeat
 from pybricks.hubs import EV3Brick
@@ -8,7 +9,6 @@ from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 import time as timeSecs
-import random
 from math import sqrt, asin
 import threading
 
@@ -31,9 +31,9 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 200
 
 #drive speed variables
-driveSpeed = 115 #115 normal  85 small
+driveSpeed = 85 #115 normal  85 small
 turnDriveSpeed = 60
-towerDriveSpeed = 280
+towerDriveSpeed = 140
 
 #colors
 silver = 90
@@ -47,7 +47,6 @@ red = 65
 rescueComplete = 0 #once completed rescue changes the variable to 1
 lastTurn = None
 rescueTime = timeSecs.process_time()
-ev3.speaker.set_volume(50000) #why...
 
 #program
 
@@ -56,7 +55,7 @@ def obstacle(distance, speed):
 	robot.stop()
 	robot.straight(-10)
 	robot.turn(-80)
-	robot.drive(towerDriveSpeed, 75)	
+	robot.drive(towerDriveSpeed, 37.5)	
 	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
@@ -98,7 +97,7 @@ def doubleBlack(compensator):
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(25) #15 small 25 normal
+			robot.turn(15) #15 small 25 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -107,7 +106,7 @@ def doubleBlack(compensator):
 
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(-25)
+			robot.turn(-15)
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -134,6 +133,7 @@ def doubleWhite(compensator):
 def rescue():
 	robot.stop()
 	wait(100)
+	claw.run_angle(400, -clawTurn)
 	print(robot.angle())
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
@@ -171,7 +171,7 @@ def rescue():
 	claw.run_angle(400, clawTurn) 	#closes the claw
 
 	canDist = robot.distance()
-	robot.drive(1000000, 0)
+	robot.drive(100000000, 0)
 	while lColor.reflection() <= 30 and rColor.reflection() <= 30:
 		pass
 #
@@ -186,7 +186,7 @@ def rescue():
 	robot.straight(canDist - robot.distance())
 
 	#goes back the distance of the can
-	robot.straight(-(distance - 20))
+	robot.straight(-distance)
 	robot.turn(angle)
 	robot.straight(-200)
 
@@ -204,6 +204,7 @@ def rescue():
 	robot.straight(20)
 
 	rescueComplete = 1
+	claw.run_angle(400, clawTurn)
 
 	return timeSecs.process_time() + 50
 
@@ -219,7 +220,8 @@ def checkRescue():
 			
 
 def whiteLine():
-	robot.straight(-1.5)
+	robot.stop()
+	robot.straight(-15)
 	ev3.speaker.beep()
 	print("whiteLine")
 	while True:
@@ -253,7 +255,7 @@ def redLine():
 
 #Handles all movement
 def move():
-	robot.straight(-1.5)
+	robot.stop()
 	rescueTime = timeSecs.process_time()
 	ev3.speaker.beep()
 	while True:
@@ -267,7 +269,7 @@ def move():
 				rescueTime = checkRescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 2.5 #2.5normal 4.7small
+		multiplier = 3 #2.5normal 4.7small
 		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator)
@@ -279,18 +281,16 @@ def move():
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def test():
-	while len(ev3.buttons.pressed()) == 0:
-		pass
+	ev3.speaker.set_volume(100000)
 	while True:
-		#ev3.screen.print(ultraS.distance())
-		#ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
-		#ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
-		
-		ev3.speaker.beep(10000, 0.01)
+		robot.straight(random.randint(-1000, 1000))
+		ev3.speaker.play_file(SoundFile.HELLO)
+		robot.turn(random.randint(-360, 360))
 
 
 def initiate():
 	ev3.speaker.beep()
+	#ev3.speaker.play_file("rickroll.alsa")
 	while len(ev3.buttons.pressed()) == 0:
 		pass
 	move()
@@ -298,7 +298,6 @@ def initiate():
 #testThread = threading.Thread(target=test)
 #testThread.start()
 
-#ev3.speaker.play_file("Never gonna give you up.mp3")
 
 #test()
 initiate()
