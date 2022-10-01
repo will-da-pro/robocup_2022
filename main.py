@@ -231,7 +231,6 @@ def checkRescue():
 		robot.straight(-50)
 		rescueTime = timeSecs.process_time() + 1
 	return rescueTime
-			
 
 def redLine():
 	robot.stop()
