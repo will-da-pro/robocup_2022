@@ -1,4 +1,5 @@
 #!/usr/bin/env pybricks-micropython
+import random
 import sys
 from timeit import repeat
 from pybricks.hubs import EV3Brick
@@ -8,8 +9,7 @@ from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 import time as timeSecs
-import random
-from math import sqrt, asin
+#from math import sqrt, asin
 import threading
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
@@ -22,18 +22,19 @@ lColor = ColorSensor(Port.S1)
 rColor = ColorSensor(Port.S4)
 ultraS = UltrasonicSensor(Port.S3)
 ultraSLimit = 100
+maxCanDist = 400
 
 #motors
 lMotor = Motor(Port.A)
 rMotor = Motor(Port.D)
 claw = Motor(Port.B)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
-clawTurn = 200
+clawTurn = 400
 
 #drive speed variables
-driveSpeed = 115 #115 normal  85 small
+driveSpeed = 85 #115 normal  85 small
 turnDriveSpeed = 60
-towerDriveSpeed = 280
+towerDriveSpeed = 280 #140
 
 #colors
 silver = 90
@@ -47,7 +48,6 @@ red = 65
 rescueComplete = 0 #once completed rescue changes the variable to 1
 lastTurn = None
 rescueTime = timeSecs.process_time()
-ev3.speaker.set_volume(50000) #why...
 
 #program
 
@@ -56,22 +56,20 @@ def obstacle(distance, speed):
 	robot.stop()
 	robot.straight(-10)
 	robot.turn(-80)
-	robot.drive(towerDriveSpeed, 75)	
+	robot.drive(towerDriveSpeed, 75) #37.5	
 	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
+	robot.drive(-50, 0)
+	while lColor.reflection() > black and rColor.reflection() > black:
+		pass
+	robot.stop()
 	robot.turn(-50)
 	robot.straight(20)
 	robot.turn(-20)
 			
 def isBlack(side):
 	if side.reflection() <= black:
-		return True
-	else:
-		return False
-
-def isWhite(side):
-	if side.reflection() >= black:
 		return True
 	else:
 		return False
@@ -89,8 +87,13 @@ def doubleBlack(compensator):
 		robot.straight(7.5)
 
 		#Uncomment for white line
-		#iteration += 1
-		#if iteration >= 2:
+		iteration += 1
+		if iteration >= 2:
+			checkGreenCol()
+		#	if iteration >= 10:
+		#		robot.drive(10000000, 0)
+		#		while True:
+		#			pass
 		#	whiteLine()
 
 		if diff <= compensator and diff >= -compensator:
@@ -98,7 +101,7 @@ def doubleBlack(compensator):
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(25) #15 small 25 normal
+			#robot.turn(15) #10 small 15 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -107,7 +110,7 @@ def doubleBlack(compensator):
 
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(-25)
+			#q1robot.turn(-15)
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -117,37 +120,45 @@ def doubleBlack(compensator):
 		else:
 			pass
 
-def doubleWhite(compensator):
-	iteration = 0
-	
-	while lColor.reflection() > black and rColor.reflection() > black:
+def checkGreenCol():
+	if lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
+		robot.straight(-15)
+		rescueTime = rescue()
+	if(lColor.color() == Color.GREEN):
+		robot.turn(-15)
+		robot.drive(100, 0)
+		while rColor.reflection() < black:
+			pass
 		robot.stop()
-		robot.straight(7.5)
-
-		diff = rColor.reflection() - lColor.reflection()
-
-		iteration += 1
-
-		if iteration >= 2:
-			move()
+		robot.drive(0, -40)
+	elif(rColor.color() == Color.GREEN):
+		robot.turn(15) #15 small 25 normal
+		robot.drive(100, 0)
+		while lColor.reflection() < black:
+			pass
+		robot.stop()
+		robot.drive(0, 40)
+	else:
+		return
 
 def rescue():
 	robot.stop()
 	wait(100)
+	claw.run_until_stalled(-clawTurn)
 	print(robot.angle())
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
 	robot.straight(120)
 	robot.turn(120)
-	robot.drive(0, -40)
-	while ultraS.distance() > 500:
+	robot.drive(0, -60)
+	while ultraS.distance() > maxCanDist:
 		pass
 
 	ev3.speaker.beep()
 
 	canStartAngle = robot.angle()
 
-	while ultraS.distance() < 500:
+	while ultraS.distance() < maxCanDist:
 		pass
 
 	robot.stop()
@@ -168,25 +179,26 @@ def rescue():
 	robot.stop()
 	#accDistance = ultraS.distance()
 	#robot.straight(accDistance)
-	claw.run_angle(400, clawTurn) 	#closes the claw
+	claw.run_until_stalled(clawTurn) 	#closes the claw
+	claw.hold()
 
 	canDist = robot.distance()
-	robot.drive(1000000, 0)
+	robot.drive(100000000, 0)
 	while lColor.reflection() <= 30 and rColor.reflection() <= 30:
 		pass
-#
+
 	robot.stop()
 
 	robot.straight(20)
 
-	claw.run_angle(400, -clawTurn)
+	claw.run_until_stalled(-clawTurn)
 
 	robot.straight(-20)
 
 	robot.straight(canDist - robot.distance())
 
 	#goes back the distance of the can
-	robot.straight(-(distance - 20))
+	robot.straight(-distance)
 	robot.turn(angle)
 	robot.straight(-200)
 
@@ -204,6 +216,9 @@ def rescue():
 	robot.straight(20)
 
 	rescueComplete = 1
+	claw.run_until_stalled(clawTurn)
+	claw.hold()
+	claw.run_angle(100, -100)
 
 	return timeSecs.process_time() + 50
 
@@ -214,35 +229,9 @@ def checkRescue():
 		rescueTime = rescue()
 	else:
 		robot.straight(-50)
-		rescueTime = timeSecs.process_time() + 30
+		rescueTime = timeSecs.process_time() + 1
 	return rescueTime
 			
-
-def whiteLine():
-	robot.straight(-1.5)
-	ev3.speaker.beep()
-	print("whiteLine")
-	while True:
-		leftIsWhite = isWhite(lColor)
-		rightIsWhite = isWhite(rColor)
-		if lColor.reflection() > 99 or rColor.reflection() > 99:
-			if rescueComplete == 1 or timeSecs.process_time() < rescueTime:
-				pass
-			else:
-				rescue()
-		if (ultraS.distance() < ultraSLimit):
-			obstacle(ultraS.distance, turnDriveSpeed)
-		compensator = 2 #Amount to multiply output by
-		multiplier = 2.5
-		diff = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
-		if leftIsWhite and rightIsWhite:
-			doubleWhite(compensator)
-
-		# Uncomment for redline
-		if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
-			redLine()
-		output = int(multiplier * diff) #gets degrees to turn by
-		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def redLine():
 	robot.stop()
@@ -253,7 +242,7 @@ def redLine():
 
 #Handles all movement
 def move():
-	robot.straight(-1.5)
+	robot.stop()
 	rescueTime = timeSecs.process_time()
 	ev3.speaker.beep()
 	while True:
@@ -267,7 +256,7 @@ def move():
 				rescueTime = checkRescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 2.5 #2.5normal 4.7small
+		multiplier = 3 #2.5normal 4.7small
 		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator)
@@ -278,27 +267,22 @@ def move():
 		output = int(multiplier * diff) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
-def test():
-	while len(ev3.buttons.pressed()) == 0:
-		pass
-	while True:
-		#ev3.screen.print(ultraS.distance())
-		#ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
-		#ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
-		
-		ev3.speaker.beep(10000, 0.01)
-
 
 def initiate():
+	ev3.speaker.say("Close the claws")
+	#claw.run_until_stalled(100)
 	ev3.speaker.beep()
+	#ev3.speaker.play_file("rickroll.alsa")
 	while len(ev3.buttons.pressed()) == 0:
 		pass
 	move()
+def test():
+	while True:
+		ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
 
-#ev3.speaker.play_file("Never gonna give you up.mp3")
 
 #test()
 initiate()
