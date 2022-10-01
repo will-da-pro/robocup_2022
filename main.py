@@ -32,7 +32,7 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 400
 
 #drive speed variables
-driveSpeed = 115 #115 normal  85 small
+driveSpeed = 85 #115 normal  85 small
 turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
 
@@ -60,6 +60,10 @@ def obstacle(distance, speed):
 	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
+	robot.drive(-50, 0)
+	while lColor.reflection() > black and rColor.reflection() > black:
+		pass
+	robot.stop()
 	robot.turn(-50)
 	robot.straight(20)
 	robot.turn(-20)
@@ -97,7 +101,7 @@ def doubleBlack(compensator):
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(15) #10 small 15 normal
+			#robot.turn(15) #10 small 15 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -106,7 +110,7 @@ def doubleBlack(compensator):
 
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(-15)
+			#q1robot.turn(-15)
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -117,15 +121,18 @@ def doubleBlack(compensator):
 			pass
 
 def checkGreenCol():
+	if lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
+		robot.straight(-15)
+		rescueTime = rescue()
 	if(lColor.color() == Color.GREEN):
-		robot.turn(-25)
+		robot.turn(-15)
 		robot.drive(100, 0)
 		while rColor.reflection() < black:
 			pass
 		robot.stop()
 		robot.drive(0, -40)
 	elif(rColor.color() == Color.GREEN):
-		robot.turn(25) #15 small 25 normal
+		robot.turn(15) #15 small 25 normal
 		robot.drive(100, 0)
 		while lColor.reflection() < black:
 			pass
@@ -222,7 +229,7 @@ def checkRescue():
 		rescueTime = rescue()
 	else:
 		robot.straight(-50)
-		rescueTime = timeSecs.process_time() + 5
+		rescueTime = timeSecs.process_time() + 1
 	return rescueTime
 			
 
