@@ -20,8 +20,8 @@ ev3 = EV3Brick()
 #sensors
 lColor = ColorSensor(Port.S1)
 rColor = ColorSensor(Port.S4)
-ultraS = UltrasonicSensor(Port.S3)
-ultraSLimit = 100
+infraredS = InfraredSensor(Port.S3)
+infraredSLimit = 100
 
 #motors
 lMotor = Motor(Port.A)
@@ -31,9 +31,9 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 200
 
 #drive speed variables
-driveSpeed = 85 #115 normal  85 small
+driveSpeed = 115 #115 normal  85 small
 turnDriveSpeed = 60
-towerDriveSpeed = 140
+towerDriveSpeed = 280 #140
 
 #colors
 silver = 90
@@ -55,7 +55,7 @@ def obstacle(distance, speed):
 	robot.stop()
 	robot.straight(-10)
 	robot.turn(-80)
-	robot.drive(towerDriveSpeed, 37.5)	
+	robot.drive(towerDriveSpeed, 75) #37.5	
 	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
@@ -65,12 +65,6 @@ def obstacle(distance, speed):
 			
 def isBlack(side):
 	if side.reflection() <= black:
-		return True
-	else:
-		return False
-
-def isWhite(side):
-	if side.reflection() >= black:
 		return True
 	else:
 		return False
@@ -88,8 +82,13 @@ def doubleBlack(compensator):
 		robot.straight(7.5)
 
 		#Uncomment for white line
-		#iteration += 1
-		#if iteration >= 2:
+		iteration += 1
+		if iteration >= 2:
+			checkGreenCol()
+		#	if iteration >= 10:
+		#		robot.drive(10000000, 0)
+		#		while True:
+		#			pass
 		#	whiteLine()
 
 		if diff <= compensator and diff >= -compensator:
@@ -97,7 +96,7 @@ def doubleBlack(compensator):
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(15) #15 small 25 normal
+			robot.turn(15) #10 small 15 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -116,19 +115,23 @@ def doubleBlack(compensator):
 		else:
 			pass
 
-def doubleWhite(compensator):
-	iteration = 0
-	
-	while lColor.reflection() > black and rColor.reflection() > black:
+def checkGreenCol():
+	if(lColor.color() == Color.GREEN):
+		robot.turn(-25)
+		robot.drive(100, 0)
+		while rColor.reflection() < black:
+			pass
 		robot.stop()
-		robot.straight(7.5)
-
-		diff = rColor.reflection() - lColor.reflection()
-
-		iteration += 1
-
-		if iteration >= 2:
-			move()
+		robot.drive(0, -40)
+	elif(rColor.color() == Color.GREEN):
+		robot.turn(25) #15 small 25 normal
+		robot.drive(100, 0)
+		while lColor.reflection() < black:
+			pass
+		robot.stop()
+		robot.drive(0, 40)
+	else:
+		return
 
 def rescue():
 	robot.stop()
@@ -140,14 +143,14 @@ def rescue():
 	robot.straight(120)
 	robot.turn(120)
 	robot.drive(0, -40)
-	while ultraS.distance() > 500:
+	while infraredS.distance() > 500:
 		pass
 
 	ev3.speaker.beep()
 
 	canStartAngle = robot.angle()
 
-	while ultraS.distance() < 500:
+	while infraredS.distance() < 500:
 		pass
 
 	robot.stop()
@@ -162,7 +165,7 @@ def rescue():
 
 	robot.turn((canStartAngle - canEndAngle)/2)
 
-	distance = ultraS.distance()
+	distance = infraredS.distance()
 	angle = startAngle - robot.angle() #to compensate for distance diffs
 	robot.straight(distance) #moves by the distance of the can
 	robot.stop()
@@ -219,33 +222,6 @@ def checkRescue():
 	return rescueTime
 			
 
-def whiteLine():
-	robot.stop()
-	robot.straight(-15)
-	ev3.speaker.beep()
-	print("whiteLine")
-	while True:
-		leftIsWhite = isWhite(lColor)
-		rightIsWhite = isWhite(rColor)
-		if lColor.reflection() > 99 or rColor.reflection() > 99:
-			if rescueComplete == 1 or timeSecs.process_time() < rescueTime:
-				pass
-			else:
-				rescue()
-		if (ultraS.distance() < ultraSLimit):
-			obstacle(ultraS.distance, turnDriveSpeed)
-		compensator = 2 #Amount to multiply output by
-		multiplier = 2.5
-		diff = rColor.reflection() - lColor.reflection() #finds the difference between the reflections
-		if leftIsWhite and rightIsWhite:
-			doubleWhite(compensator)
-
-		# Uncomment for redline
-		if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
-			redLine()
-		output = int(multiplier * diff) #gets degrees to turn by
-		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
-
 def redLine():
 	robot.stop()
 	wait(300)
@@ -267,8 +243,8 @@ def move():
 				pass
 			else:
 				rescueTime = checkRescue()
-		if (ultraS.distance() < ultraSLimit):
-			obstacle(ultraS.distance, turnDriveSpeed)
+		if (infraredS.distance() < infraredSLimit):
+			obstacle(infraredS.distance, turnDriveSpeed)
 		multiplier = 3 #2.5normal 4.7small
 		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
@@ -280,20 +256,17 @@ def move():
 		output = int(multiplier * diff) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
-def test():
-	ev3.speaker.set_volume(100000)
-	while True:
-		robot.straight(random.randint(-1000, 1000))
-		ev3.speaker.play_file(SoundFile.HELLO)
-		robot.turn(random.randint(-360, 360))
-
 
 def initiate():
+	ev3.speaker.say("Close the claws")
 	ev3.speaker.beep()
 	#ev3.speaker.play_file("rickroll.alsa")
 	while len(ev3.buttons.pressed()) == 0:
 		pass
 	move()
+def test():
+	while True:
+		ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
