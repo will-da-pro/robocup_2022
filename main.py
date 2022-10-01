@@ -9,7 +9,7 @@ from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 import time as timeSecs
-from math import sqrt, asin
+#from math import sqrt, asin
 import threading
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
@@ -20,8 +20,9 @@ ev3 = EV3Brick()
 #sensors
 lColor = ColorSensor(Port.S1)
 rColor = ColorSensor(Port.S4)
-infraredS = InfraredSensor(Port.S3)
-infraredSLimit = 100
+ultraS = UltrasonicSensor(Port.S3)
+ultraSLimit = 100
+maxCanDist = 400
 
 #motors
 lMotor = Motor(Port.A)
@@ -142,15 +143,15 @@ def rescue():
 	startAngle = robot.angle()
 	robot.straight(120)
 	robot.turn(120)
-	robot.drive(0, -40)
-	while infraredS.distance() > 500:
+	robot.drive(0, -60)
+	while ultraS.distance() > maxCanDist:
 		pass
 
 	ev3.speaker.beep()
 
 	canStartAngle = robot.angle()
 
-	while infraredS.distance() < 500:
+	while ultraS.distance() < maxCanDist:
 		pass
 
 	robot.stop()
@@ -165,7 +166,7 @@ def rescue():
 
 	robot.turn((canStartAngle - canEndAngle)/2)
 
-	distance = infraredS.distance()
+	distance = ultraS.distance()
 	angle = startAngle - robot.angle() #to compensate for distance diffs
 	robot.straight(distance) #moves by the distance of the can
 	robot.stop()
@@ -218,7 +219,7 @@ def checkRescue():
 		rescueTime = rescue()
 	else:
 		robot.straight(-50)
-		rescueTime = timeSecs.process_time() + 30
+		rescueTime = timeSecs.process_time() + 5
 	return rescueTime
 			
 
@@ -243,8 +244,8 @@ def move():
 				pass
 			else:
 				rescueTime = checkRescue()
-		if (infraredS.distance() < infraredSLimit):
-			obstacle(infraredS.distance, turnDriveSpeed)
+		if (ultraS.distance() < ultraSLimit):
+			obstacle(ultraS.distance, turnDriveSpeed)
 		multiplier = 3 #2.5normal 4.7small
 		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
@@ -259,6 +260,7 @@ def move():
 
 def initiate():
 	ev3.speaker.say("Close the claws")
+	#claw.run_until_stalled(100)
 	ev3.speaker.beep()
 	#ev3.speaker.play_file("rickroll.alsa")
 	while len(ev3.buttons.pressed()) == 0:
