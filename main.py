@@ -29,7 +29,7 @@ lMotor = Motor(Port.A)
 rMotor = Motor(Port.D)
 claw = Motor(Port.B)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
-clawTurn = 200
+clawTurn = 400
 
 #drive speed variables
 driveSpeed = 115 #115 normal  85 small
@@ -137,7 +137,7 @@ def checkGreenCol():
 def rescue():
 	robot.stop()
 	wait(100)
-	claw.run_angle(400, -clawTurn)
+	claw.run_until_stalled(-clawTurn)
 	print(robot.angle())
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
@@ -172,18 +172,19 @@ def rescue():
 	robot.stop()
 	#accDistance = ultraS.distance()
 	#robot.straight(accDistance)
-	claw.run_angle(400, clawTurn) 	#closes the claw
+	claw.run_until_stalled(clawTurn) 	#closes the claw
+	claw.hold()
 
 	canDist = robot.distance()
 	robot.drive(100000000, 0)
 	while lColor.reflection() <= 30 and rColor.reflection() <= 30:
 		pass
-#
+
 	robot.stop()
 
 	robot.straight(20)
 
-	claw.run_angle(400, -clawTurn)
+	claw.run_until_stalled(-clawTurn)
 
 	robot.straight(-20)
 
@@ -208,7 +209,9 @@ def rescue():
 	robot.straight(20)
 
 	rescueComplete = 1
-	claw.run_angle(400, clawTurn)
+	claw.run_until_stalled(clawTurn)
+	claw.hold()
+	claw.run_angle(100, -100)
 
 	return timeSecs.process_time() + 50
 
