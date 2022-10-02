@@ -32,7 +32,7 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 400
 
 #drive speed variables
-driveSpeed = 85 #115 normal  85 small
+driveSpeed = 115 #115 normal  85 small
 turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
 
@@ -101,7 +101,7 @@ def doubleBlack(compensator):
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			#robot.turn(15) #10 small 15 normal
+			robot.turn(15) #10 small 15 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -110,7 +110,7 @@ def doubleBlack(compensator):
 
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			#q1robot.turn(-15)
+			robot.turn(-15)
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -203,7 +203,7 @@ def rescue():
 	robot.straight(-200)
 
 	#robot.stop()
-	robot.turn(90)
+	robot.turn(150)
 
 	robot.drive(0, 75)
 	while lColor.reflection() > black:
@@ -229,7 +229,7 @@ def checkRescue():
 		rescueTime = rescue()
 	else:
 		robot.straight(-50)
-		rescueTime = timeSecs.process_time() + 1
+		rescueTime = timeSecs.process_time() + 0.1
 	return rescueTime
 
 def redLine():
@@ -253,8 +253,8 @@ def move():
 				pass
 			else:
 				rescueTime = checkRescue()
-		if (ultraS.distance() < ultraSLimit):
-			obstacle(ultraS.distance, turnDriveSpeed)
+		#if (ultraS.distance() < ultraSLimit):
+		#	obstacle(ultraS.distance, turnDriveSpeed)
 		multiplier = 3 #2.5normal 4.7small
 		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
