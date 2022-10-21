@@ -20,6 +20,7 @@ ev3 = EV3Brick()
 #sensors
 lColor = ColorSensor(Port.S1)
 rColor = ColorSensor(Port.S4)
+frontColor = ColorSensor(Port.S2)
 ultraS = UltrasonicSensor(Port.S3)
 ultraSLimit = 100
 maxCanDist = 400
@@ -144,7 +145,7 @@ def checkGreenCol():
 
 def rescue():
 	robot.stop()
-	rescueBlockPos = 0
+	rescueBlock = 0
 	wait(100)
 	claw.run_until_stalled(-clawTurn)
 	print(robot.angle())
@@ -164,6 +165,7 @@ def rescue():
 		ev3.speaker.beep()
 
 		objStartAngle = robot.angle()
+		objDist = ultraS.distance()
 
 		while ultraS.distance() < maxCanDist:
 			pass
@@ -180,40 +182,37 @@ def rescue():
 		objSize = objEndAngle - objStartAngle
 		objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
 
-		rescueObjArray.append([objSize, objMidPoint])
-		robot.drive(0, -60)
+		if objSize < rescueBlockSize:
+			rescueObjArray.append([objSize, objMidPoint, objDist])
+			robot.drive(0, -60)
+		else:
+			rescueBlock = [objSize, objMidPoint, objDist]
 
 	print(rescueObjArray)
 
-	for i in rescueObjArray:
-		if (i[0] > rescueBlockSize):
-			rescueBlockPos = i[1]
 
-	robot.turn(objMidPoint)
+	robot.turn(objMidPoint - robot.angle())
 
 	distance = ultraS.distance()
 	angle = startAngle - robot.angle() #to compensate for distance diffs
 	robot.straight(distance) #moves by the distance of the can
 	robot.stop()
+
+	if (frontColor.reflection() < 99):
+		claw.run_until_stalled(clawTurn) 	#closes the claw
+		claw.hold()
+
+		robot.straight(-distance)
+
+	robot.turn(rescueBlock[1] - robot.angle())
 	#accDistance = ultraS.distance()
 	#robot.straight(accDistance)
-	claw.run_until_stalled(clawTurn) 	#closes the claw
-	claw.hold()
 
-	canDist = robot.distance()
-	robot.drive(100000000, 0)
-	while lColor.reflection() <= 30 and rColor.reflection() <= 30:
-		pass
-
-	robot.stop()
-
-	robot.straight(20)
+	robot.straight(rescueBlock[2])
 
 	claw.run_until_stalled(-clawTurn)
 
-	robot.straight(-20)
-
-	robot.straight(canDist - robot.distance())
+	robot.straight(-rescueBlock[2])
 
 	#goes back the distance of the can
 	robot.straight(-distance)
