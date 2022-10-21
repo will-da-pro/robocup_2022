@@ -151,27 +151,39 @@ def rescue():
 	robot.straight(120)
 	robot.turn(120)
 	robot.drive(0, -60)
-	while ultraS.distance() > maxCanDist:
-		pass
 
-	ev3.speaker.beep()
+	turnStopDist = robot.angle() - 240
+	rescueObjArray = []
 
-	canStartAngle = robot.angle()
+	while robot.angle() >= turnStopDist:
+		while ultraS.distance() > maxCanDist:
+			pass
 
-	while ultraS.distance() < maxCanDist:
-		pass
+		ev3.speaker.beep()
 
-	robot.stop()
+		objStartAngle = robot.angle()
 
-	ev3.speaker.beep()
+		while ultraS.distance() < maxCanDist:
+			pass
 
-	robot.turn(20)
+		robot.stop()
 
-	ev3.speaker.beep()
+		ev3.speaker.beep()
 
-	canEndAngle = robot.angle()
+		#robot.turn(20)
 
-	robot.turn((canStartAngle - canEndAngle)/2)
+		ev3.speaker.beep()
+
+		objEndAngle = robot.angle()
+		objSize = objEndAngle - objStartAngle
+		objMidPoint = (objStartAngle - objEndAngle)/2 - 20
+
+		rescueObjArray.append({objSize, objMidPoint})
+		robot.drive(0, -60)
+
+	print(rescueObjArray)
+
+	robot.turn(objMidPoint)
 
 	distance = ultraS.distance()
 	angle = startAngle - robot.angle() #to compensate for distance diffs
