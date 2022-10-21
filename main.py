@@ -32,7 +32,7 @@ robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 400
 
 #drive speed variables
-driveSpeed = 85 #115 normal  85 small
+driveSpeed = 115 #115 normal  85 small
 turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
 
@@ -46,6 +46,7 @@ red = 65
 
 #other variables
 rescueComplete = 0 #once completed rescue changes the variable to 1
+rescueBlockSize = 300
 lastTurn = None
 rescueTime = timeSecs.process_time()
 
@@ -101,7 +102,7 @@ def doubleBlack(compensator):
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			#robot.turn(15) #10 small 15 normal
+			robot.turn(15) #10 small 15 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -110,7 +111,7 @@ def doubleBlack(compensator):
 
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			#q1robot.turn(-15)
+			robot.turn(-15)
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -143,6 +144,7 @@ def checkGreenCol():
 
 def rescue():
 	robot.stop()
+	rescueBlockPos = 0
 	wait(100)
 	claw.run_until_stalled(-clawTurn)
 	print(robot.angle())
@@ -151,27 +153,43 @@ def rescue():
 	robot.straight(120)
 	robot.turn(120)
 	robot.drive(0, -60)
-	while ultraS.distance() > maxCanDist:
-		pass
 
-	ev3.speaker.beep()
+	turnStopDist = robot.angle() - 240
+	rescueObjArray = []
 
-	canStartAngle = robot.angle()
+	while robot.angle() >= turnStopDist:
+		while ultraS.distance() > maxCanDist:
+			pass
 
-	while ultraS.distance() < maxCanDist:
-		pass
+		ev3.speaker.beep()
 
-	robot.stop()
+		objStartAngle = robot.angle()
 
-	ev3.speaker.beep()
+		while ultraS.distance() < maxCanDist:
+			pass
 
-	robot.turn(20)
+		robot.stop()
 
-	ev3.speaker.beep()
+		ev3.speaker.beep()
 
-	canEndAngle = robot.angle()
+		#robot.turn(20)
 
-	robot.turn((canStartAngle - canEndAngle)/2)
+		ev3.speaker.beep()
+
+		objEndAngle = robot.angle()
+		objSize = objEndAngle - objStartAngle
+		objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
+
+		rescueObjArray.append([objSize, objMidPoint])
+		robot.drive(0, -60)
+
+	print(rescueObjArray)
+
+	for i in rescueObjArray:
+		if (i[0] > rescueBlockSize):
+			rescueBlockPos = i[1]
+
+	robot.turn(objMidPoint)
 
 	distance = ultraS.distance()
 	angle = startAngle - robot.angle() #to compensate for distance diffs
@@ -203,7 +221,7 @@ def rescue():
 	robot.straight(-200)
 
 	#robot.stop()
-	robot.turn(90)
+	robot.turn(150)
 
 	robot.drive(0, 75)
 	while lColor.reflection() > black:
@@ -229,9 +247,8 @@ def checkRescue():
 		rescueTime = rescue()
 	else:
 		robot.straight(-50)
-		rescueTime = timeSecs.process_time() + 1
+		rescueTime = timeSecs.process_time() + 0.1
 	return rescueTime
-			
 
 def redLine():
 	robot.stop()
@@ -254,8 +271,8 @@ def move():
 				pass
 			else:
 				rescueTime = checkRescue()
-		if (ultraS.distance() < ultraSLimit):
-			obstacle(ultraS.distance, turnDriveSpeed)
+		#if (ultraS.distance() < ultraSLimit):
+		#	obstacle(ultraS.distance, turnDriveSpeed)
 		multiplier = 3 #2.5normal 4.7small
 		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
