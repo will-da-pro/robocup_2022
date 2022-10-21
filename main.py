@@ -46,6 +46,7 @@ red = 65
 
 #other variables
 rescueComplete = 0 #once completed rescue changes the variable to 1
+rescueBlockSize = 300
 lastTurn = None
 rescueTime = timeSecs.process_time()
 
@@ -143,6 +144,7 @@ def checkGreenCol():
 
 def rescue():
 	robot.stop()
+	rescueBlockPos = 0
 	wait(100)
 	claw.run_until_stalled(-clawTurn)
 	print(robot.angle())
@@ -176,12 +178,16 @@ def rescue():
 
 		objEndAngle = robot.angle()
 		objSize = objEndAngle - objStartAngle
-		objMidPoint = (objStartAngle - objEndAngle)/2 - 20
+		objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
 
-		rescueObjArray.append({objSize, objMidPoint})
+		rescueObjArray.append([objSize, objMidPoint])
 		robot.drive(0, -60)
 
 	print(rescueObjArray)
+
+	for i in rescueObjArray:
+		if (i[0] > rescueBlockSize):
+			rescueBlockPos = i[1]
 
 	robot.turn(objMidPoint)
 
