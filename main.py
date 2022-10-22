@@ -156,7 +156,7 @@ def rescue():
 	robot.drive(0, -60)
 
 	turnStopDist = robot.angle() - 240
-	rescueObjArray = []
+	rescueObjs = []
 
 	while robot.angle() >= turnStopDist:
 		while ultraS.distance() > maxCanDist:
@@ -183,26 +183,26 @@ def rescue():
 		objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
 
 		if objSize < rescueBlockSize:
-			rescueObjArray.append([objSize, objMidPoint, objDist])
+			rescueObjs.append([objSize, objMidPoint, objDist])
 			robot.drive(0, -60)
 		else:
 			rescueBlock = [objSize, objMidPoint, objDist]
 
-	print(rescueObjArray)
+	print(rescueObjs)
 
+	for x in rescueObj:
+		robot.turn(x[1] - robot.angle())
 
-	robot.turn(objMidPoint - robot.angle())
+		distance = ultraS.distance()
+		angle = startAngle - robot.angle() #to compensate for distance diffs
+		robot.straight(distance) #moves by the distance of the can
+		robot.stop()
 
-	distance = ultraS.distance()
-	angle = startAngle - robot.angle() #to compensate for distance diffs
-	robot.straight(distance) #moves by the distance of the can
-	robot.stop()
+		if (frontColor.reflection() < 99):
+			claw.run_until_stalled(clawTurn) 	#closes the claw
+			claw.hold()
 
-	if (frontColor.reflection() < 99):
-		claw.run_until_stalled(clawTurn) 	#closes the claw
-		claw.hold()
-
-		robot.straight(-distance)
+			robot.straight(-distance)
 
 	robot.turn(rescueBlock[1] - robot.angle())
 	#accDistance = ultraS.distance()
