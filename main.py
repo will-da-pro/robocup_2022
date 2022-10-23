@@ -24,6 +24,7 @@ frontColor = ColorSensor(Port.S2)
 ultraS = UltrasonicSensor(Port.S3)
 ultraSLimit = 100
 maxCanDist = 400
+rescueBlockDist = 300
 
 #motors
 lMotor = Motor(Port.A)
@@ -182,16 +183,16 @@ def rescue():
 		objSize = objEndAngle - objStartAngle
 		objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
 
-		if objSize < rescueBlockSize:
+		if objStartAngle < startAngle and objEndAngle > startAngle:
+			rescueBlock = [objSize, objMidPoint, objDist]
+		else:
 			rescueObjs.append([objSize, objMidPoint, objDist])
 			robot.drive(0, -60)
-		else:
-			rescueBlock = [objSize, objMidPoint, objDist]
 
 	print(rescueObjs)
 
-	for x in rescueObj:
-		robot.turn(x[1] - robot.angle())
+	if rescueObjs.len() < 1:
+		robot.turn(startAngle - robot.angle())
 
 		distance = ultraS.distance()
 		angle = startAngle - robot.angle() #to compensate for distance diffs
@@ -203,6 +204,23 @@ def rescue():
 			claw.hold()
 
 			robot.straight(-distance)
+		else:
+			print("Can not found")
+		
+	else:
+		for x in rescueObj:
+			robot.turn(x[1] - robot.angle())
+
+			distance = ultraS.distance()
+			angle = startAngle - robot.angle() #to compensate for distance diffs
+			robot.straight(distance) #moves by the distance of the can
+			robot.stop()
+
+			if (frontColor.reflection() < 99):
+				claw.run_until_stalled(clawTurn) 	#closes the claw
+				claw.hold()
+
+				robot.straight(-distance)
 
 	robot.turn(rescueBlock[1] - robot.angle())
 	#accDistance = ultraS.distance()
