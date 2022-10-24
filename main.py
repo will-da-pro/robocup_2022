@@ -154,17 +154,33 @@ def rescue():
 	startAngle = robot.angle()
 	robot.straight(120)
 	robot.turn(120)
-	robot.drive(0, -60)
 
 	turnStopDist = robot.angle() - 240
 	rescueObjs = []
 	detectedObjs = []
 	lastDist = ultraS.distance()
 	minLengthDif = 10
+	maxUltraSDist = 400
+	
+	robot.drive(0, -60)
 
 	while robot.angle() >= turnStopDist:
 		dist = ultraS.distance()
 
+		if dist > maxUltraSDist:
+			if detectedObjs.len() > 0:
+				for x in rescueObjs:
+					ev3.speaker.beep()
+
+					objEndAngle = robot.angle()
+					objSize = objEndAngle - objStartAngle
+					objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
+
+					if objStartAngle < startAngle and objEndAngle > startAngle:
+						rescueBlock = [objSize, objMidPoint, objDist]
+					else:
+						rescueObjs.append([objSize, objMidPoint, objDist])
+						robot.drive(0, -60)
 		if dist - lastDist >= minLengthDif:
 			ev3.speaker.beep()
 			
