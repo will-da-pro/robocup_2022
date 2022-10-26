@@ -177,9 +177,9 @@ def rescue():
 					objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
 
 					if objStartAngle < startAngle and objEndAngle > startAngle:
-						rescueBlock = [objSize, objMidPoint, objDist]
+						rescueBlock = [objSize, objMidPoint, dist]
 					else:
-						rescueObjs.append([objSize, objMidPoint, objDist])
+						rescueObjs.append([objSize, objMidPoint, dist])
 						robot.drive(0, -60)
 		if dist - lastDist >= minLengthDif:
 			ev3.speaker.beep()
@@ -194,9 +194,9 @@ def rescue():
 			objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
 
 			if objStartAngle < startAngle and objEndAngle > startAngle:
-				rescueBlock = [objSize, objMidPoint, objDist]
+				rescueBlock = [objSize, objMidPoint, dist]
 			else:
-				rescueObjs.append([objSize, objMidPoint, objDist])
+				rescueObjs.append([objSize, objMidPoint, dist])
 				robot.drive(0, -60)
 
 	print(rescueObjs)
@@ -218,7 +218,7 @@ def rescue():
 			print("Can not found")
 		
 	else:
-		for x in rescueObj:
+		for x in rescueObjs:
 			robot.turn(x[1] - robot.angle())
 
 			distance = ultraS.distance()
