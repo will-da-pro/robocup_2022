@@ -242,11 +242,6 @@ def rescue():
 
 	robot.straight(-rescueBlock[2])
 
-	#goes back the distance of the can
-	robot.straight(-distance)
-	robot.turn(angle)
-	robot.straight(-200)
-
 	#robot.stop()
 	robot.turn(150)
 
