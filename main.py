@@ -18,8 +18,8 @@ import threading
 ev3 = EV3Brick()
 
 #sensors
-lColor = ColorSensor(Port.S1)
-rColor = ColorSensor(Port.S4)
+lColor = ColorSensor(Port.S4)
+rColor = ColorSensor(Port.S1)
 frontColor = ColorSensor(Port.S2)
 ultraS = UltrasonicSensor(Port.S3)
 ultraSLimit = 100
@@ -27,8 +27,8 @@ maxCanDist = 400
 rescueBlockDist = 300
 
 #motors
-lMotor = Motor(Port.A)
-rMotor = Motor(Port.D)
+lMotor = Motor(Port.D)
+rMotor = Motor(Port.A)
 claw = Motor(Port.B)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = 400
@@ -159,8 +159,10 @@ def rescue():
 	rescueObjs = []
 	detectedObjs = []
 	lastDist = ultraS.distance()
-	minLengthDif = 10
+	minLengthDif = 500
 	maxUltraSDist = 400
+	objStartAngle = 0
+	objEndAngle = 0
 	
 	robot.drive(0, -60)
 
@@ -168,9 +170,9 @@ def rescue():
 		dist = ultraS.distance()
 
 		if dist > maxUltraSDist:
-			if detectedObjs.len() > 0:
+			if len(detectedObjs) > 0:
 				for x in rescueObjs:
-					ev3.speaker.beep()
+					#ev3.speaker.beep()
 
 					objEndAngle = robot.angle()
 					objSize = objEndAngle - objStartAngle
@@ -183,12 +185,15 @@ def rescue():
 						robot.drive(0, -60)
 		if dist - lastDist >= minLengthDif:
 			ev3.speaker.beep()
+
+			print("start" + str(dist) + ", " + str(lastDist))
 			
 			detectedObjs.append(dist)
 			objStartAngle = robot.angle()
 		elif lastDist - dist >= minLengthDif:
 			ev3.speaker.beep()
 
+			print("end" + str(dist) + ", " + str(lastDist))
 			objEndAngle = robot.angle()
 			objSize = objEndAngle - objStartAngle
 			objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
@@ -198,10 +203,11 @@ def rescue():
 			else:
 				rescueObjs.append([objSize, objMidPoint, dist])
 				robot.drive(0, -60)
+		lastDist = dist
 
 	print(rescueObjs)
 
-	if rescueObjs.len() < 1:
+	if len(rescueObjs) < 1:
 		robot.turn(startAngle - robot.angle())
 
 		distance = ultraS.distance()
