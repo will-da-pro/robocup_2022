@@ -183,14 +183,14 @@ def rescue():
 					else:
 						rescueObjs.append([objSize, objMidPoint, dist])
 						robot.drive(0, -60)
-		if dist - lastDist >= minLengthDif:
+		if lastDist - dist >= minLengthDif:
 			ev3.speaker.beep()
 
 			print("start" + str(dist) + ", " + str(lastDist))
 			
 			detectedObjs.append(dist)
 			objStartAngle = robot.angle()
-		elif lastDist - dist >= minLengthDif:
+		elif dist - lastDist >= minLengthDif:
 			ev3.speaker.beep()
 
 			print("end" + str(dist) + ", " + str(lastDist))
