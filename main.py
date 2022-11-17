@@ -169,20 +169,20 @@ def rescue():
 	while robot.angle() >= turnStopDist:
 		dist = ultraS.distance()
 
-		if dist > maxUltraSDist:
-			if len(detectedObjs) > 0:
-				for x in rescueObjs:
-					#ev3.speaker.beep()
+		#if dist > maxUltraSDist:
+		#	if len(detectedObjs) > 0:
+		#		for x in rescueObjs:
+		#			#ev3.speaker.beep()
+#
+		#			objEndAngle = robot.angle()
+		#			objSize = objEndAngle - objStartAngle
+		#			objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
 
-					objEndAngle = robot.angle()
-					objSize = objEndAngle - objStartAngle
-					objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
-
-					if objStartAngle < startAngle and objEndAngle > startAngle:
-						rescueBlock = [objSize, objMidPoint, dist]
-					else:
-						rescueObjs.append([objSize, objMidPoint, dist])
-						robot.drive(0, -60)
+		#			if objStartAngle < startAngle and objEndAngle > startAngle:
+		#				rescueBlock = [objSize, objMidPoint, dist]
+		#			else:
+		#				rescueObjs.append([objSize, objMidPoint, dist])
+		#				robot.drive(0, -60)
 		if lastDist - dist >= minLengthDif:
 			ev3.speaker.beep()
 
@@ -191,7 +191,7 @@ def rescue():
 			detectedObjs.append(dist)
 			objStartAngle = robot.angle()
 		elif dist - lastDist >= minLengthDif:
-			ev3.speaker.beep()
+			ev3.speaker.beep(700, 500)
 
 			print("end" + str(dist) + ", " + str(lastDist))
 			objEndAngle = robot.angle()
@@ -205,6 +205,7 @@ def rescue():
 				robot.drive(0, -60)
 		lastDist = dist
 
+	robot.stop()
 	print(rescueObjs)
 
 	if len(rescueObjs) < 1:
