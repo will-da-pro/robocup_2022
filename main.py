@@ -153,6 +153,7 @@ def rescue():
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
 	robot.straight(120)
+	rescueBlock = [200, robot.angle(), ultraS.distance()]
 	robot.turn(120)
 
 	turnStopDist = robot.angle() - 240
@@ -196,12 +197,12 @@ def rescue():
 			print("end" + str(dist) + ", " + str(lastDist))
 			objEndAngle = robot.angle()
 			objSize = objEndAngle - objStartAngle
-			objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
+			objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 40
 
 			if objStartAngle < startAngle and objEndAngle > startAngle:
-				rescueBlock = [objSize, objMidPoint, dist]
+				rescueBlock = [objSize, objMidPoint, lastDist]
 			else:
-				rescueObjs.append([objSize, objMidPoint, dist])
+				rescueObjs.append([objSize, objMidPoint, lastDist])
 				robot.drive(0, -60)
 		lastDist = dist
 
@@ -238,7 +239,11 @@ def rescue():
 				claw.hold()
 
 				robot.straight(-distance)
+				break
 
+	print("block")
+	print(rescueBlock[1])
+	print(rescueBlock[1] - robot.angle())
 	robot.turn(rescueBlock[1] - robot.angle())
 	#accDistance = ultraS.distance()
 	#robot.straight(accDistance)
