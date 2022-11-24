@@ -191,19 +191,19 @@ def rescue():
 			
 			detectedObjs.append(dist)
 			objStartAngle = robot.angle()
-		elif dist - lastDist >= minLengthDif:
-			ev3.speaker.beep(700, 500)
 
 			print("end" + str(dist) + ", " + str(lastDist))
-			objEndAngle = robot.angle()
+			objEndAngle = robot.angle() + 10
 			objSize = objEndAngle - objStartAngle
 			objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 40
 
 			if objStartAngle < startAngle and objEndAngle > startAngle:
-				rescueBlock = [objSize, objMidPoint, lastDist]
+				rescueBlock = [objSize, objMidPoint, dist]
 			else:
-				rescueObjs.append([objSize, objMidPoint, lastDist])
+				rescueObjs.append([objSize, objMidPoint, dist])
 				robot.drive(0, -60)
+
+			
 		lastDist = dist
 
 	robot.stop()
