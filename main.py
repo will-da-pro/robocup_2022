@@ -31,7 +31,7 @@ lMotor = Motor(Port.D)
 rMotor = Motor(Port.A)
 claw = Motor(Port.B)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
-clawTurn = 400
+clawTurn = -90
 
 #drive speed variables
 driveSpeed = 115 #115 normal  85 small
@@ -146,113 +146,45 @@ def checkGreenCol():
 
 def rescue():
 	robot.stop()
-	rescueBlock = 0
 	wait(100)
-	claw.run_until_stalled(-clawTurn)
+	claw.run_angle(100, -clawTurn)
 	print(robot.angle())
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
+	blockDist = ultraS.distance()
 	robot.straight(120)
-	rescueBlock = [200, robot.angle(), ultraS.distance()]
 	robot.turn(120)
 
 	turnStopDist = robot.angle() - 240
-	rescueObjs = []
-	detectedObjs = []
-	lastDist = ultraS.distance()
-	minLengthDif = 500
-	maxUltraSDist = 400
-	objStartAngle = 0
-	objEndAngle = 0
 	
 	robot.drive(0, -60)
 
 	while robot.angle() >= turnStopDist:
-		dist = ultraS.distance()
-
-		#if dist > maxUltraSDist:
-		#	if len(detectedObjs) > 0:
-		#		for x in rescueObjs:
-		#			#ev3.speaker.beep()
-#
-		#			objEndAngle = robot.angle()
-		#			objSize = objEndAngle - objStartAngle
-		#			objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 20
-
-		#			if objStartAngle < startAngle and objEndAngle > startAngle:
-		#				rescueBlock = [objSize, objMidPoint, dist]
-		#			else:
-		#				rescueObjs.append([objSize, objMidPoint, dist])
-		#				robot.drive(0, -60)
-		if lastDist - dist >= minLengthDif:
-			ev3.speaker.beep()
-
-			print("start" + str(dist) + ", " + str(lastDist))
-			
-			detectedObjs.append(dist)
-			objStartAngle = robot.angle()
-
-			print("end" + str(dist) + ", " + str(lastDist))
-			objEndAngle = robot.angle() + 10
-			objSize = objEndAngle - objStartAngle
-			objMidPoint = objStartAngle + (objStartAngle - objEndAngle)/2 - 40
-
-			if objStartAngle < startAngle and objEndAngle > startAngle:
-				rescueBlock = [objSize, objMidPoint, dist]
-			else:
-				rescueObjs.append([objSize, objMidPoint, dist])
-				robot.drive(0, -60)
-
-			
-		lastDist = dist
-
-	robot.stop()
-	print(rescueObjs)
-
-	if len(rescueObjs) < 1:
-		robot.turn(startAngle - robot.angle())
-
-		distance = ultraS.distance()
-		angle = startAngle - robot.angle() #to compensate for distance diffs
-		robot.straight(distance) #moves by the distance of the can
+		while (ultraS.distance() > maxCanDist):
+			pass
 		robot.stop()
+		canDist = ultraS.distance()
+		print("Can detected. Distance: " + str(canDist))
 
-		if (frontColor.reflection() < 99):
-			claw.run_until_stalled(clawTurn) 	#closes the claw
-			claw.hold()
+		robot.turn(-15)
+		canDist = ultraS.distance()
+		robot.straight(canDist)
+		claw.run_angle(200, clawTurn)
 
-			robot.straight(-distance)
+		if (frontColor.reflection() > 10):
+			ev3.speaker.beep()
+			robot.straight(-canDist)
+			break
 		else:
-			print("Can not found")
-		
-	else:
-		for x in rescueObjs:
-			robot.turn(x[1] - robot.angle())
+			claw.run_angle(200, -clawTurn)
+			robot.straight(-canDist)
+	
+	robot.turn(startAngle - robot.angle())
 
-			distance = ultraS.distance()
-			angle = startAngle - robot.angle() #to compensate for distance diffs
-			robot.straight(distance) #moves by the distance of the can
-			robot.stop()
+	robot.straight(blockDist)
+	claw.run_angle(200, -clawTurn)
+	robot.straight(-blockDist - 120)
 
-			if (frontColor.reflection() < 99):
-				claw.run_until_stalled(clawTurn) 	#closes the claw
-				claw.hold()
-
-				robot.straight(-distance)
-				break
-
-	print("block")
-	print(rescueBlock[1])
-	print(rescueBlock[1] - robot.angle())
-	robot.turn(rescueBlock[1] - robot.angle())
-	#accDistance = ultraS.distance()
-	#robot.straight(accDistance)
-
-	robot.straight(rescueBlock[2])
-
-	claw.run_until_stalled(-clawTurn)
-
-	robot.straight(-rescueBlock[2])
 
 	#robot.stop()
 	robot.turn(150)
@@ -268,7 +200,7 @@ def rescue():
 	robot.straight(20)
 
 	rescueComplete = 1
-	claw.run_until_stalled(clawTurn)
+	claw.run_angle(100, clawTurn)
 	claw.hold()
 	claw.run_angle(100, -100)
 
