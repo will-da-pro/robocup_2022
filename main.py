@@ -250,7 +250,6 @@ def move():
 		output = int(multiplier * diff) #gets degrees to turn by
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
-
 def initiate():
 	ev3.speaker.say("Close the claws")
 	#claw.run_until_stalled(100)
@@ -265,7 +264,6 @@ def test():
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
-
 
 #test()
 initiate()
