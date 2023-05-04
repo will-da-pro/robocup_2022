@@ -125,6 +125,7 @@ def doubleBlack(compensator):
 
 def checkGreenCol():
 	if lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
+		#change this ig
 		robot.straight(-15)
 		rescueTime = rescue()
 	if(lColor.color() == Color.GREEN):
