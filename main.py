@@ -243,7 +243,10 @@ def move():
 		multiplier = 3 #2.5normal 4.7small
 		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
-			doubleBlack(compensator)
+			if lColor.reflection() > green1 and lColor.reflection() < green2 and rColor.reflection() > green1 and rColor.reflection() < green2:
+				robot.drive(driveSpeed, 180)
+			else:
+				doubleBlack(compensator)
 		#Uncomment for redline
 		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
 		#	redLine()
