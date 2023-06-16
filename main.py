@@ -27,9 +27,10 @@ maxCanDist = 400
 rescueBlockDist = 300
 
 #motors
-lMotor = Motor(Port.D)
-rMotor = Motor(Port.A)
-claw = Motor(Port.B)
+lMotor = Motor(Port.C)
+rMotor = Motor(Port.B)
+claw = Motor(Port.D)
+claw2 = Motor(Port.A)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = -90
 
@@ -183,6 +184,7 @@ def rescue():
 	robot.turn(startAngle - robot.angle())
 
 	robot.straight(blockDist)
+	claw2.run_angle(200,30)
 	claw.run_angle(200, -clawTurn)
 	robot.straight(-blockDist - 120)
 
@@ -255,16 +257,18 @@ def move():
 		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def initiate():
-	ev3.speaker.say("Close the claws")
+	#ev3.speaker.say("Close the claws")
 	#claw.run_until_stalled(100)
 	ev3.speaker.beep()
 	#ev3.speaker.play_file("rickroll.alsa")
-	while len(ev3.buttons.pressed()) == 0:
-		pass
+	#while len(ev3.buttons.pressed()) == 0:
+	#	pass
 	move()
 def test():
-	while True:
-		ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
+	#while True:
+	#	ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
+	claw2.run_angle(200,-50)
+	wait(100000)
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
