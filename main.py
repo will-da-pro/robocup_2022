@@ -30,7 +30,7 @@ rescueBlockDist = 300
 lMotor = Motor(Port.C)
 rMotor = Motor(Port.B)
 claw = Motor(Port.D)
-claw2 = Motor(Port.A)
+lifter = Motor(Port.A)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = -90
 
@@ -150,71 +150,58 @@ def checkGreenCol():
 
 def rescue():
 	robot.stop()
+ 
+	maxCanDist = 300
+ 
 	wait(100)
-	claw.run_angle(10, -clawTurn)
-	print(robot.angle())
-	#robot.turn(-(robot.angle() % 90))
+	robot.straight(200)
+	robot.turn(-140)
+ 
 	startAngle = robot.angle()
-	blockDist = ultraS.distance()
-	robot.straight(120)
-	robot.turn(120)
+ 
+	robot.drive(0, 50)
+ 
+	while robot.angle() - startAngle < 280:
+		if ultraS.distance() < maxCanDist:
+			robot.stop()
+			canDist = ultraS.distance()
+			robot.turn(5)
+			robot.straight(canDist - 10)
+			if frontColor.reflection() < black or frontColor.reflection() == None:
+				robot.straight(-canDist + 10)
+				robot.turn(20)
+				robot.drive(0, 50)
+			else:
+				lifter.run_angle(200, 50)
+				claw.run_angle(200, 50)
+				robot.straight(-canDist + 10)
+				robot.turn((robot.angle() - startAngle) - startAngle + 140)
+				robot.straight(300)
+				lifter.run_angle(200, -50)
+				robot.straight(100)
+				claw.run_angle(200, -50)
+				robot.straight(-400)
 
-	turnStopDist = robot.angle() - 240
+	sys.exit()
+
 	
-	robot.drive(0, -60)
-
-	while robot.angle() >= turnStopDist:
-		while (ultraS.distance() > maxCanDist):
+def checkRescue():
+	testDidst = 50
+	robot.stop()
+	robot.straight(testDidst)
+	if lColor.reflection() < black and rColor.reflection() < black:
+		robot.drive(-10,0)
+		while lColor.reflection() < 99 or rColor.reflection() < 99:
+			pass
+		robot.stop
+		if lColor.reflection() > 99:
+			robot.drive(10,-90)
+		if rColor.reflection() > 99:
+			robot.drive(10,-90)
+		while lColor.reflection() > 99 and rColor.reflection() > 99:
 			pass
 		robot.stop()
-		canDist = ultraS.distance()
-		print("Can detected. Distance: " + str(canDist))
-
-		robot.turn(-15)
-		canDist = ultraS.distance()
-		robot.straight(canDist)
-		claw.run_angle(200, clawTurn)
-
-		if (frontColor.reflection() > 10):
-			ev3.speaker.beep()
-			robot.straight(-canDist)
-			break
-		else:
-			claw.run_angle(200, -clawTurn)
-			robot.straight(-canDist)
-	
-	robot.turn(startAngle - robot.angle())
-
-	robot.straight(blockDist)
-	claw2.run_angle(200,30)
-	claw.run_angle(200, -clawTurn)
-	robot.straight(-blockDist - 120)
-
-
-	#robot.stop()
-	robot.turn(150)
-
-	robot.drive(0, 75)
-	while lColor.reflection() > black:
-		pass
-
-	robot.stop()
-
-	robot.turn(-30)
-
-	robot.straight(20)
-
-	rescueComplete = 1
-	claw.run_angle(100, clawTurn)
-	claw.hold()
-	claw.run_angle(100, -100)
-
-	return timeSecs.process_time() + 50
-
-def checkRescue():
-	robot.stop()
-	robot.straight(50)
-	if lColor.reflection() < black and rColor.reflection() < black:
+		robot.straight(testDidst)
 		rescueTime = rescue()
 	else:
 		robot.straight(-50)
@@ -266,7 +253,7 @@ def initiate():
 def test():
 	#while True:
 	#	ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
-	claw2.run_angle(200,-50)
+	lifter.run_angle(200,-50)
 	wait(100000)
 
 #testThread = threading.Thread(target=test)
