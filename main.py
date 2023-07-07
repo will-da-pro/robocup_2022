@@ -151,7 +151,7 @@ def checkGreenCol():
 def rescue():
 	robot.stop()
 	wait(100)
-	claw.run_angle(100, -clawTurn)
+	claw.run_angle(10, -clawTurn)
 	print(robot.angle())
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
