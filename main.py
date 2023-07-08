@@ -42,9 +42,9 @@ towerDriveSpeed = 280 #140
 #colors
 silver = 90
 white = 50
-black = 25
+black = 30
 green1 = 12
-green2 = 20
+green2 = 25
 red = 65
 
 #other variables
@@ -52,6 +52,7 @@ rescueComplete = 0 #once completed rescue changes the variable to 1
 rescueBlockSize = 300
 lastTurn = None
 rescueTime = timeSecs.process_time()
+uTurn = 0
 
 #program
 
@@ -80,14 +81,15 @@ def isBlack(side):
 
 def doubleBlack(compensator):
 
+	robot.stop
 	wait(50)
-
+ 
 	diff = lColor.reflection() - rColor.reflection()
 
 	iteration = 0
  
-	if lColor.reflection() > green1 and lColor.reflection() < green2 and rColor.reflection() > green1 and rColor.reflection() < green2:
-		robot.drive(driveSpeed, 180)
+	uTurn = (lColor.reflection() + rColor.reflection())/2
+ 
 	while lColor.reflection() < black and rColor.reflection() < black:
 		robot.stop()
 		robot.straight(7.5)
@@ -102,8 +104,12 @@ def doubleBlack(compensator):
 		#			pass
 		#	whiteLine()
 
-		if diff <= compensator and diff >= -compensator:
-			pass
+		#if diff <= compensator and diff >= -compensator:
+		#	pass
+
+		if uTurn > green1 and uTurn < green2:
+			robot.turn(180)
+			robot.straight(10)
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
@@ -127,18 +133,27 @@ def doubleBlack(compensator):
 			pass
 
 def checkGreenCol():
-	if lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
-		#change this ig
-		robot.straight(-15)
-		rescueTime = rescue()
-	if(lColor.color() == Color.GREEN):
+	if lColor.color() == Color.GREEN or Color.BLUE and rColor.color() == Color.GREEN or Color.BLUE:
+		robot.straight(20)
+		print('2green')
+		if lColor.color() == Color.BLACK and rColor.color() == Color.BLACK:
+			robot.turn(180)
+   # move back to check silver??
+		elif lColor.color() == Color.GREEN or Color.BLUE and rColor.color() == Color.GREEN or Color.BLUE:
+			robot.turn(-15)
+			rescueTime = rescue()
+   
+		else:
+			pass
+
+	if(lColor.color() == Color.GREEN or Color.BLUE):
 		robot.turn(-15)
 		robot.drive(100, 0)
 		while rColor.reflection() < black:
 			pass
 		robot.stop()
 		robot.drive(0, -40)
-	elif(rColor.color() == Color.GREEN):
+	elif(rColor.color() == Color.GREEN or Color.BLUE):
 		robot.turn(15) #15 small 25 normal
 		robot.drive(100, 0)
 		while lColor.reflection() < black:
@@ -186,9 +201,9 @@ def rescue():
 
 	
 def checkRescue():
-	testDidst = 50
+	testDist = 50
 	robot.stop()
-	robot.straight(testDidst)
+	robot.straight(testDist)
 	if lColor.reflection() < black and rColor.reflection() < black:
 		robot.drive(-10,0)
 		while lColor.reflection() < 99 or rColor.reflection() < 99:
@@ -201,7 +216,7 @@ def checkRescue():
 		while lColor.reflection() > 99 and rColor.reflection() > 99:
 			pass
 		robot.stop()
-		robot.straight(testDidst)
+		robot.straight(testDist)
 		rescueTime = rescue()
 	else:
 		robot.straight(-50)
@@ -244,17 +259,16 @@ def move():
 
 def initiate():
 	#ev3.speaker.say("Close the claws")
-	#claw.run_until_stalled(100)
+	claw.run_until_stalled(50)
 	ev3.speaker.beep()
-	#ev3.speaker.play_file("rickroll.alsa")
 	#while len(ev3.buttons.pressed()) == 0:
 	#	pass
 	move()
 def test():
-	#while True:
-	#	ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
-	lifter.run_angle(200,-50)
-	wait(100000)
+	while True:
+		print(str(lColor.color()) + ", " + str(rColor.color()))
+	#lifter.run_angle(200,-50)
+	#wait(100000)
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
