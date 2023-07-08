@@ -170,21 +170,22 @@ def rescue():
  
 	wait(100)
 	robot.straight(200)
-	robot.turn(-140)
+	robot.turn(-160)
  
 	startAngle = robot.angle()
- 
+	driveSpeed = 60
+	turnDriveSpeed = 40
 	robot.drive(0, 50)
  
-	while robot.angle() - startAngle < 280:
+	while robot.angle() - startAngle < 300:
 		if ultraS.distance() < maxCanDist:
 			robot.stop()
 			canDist = ultraS.distance()
-			robot.turn(5)
+			robot.turn(10)
 			robot.straight(canDist - 10)
-			if frontColor.reflection() < black or frontColor.reflection() == None:
+			if frontColor.reflection() < 60 or frontColor.reflection() == None:
 				robot.straight(-canDist + 10)
-				robot.turn(20)
+				robot.turn(10)
 				robot.drive(0, 50)
 			else:
 				lifter.run_angle(200, 50)
@@ -196,6 +197,7 @@ def rescue():
 				robot.straight(100)
 				claw.run_angle(200, -50)
 				robot.straight(-400)
+				claw.run_angle(200, 50)
 
 	sys.exit()
 
