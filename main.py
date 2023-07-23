@@ -171,39 +171,51 @@ def rescue():
 	wait(100)
 	robot.straight(200)
 	robot.turn(-160)
+	claw.run_angle(-200, 50)
  
 	startAngle = robot.angle()
-	driveSpeed = 60
-	turnDriveSpeed = 40
-	robot.drive(0, 50)
+ 
+	robot.drive(0, 20)
  
 	while robot.angle() - startAngle < 300:
 		if ultraS.distance() < maxCanDist:
-			robot.stop()
+      
+			#startAngle2 = robot.angle()
 			canDist = ultraS.distance()
+			#endAngle = robot.angle()
+			robot.stop
+			#turnDistance = (startAngle2 - endAngle) / 2
 			robot.turn(10)
-			robot.straight(canDist - 10)
+			#robot.turn(turnDistance)
+			#angle = startAngle - robot.angle()
+   
+			robot.straight(canDist - 15)
+			robot.stop
+			wait(20)
+   
 			if frontColor.reflection() < 60 or frontColor.reflection() == None:
 				robot.straight(-canDist + 10)
 				robot.turn(10)
 				robot.drive(0, 50)
-			else:
+			elif frontColor.reflection() > 80:
 				lifter.run_angle(200, 50)
 				claw.run_angle(200, 50)
 				robot.straight(-canDist + 10)
-				robot.turn((robot.angle() - startAngle) - startAngle + 140)
+				robot.turn((robot.angle() - startAngle) + 140)
 				robot.straight(300)
 				lifter.run_angle(200, -50)
 				robot.straight(100)
 				claw.run_angle(200, -50)
 				robot.straight(-400)
 				claw.run_angle(200, 50)
+			else:
+				pass
 
 	sys.exit()
 
 	
 def checkRescue():
-	testDist = 50
+	testDist = 20
 	robot.stop()
 	robot.straight(testDist)
 	if lColor.reflection() < black and rColor.reflection() < black:
