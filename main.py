@@ -179,28 +179,22 @@ def rescue():
  
 	while robot.angle() - startAngle < 300:
 		if ultraS.distance() < maxCanDist:
-      
-			#startAngle2 = robot.angle()
 			canDist = ultraS.distance()
-			#endAngle = robot.angle()
-			robot.stop
-			#turnDistance = (startAngle2 - endAngle) / 2
-			robot.turn(10)
-			#robot.turn(turnDistance)
-			#angle = startAngle - robot.angle()
+			robot.stop()
+			robot.turn(10) #compensation
    
 			robot.straight(canDist - 15)
 			robot.stop
 			wait(20)
    
 			if frontColor.reflection() < 60 or frontColor.reflection() == None:
-				robot.straight(-canDist + 10)
-				robot.turn(10)
-				robot.drive(0, 50)
+				robot.straight(-(canDist - 10))#why 10
+				robot.turn(10)#change this if going forward again
+				robot.drive(0, 20)
 			elif frontColor.reflection() > 80:
+				claw.run(400)
 				lifter.run_angle(200, 50)
-				claw.run_angle(200, 50)
-				robot.straight(-canDist + 10)
+				robot.straight(-(canDist - 10))
 				robot.turn((robot.angle() - startAngle) + 140)
 				robot.straight(300)
 				lifter.run_angle(200, -50)
@@ -279,10 +273,10 @@ def initiate():
 	#	pass
 	move()
 def test():
-	while True:
-		print(str(lColor.color()) + ", " + str(rColor.color()))
-	#lifter.run_angle(200,-50)
-	#wait(100000)
+	claw.run(400)
+	lifter.run_angle(200, 50)
+
+
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
