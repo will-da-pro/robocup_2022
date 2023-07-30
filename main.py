@@ -209,7 +209,7 @@ def rescue():
 
 	
 def checkRescue():
-	testDist = 20
+	testDist = 200
 	robot.stop()
 	robot.straight(testDist)
 	if lColor.reflection() < black and rColor.reflection() < black:
