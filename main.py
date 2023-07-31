@@ -134,7 +134,7 @@ def doubleBlack(compensator):
 
 def checkGreenCol():
 	if lColor.color() == Color.GREEN or Color.BLUE and rColor.color() == Color.GREEN or Color.BLUE:
-		robot.straight(20)
+		robot.straight(30)
 		print('2green')
 		if lColor.color() == Color.BLACK and rColor.color() == Color.BLACK:
 			robot.turn(180)
@@ -182,34 +182,34 @@ def rescue():
 			canDist = ultraS.distance()
 			robot.stop()
 			robot.turn(10) #compensation
-   
+			lifter.run_angle(200,50)
 			robot.straight(canDist - 15)
 			robot.stop
 			wait(20)
    
-			if frontColor.reflection() < 60 or frontColor.reflection() == None:
+			if frontColor.reflection() < 10 or frontColor.reflection() == None:
 				robot.straight(-(canDist - 10))#why 10
 				robot.turn(10)#change this if going forward again
 				robot.drive(0, 20)
-			elif frontColor.reflection() > 80:
-				claw.run(400)
-				lifter.run_angle(200, 50)
-				robot.straight(-(canDist - 10))
+			else:
+				robot.straight(-50)
+				claw.run_angle(100,50)
+				lifter.run_angle(100, 150,wait=True)
+				#robot.straight(-(canDist - 10))
+				#robot.turn((robot.angle() - startAngle) + 140)
+				claw.run(100)
+				lifter.run_angle(100, -90)
+				robot.straight(-100)
 				robot.turn((robot.angle() - startAngle) + 140)
-				robot.straight(300)
-				lifter.run_angle(200, -50)
-				robot.straight(100)
+				robot.straight(150)
 				claw.run_angle(200, -50)
 				robot.straight(-400)
+				lifter.run_until_stalled(200)
+				lifter.run_angle(100,-90)
 				claw.run_angle(200, 50)
-			else:
-				pass
 
-	sys.exit()
-
-	
 def checkRescue():
-	testDist = 200
+	testDist = 30
 	robot.stop()
 	robot.straight(testDist)
 	if lColor.reflection() < black and rColor.reflection() < black:
@@ -267,19 +267,24 @@ def move():
 
 def initiate():
 	#ev3.speaker.say("Close the claws")
+	lifter.run_angle(100,-90)
 	claw.run_until_stalled(50)
+	claw. run_angle(100,50,wait=True)
 	ev3.speaker.beep()
 	#while len(ev3.buttons.pressed()) == 0:
 	#	pass
 	move()
 def test():
-	claw.run(400)
-	lifter.run_angle(200, 50)
+	lifter.run_angle(100,-20)
+	wait(5000)
+	claw.run(100)
+	lifter.run_angle(100,-90)
+	wait(1000)
 
 
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
 
-#test()
-initiate()
+test()
+#initiate()
