@@ -286,5 +286,5 @@ def test():
 #testThread = threading.Thread(target=test)
 #testThread.start()
 
-test()
-#initiate()
+#test()
+initiate()
