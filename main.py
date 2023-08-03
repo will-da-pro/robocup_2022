@@ -20,8 +20,8 @@ ev3 = EV3Brick()
 #sensors
 lColor = ColorSensor(Port.S4)
 rColor = ColorSensor(Port.S1)
-frontColor = ColorSensor(Port.S2)
-ultraS = UltrasonicSensor(Port.S3)
+frontColor = ColorSensor(Port.S3)
+ultraS = UltrasonicSensor(Port.S2)
 ultraSLimit = 100
 maxCanDist = 400
 rescueBlockDist = 300
@@ -151,8 +151,8 @@ def checkGreenCol():
 def rescue():
 	robot.stop()
 	wait(100)
-	claw.run_angle(100, -clawTurn)
-	claw2.run(20)
+	claw.run_angle(90, clawTurn)
+	claw2.run(-50)
 	print(robot.angle())
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
@@ -178,21 +178,21 @@ def rescue():
 
 		if (frontColor.reflection() > 10):
 			claw2.stop()
-			claw2.run_until_stalled(-10)
-			claw.run_angle(100, clawTurn)
+			claw2.run_until_stalled(100)
+			claw.run_angle(90, -clawTurn)
 			ev3.speaker.beep()
 			robot.straight(-canDist)
 			break
 		else:
-			claw.run_angle(200, -clawTurn)
 			robot.straight(-canDist)
 	
 	robot.turn(startAngle - robot.angle())
 
-	robot.straight(blockDist)
-	claw2.run_angle(200,30)
-	claw.run_angle(200, -clawTurn)
-	robot.straight(-blockDist - 120)
+	robot.straight(blockDist -250)
+	claw2.run_angle(200,-90)
+	robot.straight(100)
+	claw.run_angle(200, clawTurn)
+	robot.straight(-blockDist-100)
 
 
 	#robot.stop()
@@ -209,9 +209,6 @@ def rescue():
 	robot.straight(20)
 
 	rescueComplete = 1
-	claw.run_angle(100, clawTurn)
-	claw.hold()
-	claw.run_angle(100, -100)
 
 	return timeSecs.process_time() + 50
 
@@ -263,6 +260,8 @@ def initiate():
 	#ev3.speaker.say("Close the claws")
 	#claw.run_until_stalled(100)
 	ev3.speaker.beep()
+
+	claw2.run(-50)
 	#ev3.speaker.play_file("rickroll.alsa")
 	#while len(ev3.buttons.pressed()) == 0:
 	#	pass
