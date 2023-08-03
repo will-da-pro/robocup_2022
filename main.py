@@ -152,6 +152,7 @@ def rescue():
 	robot.stop()
 	wait(100)
 	claw.run_angle(100, -clawTurn)
+	claw2.run(20)
 	print(robot.angle())
 	#robot.turn(-(robot.angle() % 90))
 	startAngle = robot.angle()
@@ -166,6 +167,7 @@ def rescue():
 	while robot.angle() >= turnStopDist:
 		while (ultraS.distance() > maxCanDist):
 			pass
+
 		robot.stop()
 		canDist = ultraS.distance()
 		print("Can detected. Distance: " + str(canDist))
@@ -173,9 +175,11 @@ def rescue():
 		robot.turn(-15)
 		canDist = ultraS.distance()
 		robot.straight(canDist)
-		claw.run_angle(200, clawTurn)
 
 		if (frontColor.reflection() > 10):
+			claw2.stop()
+			claw2.run_until_stalled(-10)
+			claw.run_angle(100, clawTurn)
 			ev3.speaker.beep()
 			robot.straight(-canDist)
 			break
@@ -264,10 +268,9 @@ def initiate():
 	#	pass
 	move()
 def test():
-	#while True:
+	while True:
 	#	ev3.screen.print(str(lColor.color()) + ", " + str(rColor.color()))
-	claw2.run_angle(200,-50)
-	wait(100000)
+		claw2.run(200)
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
