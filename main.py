@@ -167,6 +167,7 @@ def rescue():
 	robot.stop()
  
 	maxCanDist = 300
+	blockDist = 250
  
 	wait(100)
 	robot.straight(200)
@@ -180,14 +181,37 @@ def rescue():
 	while robot.angle() - startAngle < 300:
 		if ultraS.distance() < maxCanDist:
 			canDist = ultraS.distance()
+
+			blockMax = 300
+			blockMin = 200
+			#check if orange
+			#while canDist < blockMax and canDist > blockMin and (robot.angle() - startAngle) < 130 and (robot.angle() - startAngle) > 170:
+			#	robot.drive(0,20)#change
+			#robot.stop()
+			#wait(10)
+
+			#finds center of can
+			robot.drive(0,20)
+			while canDist > maxCanDist:
+				pass
 			robot.stop()
-			robot.turn(10) #compensation
+			canRight = robot.angle()
+
+			robot.turn(-5)
+			robot.drive(0,-20)
+			while canDist > maxCanDist:
+				pass
+			robot.stop()
+			canLeft = robot.angle()
+			#calc center here
+			canCompensation = canRight - canLeft
+			robot.angle(canCompensation)
 			
 			robot.straight(canDist - 15)
 			robot.stop
 			wait(20)
    
-			if frontColor.reflection() < 3 or frontColor.reflection() == None:
+			if frontColor.reflection() > 30 or frontColor.reflection() < 1:
 				robot.straight(-(canDist - 10))
 				robot.turn(10)#change this if going forward again
 				robot.drive(0, 20)
@@ -269,6 +293,7 @@ def initiate():
 	#ev3.speaker.say("Close the claws")
 	lifter.run_angle(100,-90)
 	claw.run_until_stalled(50)
+	ev3.speaker.say("Close the claw you nons")
 	ev3.speaker.beep()
 	#while len(ev3.buttons.pressed()) == 0:
 	#	pass
