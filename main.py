@@ -205,7 +205,7 @@ def rescue():
 			canLeft = robot.angle()
 			#calc center here
 			canCompensation = canRight - canLeft
-			robot.angle(canCompensation)
+			robot.turn(canCompensation)
 			
 			robot.straight(canDist - 15)
 			robot.stop
@@ -224,7 +224,6 @@ def rescue():
 				lifter.run_angle(100, -50)
 				robot.straight(-100)
 				robot.turn(180-(robot.angle() - startAngle))
-				#STUFF IS GOOD UP TO HERE ANYTHING PAST HERE IS PRETTY MEH
 				robot.straight(150)
 				claw.run_angle(200, -50)
 				robot.straight(-400)
