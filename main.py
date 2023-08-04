@@ -196,6 +196,7 @@ def rescue():
 				pass
 			robot.stop()
 			canRight = robot.angle()
+			ev3.speaker.beep()
 
 			robot.turn(-5)
 			robot.drive(0,-20)
@@ -203,13 +204,15 @@ def rescue():
 				pass
 			robot.stop()
 			canLeft = robot.angle()
+			ev3.speaker.beep()
 			#calc center here
 			canCompensation = canRight - canLeft
 			robot.turn(canCompensation)
 			
 			robot.straight(canDist - 15)
-			robot.stop
-			wait(20)
+			ev3.speaker.beep()
+			robot.stop()
+			wait(200000000000000000000)
    
 			if frontColor.reflection() > 30 or frontColor.reflection() < 1:
 				robot.straight(-(canDist - 10))
@@ -310,5 +313,5 @@ def test():
 #testThread = threading.Thread(target=test)
 #testThread.start()
 
-#test()
-initiate()
+test()
+#initiate()
