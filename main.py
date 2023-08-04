@@ -192,23 +192,24 @@ def rescue():
 			#wait(10)
 
 			#finds center of can
-			wait(5000)
 			robot.drive(0,20)
 			while canDist > maxCanDist:
 				pass
 			robot.stop()
 			canRight = robot.angle()
 			ev3.speaker.beep()
-			wait(5000)
 
-			robot.turn(-15)
+			robot.drive(0,-20)
+			while canDist < maxCanDist: #turn untill sees can again
+				pass
+			robot.stop()
+
 			robot.drive(0,-20)
 			while canDist > maxCanDist:
 				pass
 			robot.stop()
 			canLeft = robot.angle()
 			ev3.speaker.beep()
-			wait(5000)
 			#calc center here
 			canCompensation = canRight - canLeft
 			robot.turn(canCompensation)
@@ -225,8 +226,10 @@ def rescue():
 			else:
 				robot.straight(-100)
 				lifter.run_angle(100,50,wait=True)
+				wait(1000)
 				robot.straight(50)
 				claw.run(100)
+				wait(1000)
 				wait(20)
 				lifter.run_angle(100, -50)
 				robot.straight(-100)
