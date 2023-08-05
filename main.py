@@ -182,6 +182,7 @@ def rescue():
 		if ultraS.distance() < maxCanDist:
 			canDist = ultraS.distance()
 			robot.stop()
+			wait(1000)
 
 			blockMax = 300
 			blockMin = 200
@@ -192,51 +193,54 @@ def rescue():
 			#wait(10)
 
 			#finds center of can
-			robot.drive(0,20)
-			while canDist > maxCanDist:
+			robot.drive(0,-20)
+			while ultraS.distance() < maxCanDist:
 				pass
 			robot.stop()
 			canRight = robot.angle()
 			ev3.speaker.beep()
 
-			robot.drive(0,-20)
-			while canDist < maxCanDist: #turn untill sees can again
+			robot.drive(0,20)
+			while ultraS.distance() > maxCanDist: #turn untill sees can again
 				pass
 			robot.stop()
 
-			robot.drive(0,-20)
-			while canDist > maxCanDist:
+			robot.drive(0,20)
+			while ultraS.distance() < maxCanDist:
 				pass
 			robot.stop()
 			canLeft = robot.angle()
 			ev3.speaker.beep()
 			#calc center here
 			canCompensation = canRight - canLeft
-			robot.turn(canCompensation)
+			print(canRight,canLeft,canCompensation)
+			robot.turn(canCompensation/2)
 			
-			robot.straight(canDist - 15)
+			robot.straight(canDist - 8)
 			ev3.speaker.beep()
 			robot.stop()
 			wait(20)
    
-			if frontColor.reflection() < 60:
+			if frontColor.reflection() < 5:
 				robot.straight(-(canDist - 10))
 				robot.turn(10)#change this if going forward again
 				robot.drive(0, 20)
 			else:
 				robot.straight(-100)
-				lifter.run_angle(100,50,wait=True)
-				wait(1000)
+				lifter.run_angle(100,90,wait=True)
+				wait(20)
 				robot.straight(50)
 				claw.run(100)
 				wait(1000)
-				wait(20)
-				lifter.run_angle(100, -50)
+				lifter.run_angle(100, -90)
 				robot.straight(-100)
-				robot.turn(180-(robot.angle() - startAngle))
-				robot.straight(150)
-				claw.run_angle(200, -50)
-				robot.straight(-400)
+				robot.turn(160-(robot.angle() - startAngle))
+				robot.straight(200)
+				lifter.run_angle(30,20)
+				wait(750)
+				claw.stop()
+				claw.run_angle(-100,50)
+				robot.straight(-500)
 				lifter.run_until_stalled(200)
 				lifter.run_angle(100,-90)
 				claw.run_angle(200, 50)
