@@ -171,12 +171,12 @@ def rescue():
  
 	wait(100)
 	robot.straight(200)
-	robot.turn(-160)
+	robot.turn(-40)
 	claw.run_angle(-200, 50)
  
 	startAngle = robot.angle()
  
-	robot.drive(0, 20)
+	robot.drive(0, -20)
  
 	while robot.angle() - startAngle < 300:
 		if ultraS.distance() < maxCanDist:
@@ -213,20 +213,20 @@ def rescue():
 			ev3.speaker.beep()
 			#calc center here
 			canCompensation = canRight - canLeft
-			print(canRight,canLeft,canCompensation)
+			print(canRight,canLeft,canCompensation,canDist)
 			robot.turn(canCompensation/2)
 			
-			robot.straight(canDist - 8)
+			robot.straight(canDist - 30)
 			ev3.speaker.beep()
 			robot.stop()
 			wait(20)
    
-			if frontColor.reflection() < 5:
+			if frontColor.reflection() < 2 or frontColor.color() == Color.RED:
 				robot.straight(-(canDist - 10))
-				robot.turn(10)#change this if going forward again
-				robot.drive(0, 20)
+				robot.turn(20)#change this if going forward again
+				robot.drive(0, -20)
 			else:
-				robot.straight(-100)
+				robot.straight(-75)
 				lifter.run_angle(100,90,wait=True)
 				wait(20)
 				robot.straight(50)
@@ -234,7 +234,7 @@ def rescue():
 				wait(1000)
 				lifter.run_angle(100, -90)
 				robot.straight(-100)
-				robot.turn(160-(robot.angle() - startAngle))
+				robot.turn(45-(robot.angle() - startAngle))
 				robot.straight(200)
 				lifter.run_angle(30,20)
 				wait(750)
