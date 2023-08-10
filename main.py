@@ -52,7 +52,7 @@ rescueComplete = 0 #once completed rescue changes the variable to 1
 rescueBlockSize = 300
 lastTurn = None
 rescueTime = timeSecs.process_time()
-uTurn = 0
+
 
 #program
 
@@ -107,9 +107,6 @@ def doubleBlack(compensator):
 		#if diff <= compensator and diff >= -compensator:
 		#	pass
 
-		if uTurn > green1 and uTurn < green2:
-			robot.turn(180)
-			robot.straight(10)
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
@@ -133,27 +130,28 @@ def doubleBlack(compensator):
 			pass
 
 def checkGreenCol():
-	if lColor.color() == Color.GREEN or Color.BLUE and rColor.color() == Color.GREEN or Color.BLUE:
+	if lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
 		robot.straight(30)
 		print('2green')
 		if lColor.color() == Color.BLACK and rColor.color() == Color.BLACK:
 			robot.turn(180)
+			print('180')
    # move back to check silver??
-		elif lColor.color() == Color.GREEN or Color.BLUE and rColor.color() == Color.GREEN or Color.BLUE:
+		elif lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
 			robot.turn(-15)
 			rescueTime = rescue()
    
 		else:
 			pass
 
-	if(lColor.color() == Color.GREEN or Color.BLUE):
+	if(lColor.color() == Color.GREEN):
 		robot.turn(-15)
 		robot.drive(100, 0)
 		while rColor.reflection() < black:
 			pass
 		robot.stop()
 		robot.drive(0, -40)
-	elif(rColor.color() == Color.GREEN or Color.BLUE):
+	elif(rColor.color() == Color.GREEN):
 		robot.turn(15) #15 small 25 normal
 		robot.drive(100, 0)
 		while lColor.reflection() < black:
@@ -171,7 +169,11 @@ def rescue():
  
 	wait(100)
 	robot.straight(200)
-	robot.turn(-40)
+	robot.drive(0,-100)
+	while ultraS.distance() < maxCanDist:
+		pass
+	robot.stop()
+	wait(50)
 	claw.run_angle(-200, 50)
  
 	startAngle = robot.angle()
@@ -234,7 +236,7 @@ def rescue():
 				wait(1000)
 				lifter.run_angle(100, -90)
 				robot.straight(-100)
-				robot.turn(45-(robot.angle() - startAngle))
+				robot.turn(55-(robot.angle() - startAngle))#helelellemfnseifsusiuhuhhue
 				robot.straight(200)
 				lifter.run_angle(30,20)
 				wait(750)
@@ -246,14 +248,14 @@ def rescue():
 				claw.run_angle(200, 50)
 
 def checkRescue():
-	testDist = 30
+	testDist = 50
 	robot.stop()
 	robot.straight(testDist)
 	if lColor.reflection() < black and rColor.reflection() < black:
 		robot.drive(-10,0)
 		while lColor.reflection() < 99 or rColor.reflection() < 99:
 			pass
-		robot.stop
+		robot.stop()
 		if lColor.reflection() > 99:
 			robot.drive(10,-90)
 		if rColor.reflection() > 99:
