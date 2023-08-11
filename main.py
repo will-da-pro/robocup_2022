@@ -220,30 +220,52 @@ def rescue():
 			print(canRight,canLeft,canCompensation,canDist)
 			robot.turn(canCompensation/2)
 			
-			robot.straight(canDist - 30)
+			robot.straight(canDist - 32)
 			ev3.speaker.beep()
 			robot.stop()
 			wait(20)
+
+			if frontColor.color() == Color.RED:
+				robot.straight(-(canDist - 30))
+				robot.turn(-20)#change this if going forward again
+				robot.drive(0, -20)
+				
 			robot.straight(-75)
+			lifter.run_angle(100,90,wait=True)
+			wait(20)
+			robot.straight(50)
+			claw.run_angle(100, 50)
+			wait(20)
+			claw.run_angle(-100, 50)
+			lifter.run_angle(-100,90,wait=True)
+			robot.straight(25) #forward to check colour
    
-			if frontColor.color() == Color.RED or frontColor.reflection() < 2:
+			if frontColor.color() == Color.RED:
 				robot.straight(-(canDist - 30))
 				robot.turn(-20)#change this if going forward again
 				robot.drive(0, -20)
 			else:
-				wait(1000)
-				lifter.run_angle(100, -90,wait=True)
-				robot.straight(-(canDist-55))
-				robot.turn((startAngle-robot.angle())%360)
-				robot.straight(blockDist)
-				lifter.run_angle(30,20)
-				wait(750)
-				claw.stop()
-				claw.run_angle(-100,50,wait=True)
-				robot.straight(-450)
-				lifter.run_until_stalled(200)
-				lifter.run_angle(100,-90)
-				claw.run_angle(200, 50,wait=True)
+				robot.straight(-20)
+				lifter.run_angle(100,90,wait=True)
+				wait(20)
+				claw.run(100)
+				wait(100)
+				if frontColor.reflection() < 2:
+					robot.straight(-canDist)
+					robot.turn(-20)#change this if going forward again
+					robot.drive(0, -20)
+				else:
+					robot.straight(-(canDist-55))
+					robot.turn((startAngle-robot.angle())%360)
+					robot.straight(blockDist)
+					lifter.run_angle(30,20)
+					wait(750)
+					claw.stop()
+					claw.run_angle(-100,50,wait=True)
+					robot.straight(-450)
+					lifter.run_until_stalled(200)
+					lifter.run_angle(100,-90)
+					claw.run_angle(200, 50,wait=True)
 
 def checkRescue():
 	testDist = 50
@@ -301,7 +323,7 @@ def startMessage():
 	ev3.speaker.say(helloMessages[rand])
 
 def initiate():
-	#startMessage()
+	startMessage()
 	lifter.run_angle(100,-90)
 	claw.run_until_stalled(50)
 	#ev3.speaker.say("Close the claw you nons")
