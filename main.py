@@ -34,7 +34,7 @@ lifter = Motor(Port.A)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = -90
 
-helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "Mike Oxlong", "Kimmy Head", "deez nuts are more reflective", "we may need to change some variables"]
+helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "Mike Oxlong", "Kimmy Head", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue"]
 
 #drive speed variables
 driveSpeed = 115 #115 normal  85 small
@@ -253,18 +253,18 @@ def rescue():
 					claw.run(100)
 					
 					wait(1000)
-					lifter.run_angle(100, -90)
+					lifter.run_angle(100, -90,wait=True)
 					robot.straight(-(canDist-55))
 					robot.turn((startAngle-robot.angle())%360)
 					robot.straight(blockDist)
 					lifter.run_angle(30,20)
 					wait(750)
 					claw.stop()
-					claw.run_angle(-100,50)
+					claw.run_angle(-100,50,wait=True)
 					robot.straight(-450)
 					lifter.run_until_stalled(200)
 					lifter.run_angle(100,-90)
-					claw.run_angle(200, 50)
+					claw.run_angle(200, 50,wait=True)
 
 def checkRescue():
 	testDist = 50
@@ -300,8 +300,8 @@ def move():
 				pass
 			else:
 				rescueTime = checkRescue()
-		#if (ultraS.distance() < ultraSLimit):
-		#	obstacle(ultraS.distance, turnDriveSpeed)
+		if (ultraS.distance() < ultraSLimit):
+			obstacle(ultraS.distance, turnDriveSpeed)
 		multiplier = 3 #2.5normal 4.7small
 		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
@@ -315,6 +315,8 @@ def move():
 
 
 def startMessage():
+	ev3.speaker.set_speech_options(voice="m7")
+	ev3.speaker.set_volume(100)
 	#Arguments should be 1 and the number of possible outcomes
 	rand = random.randint(0, len(helloMessages) - 1)
 	ev3.speaker.say(helloMessages[rand])
