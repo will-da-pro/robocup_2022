@@ -171,10 +171,13 @@ def rescue():
  
 	wait(100)
 	robot.straight(220)
-	robot.drive(0,-100)
-	while ultraS.distance() < maxCanDist:
-		pass
-	robot.stop()
+	if ultraS.distance() < maxCanDist:
+		robot.drive(0,-100)
+		while ultraS.distance() < maxCanDist:
+			pass
+		robot.stop()
+	else:
+		robot.turn(-30)
 	wait(50)
 	claw.run_angle(-200, 50)
  
@@ -325,7 +328,7 @@ def startMessage():
 	ev3.speaker.say(helloMessages[rand])
 
 def initiate():
-	startMessage()
+	#startMessage()
 	lifter.run_angle(100,-90)
 	claw.run_until_stalled(50)
 	#ev3.speaker.say("Close the claw you nons")
