@@ -171,13 +171,17 @@ def rescue():
  
 	wait(100)
 	robot.straight(220)
-	if ultraS.distance() < maxCanDist:
-		robot.drive(0,-100)
-		while ultraS.distance() < maxCanDist:
+	wait(100)
+	print(ultraS.distance())
+	if ultraS.distance() < maxCanDist+50:
+		robot.drive(0,-50)
+		while ultraS.distance() < maxCanDist+50:
 			pass
 		robot.stop()
 	else:
 		robot.turn(-30)
+		print("couldn't find block")
+	print(ultraS.distance())
 	wait(50)
 	claw.run_angle(-200, 50)
  
@@ -228,7 +232,7 @@ def rescue():
 			robot.stop()
 			wait(20)
 
-			if frontColor.color() == Color.RED:
+			if frontColor.color() == Color.RED or frontColor.reflection == 0:
 				robot.straight(-(canDist - 30))
 				robot.turn(-20)#change this if going forward again
 				robot.drive(0, -20)
@@ -237,41 +241,41 @@ def rescue():
 				lifter.run_angle(100,90,wait=True)
 				wait(20)
 				robot.straight(45)
-				claw.run_angle(100, 50) #centers it
+				claw.run_angle(100, 50) #centers it with claw
 				wait(20)
-				claw.run_angle(-100, 50)
+				claw.run_angle(-100, 50) #reopens claw
 				lifter.run_angle(-100,90,wait=True)
 				robot.straight(30) #forward to check colour
-	
-				if frontColor.color() == Color.RED:
-					robot.straight(-(canDist - 30))
+				if frontColor.reflection() < 2:
+					robot.straight(-canDist-5)
 					robot.turn(-20)#change this if going forward again
 					robot.drive(0, -20)
 				else:
-					robot.straight(-25)
+					robot.straight(-40)
 					lifter.run_angle(100,90,wait=True)
-					wait(20)
-					claw.run(100)
-					wait(100)
-					if frontColor.reflection() < 10:
-						claw.run_angle(10,50)
-						robot.straight(-canDist)
-						robot.turn(-20)#change this if going forward again
-						robot.drive(0, -20)
-					else:
-						lifter.run_angle(-100,90,wait=True)
-						robot.straight(-(canDist-55))
-						robot.turn((startAngle-robot.angle())%360+25)
-						robot.straight(blockDist)
-						lifter.run_angle(30,20)
-						wait(750)
-						claw.stop()
-						claw.run_angle(-100,50,wait=True)
-						robot.straight(-450)
-						lifter.run_until_stalled(200)
-						lifter.run_angle(100,-90)
-						claw.run_angle(200, 50,wait=True)
-
+					robot.straight(20) #might knock can over
+					claw.run(100) #grabs can
+					wait(500)
+					lifter.run_angle(100,-90,wait=True) #lifts can
+					robot.straight(-(canDist-55)) #back to middle
+					robot.turn((startAngle-robot.angle())%360+25) #face block
+					robot.straight(blockDist-25) #goto block
+					if frontColor.color() != Color.RED:
+						start = timeSecs.time()
+						while frontColor.color() != Color.RED:
+							robot.drive(0,40)
+							wait(5000)
+							robot.drive(0,40)
+						robot.stop()
+					lifter.run_angle(30,20) #lower lifter
+					wait(750)
+					claw.stop()
+					claw.run_angle(-100,50,wait=True) #drop can
+					robot.straight(-450)
+					lifter.run_until_stalled(200)
+					lifter.run_angle(100,-90)
+					claw.run_angle(200, 50,wait=True)
+				#
 def checkRescue():
 	testDist = 50
 	robot.stop()
