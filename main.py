@@ -274,7 +274,7 @@ def rescue():
 					robot.straight(-450)
 					lifter.run_until_stalled(200)
 					lifter.run_angle(100,-90)
-					claw.run_angle(200, 50,wait=True)
+					claw.run_angle(100, 50,wait=True)
 				#
 def checkRescue():
 	testDist = 50
@@ -332,7 +332,7 @@ def startMessage():
 	ev3.speaker.say(helloMessages[rand])
 
 def initiate():
-	#startMessage()
+	startMessage()
 	lifter.run_angle(100,-90)
 	claw.run_until_stalled(50)
 	#ev3.speaker.say("Close the claw you nons")
