@@ -165,6 +165,7 @@ def checkGreenCol():
 
 def rescue():
 	robot.stop()
+	startAngle = robot.angle()
  
 	maxCanDist = 300
 	blockDist = 270
@@ -185,7 +186,6 @@ def rescue():
 	wait(50)
 	claw.run_angle(-200, 50)
  
-	startAngle = robot.angle()
  
 	robot.drive(0, -20)
  
@@ -246,8 +246,8 @@ def rescue():
 				claw.run_angle(-100, 50) #reopens claw
 				lifter.run_angle(-100,90,wait=True)
 				robot.straight(30) #forward to check colour
-				if frontColor.reflection() < 2:
-					robot.straight(-canDist-5)
+				if frontColor.reflection() < 10:
+					robot.straight(-canDist+25)
 					robot.turn(-20)#change this if going forward again
 					robot.drive(0, -20)
 				else:
@@ -258,15 +258,9 @@ def rescue():
 					wait(500)
 					lifter.run_angle(100,-90,wait=True) #lifts can
 					robot.straight(-(canDist-55)) #back to middle
-					robot.turn((startAngle-robot.angle())%360+25) #face block
+					robot.turn((startAngle-robot.angle())) #face block
 					robot.straight(blockDist-25) #goto block
-					if frontColor.color() != Color.RED:
-						start = timeSecs.time()
-						while frontColor.color() != Color.RED:
-							robot.drive(0,40)
-							wait(5000)
-							robot.drive(0,40)
-						robot.stop()
+					
 					lifter.run_angle(30,20) #lower lifter
 					wait(750)
 					claw.stop()
