@@ -34,7 +34,7 @@ lifter = Motor(Port.A)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = -90
 
-helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "Mike Oxlong", "Kimmy Head", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue"]
+helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue"]
 
 #drive speed variables
 driveSpeed = 115 #115 normal  85 small
@@ -204,14 +204,16 @@ def rescue():
 			#wait(10)
 
 			#finds center of can
-			robot.drive(0,-20)
+			robot.turn(-20)
+
+			robot.drive(0,-10)
 			while ultraS.distance() < maxCanDist:
 				pass
 			robot.stop()
 			canRight = robot.angle()
 			ev3.speaker.beep()
 
-			robot.drive(0,20)
+			robot.drive(0,10)
 			while ultraS.distance() > maxCanDist: #turn untill sees can again
 				pass
 			robot.stop()
@@ -234,7 +236,7 @@ def rescue():
 
 			if frontColor.color() == Color.RED or frontColor.reflection == 0:
 				robot.straight(-(canDist - 30))
-				robot.turn(-20)#change this if going forward again
+				robot.turn(-30)#change this if going forward again
 				robot.drive(0, -20)
 			else:
 				robot.straight(-70)
@@ -248,7 +250,7 @@ def rescue():
 				robot.straight(30) #forward to check colour
 				if frontColor.reflection() < 10:
 					robot.straight(-canDist+25)
-					robot.turn(-20)#change this if going forward again
+					robot.turn(-30)#change this if going forward again
 					robot.drive(0, -20)
 				else:
 					robot.straight(-40)
@@ -265,11 +267,22 @@ def rescue():
 					wait(750)
 					claw.stop()
 					claw.run_angle(-100,50,wait=True) #drop can
-					robot.straight(-450)
+					robot.straight(-460)
 					lifter.run_until_stalled(200)
 					lifter.run_angle(100,-90)
-					claw.run_angle(100, 50,wait=True)
-				#
+					claw.run_angle(50, 50,wait=True)
+					
+					robot.turn(150)
+
+					robot.drive(0, 75)
+					while lColor.reflection() > black:
+						pass
+
+					robot.stop()
+					robot.turn(-30)
+					robot.straight(20)
+
+					return timeSecs.process_time() + 50
 def checkRescue():
 	testDist = 50
 	robot.stop()
