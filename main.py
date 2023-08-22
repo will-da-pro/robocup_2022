@@ -1,4 +1,7 @@
 #!/usr/bin/env pybricks-micropython
+import random
+import sys
+from timeit import repeat
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (TouchSensor, ColorSensor, InfraredSensor, UltrasonicSensor, GyroSensor, Motor)
 from pybricks.parameters import Port, Stop, Direction, Button, Color
@@ -6,61 +9,69 @@ from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 import time as timeSecs
-import random
-from math import sqrt, asin
+#from math import sqrt, asin
 import threading
 
-
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
-# Click "Open user guide" on the EV3 extension tab for more information.
 
-
-# Create your objects here.
+#objects
 ev3 = EV3Brick()
 
 #sensors
-lColor = ColorSensor(Port.S1)
-rColor = ColorSensor(Port.S4)
-ultraS = UltrasonicSensor(Port.S3)
-ultraSLimit = 50
+lColor = ColorSensor(Port.S4)
+rColor = ColorSensor(Port.S1)
+frontColor = ColorSensor(Port.S3)
+ultraS = UltrasonicSensor(Port.S2)
+ultraSLimit = 90
+maxCanDist = 400
 
 #motors
-lMotor = Motor(Port.A)
-rMotor = Motor(Port.D)
-claw = Motor(Port.B)
+lMotor = Motor(Port.C)
+rMotor = Motor(Port.B)
+claw = Motor(Port.D)
+lifter = Motor(Port.A)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
-clawTurn = 200
+clawTurn = -90
+
+helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "Uh Will what are you doing", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "JAMES GET OFF MINECRAFT", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue", "It's over 9000!", "hahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahaha that wasted a lot of time lol", "I AM DANTE. MY VOICE IS THUNDER. MY SPEECH IS LAW. MY SKIN IS TOUGHER THAN A THOUSAND ARMORS. I AM DANTE AND THE WORLD QUAKES BENEATH ME. YOU HAD A CHOICE AND YOU CHOSE DEATH. BEFORE YOUR END WITNESS MY FURY. I WILL TRANSFORM YOUR VILLAGE INTO DUST. STARTING WITH THE COMMUNITY CENTER. IT'S DOOM O'CLOCK. TIME TO REPENT. ORDER. SECURITY. FREEDOM. VALUES. JUSTICE. NO MORE BANK. NO MORE AUCTIONS. WORTHLESS. DISTRACTIONS. I AM DANTE. THE SAVIOR OF THE WORLD. YOU VOTED FOR ME MY SWEET CHILDS. BUT TECHNOBLADE CORRUPTED YOU. CAN'T YOU SEE? I AM BUILT DIFFERENT. PEACE ISN'T EARNED. PEACE IS TAKEN BY FORCE. I AM DANTE. I AM STRENGTH. THE COLOSSEUM WILL BE NO MORE. WATCH. THIS IS HOW AN ERA ENDS. DID YOU REALLY THINK YOU COULD WIN? I'M NOT DONE. I WILL NOW TAKE DOWN THIS USELESS WIZARD TOWER. I AM DANTE. THE WORLD WILL END.", "Dante best", "BeeMovieScriptAccordingtoallknownlawsofaviationthereisnowayabeeshouldbeabletoflyItswingsaretoosmalltogetitsfatlittlebodyoffthegroundThebeeofcoursefliesanywaybecausebeesdontcarewhathumansthinkisimpossibleYellowblackYellowblackYellowblackYellowblackOohblackandyellowLetsshakeitupalittleBarryBreakfastisreadyOomingHangonasecondHelloBarryAdamOanyoubelievethisishappeningIcantIllpickyouupLookingsharpUsethestairsYourfatherpaidgoodmoneyforthoseSorryImexcitedHeresthegraduateWereveryproudofyousonAperfectreportcardallBsVeryproudMaIgotathinggoinghereYougotlintonyourfuzzOwThatsmeWavetousWellbeinrow118000ByeBarryItoldyoustopflyinginthehouseHeyAdamHeyBarryIsthatfuzzgelAlittleSpecialdaygraduationNeverthoughtIdmakeitThreedaysgradeschoolthreedayshighschoolThosewereawkwardThreedayscollegeImgladItookadayandhitchhikedaroundthehiveYoudidcomebackdifferentHiBarryArtiegrowingamustacheLooksgoodHearaboutFrankieYeahYougoingtothefuneralNoImnotgoingEverybodyknowsstingsomeoneyoudieDontwasteitonasquirrelSuchahotheadIguesshecouldhavejustgottenoutofthewayIlovethisincorporatinganamusementparkintoourdayThatswhywedontneedvacationsBoyquiteabitofpompunderthecircumstancesWellAdamtodaywearemenWeareBeemenAmenHallelujahStudentsfacultydistinguishedbeespleasewelcomeDeanBuzzwellWelcomeNewHiveOitygraduatingclassof915ThatconcludesourceremoniesAndbeginsyourcareeratHonexIndustriesWillwepickourjobtodayIhearditsjustorientationHeadsupHerewegoKeepyourhandsandantennasinsidethetramatalltimesWonderwhatitllbelikeAlittlescaryWelcometoHonexadivisionofHonescoandapartoftheHexagonGroupThisisitWowWowWeknowthatyouasabeehaveworkedyourwholelifetogettothepointwhereyoucanworkforyourwholelifeHoneybeginswhenourvaliantPollenJocksbringthenectartothehiveOurtopsecretformulaisautomaticallycolorcorrectedscentadjustedandbubblecontouredintothissoothingsweetsyrupwithitsdistinctivegoldenglowyouknowasHoneyThatgirlwashotShesmycousinSheisYeswereallcousinsRightYourerightAtHonexweconstantlystrivetoimproveeveryaspectofbeeexistenceThesebeesarestresstestinganewhelmettechnologyWhatdoyouthinkhemakesNotenoughHerewehaveourlatestadvancementtheKrelmanWhatdoesthatdoOatchesthatlittlestrandofhoneythathangsafteryoupouritSavesusmillionsOananyoneworkontheKrelmanOfcourseMostbeejobsaresmallonesButbeesknowthateverysmalljobifitsdonewellmeansalotButchoosecarefullybecauseyoullstayinthejobyoupickfortherestofyourlifeThesamejobtherestofyourlifeIdidntknowthatWhatsthedifferenceYoullbehappytoknowthatbeesasaspecieshaventhadonedayoffin27millionyearsSoyoulljustworkustodeathWellsuretryWowThatblewmymindWhatsthedifferenceHowcanyousaythatOnejobforeverThatsaninsanechoicetohavetomakeImrelievedNowweonlyhavetomakeonedecisioninlifeButAdamhowcouldtheyneverhavetoldusthatWhywouldyouquestionanythingWerebeesWerethemostperfectlyfunctioningsocietyonEarthYoueverthinkmaybethingsworkalittletoowellhereLikewhatGivemeoneexampleIdontknowButyouknowwhatImtalkingaboutPleaseclearthegateRoyalNectarForceonapproachWaitasecondOheckitoutHeythosearePollenJocksWowIveneverseenthemthiscloseTheyknowwhatitslikeoutsidethehiveYeahbutsomedontcomebackHeyJocksHiJocksYouguysdidgreatYouremonstersYoureskyfreaksIloveitIloveitIwonderwheretheywereIdontknowTheirdaysnotplannedOutsidethehiveflyingwhoknowswheredoingwhoknowswhatYoucantjustdecidetobeaPollenJockYouhavetobebredforthatRightLookThatsmorepollenthanyouandIwillseeinalifetimeItsjustastatussymbolBeesmaketoomuchofitPerhapsUnlessyourewearingitandtheladiesseeyouwearingitThoseladiesArenttheyourcousinstooDistantDistantLookatthesetwoOoupleofHiveHarrysLetshavefunwiththemItmustbedangerousbeingaPollenJockYeahOnceabearpinnedmeagainstamushroomHehadapawonmythroatandwiththeotherhewasslappingmeOhmyIneverthoughtIdknockhimoutWhatwereyoudoingduringthisTryingtoalerttheauthoritiesIcanautographthatAlittlegustyouttheretodaywasntitcomradesYeahGustyWerehittingasunflowerpatchsixmilesfromheretomorrowSixmileshuhBarryApuddlejumpforusbutmaybeyourenotupforitMaybeIamYouarenotWeregoing0900atJGateWhatdoyouthinkbuzzyboyAreyoubeeenoughImightbeItalldependsonwhat0900meansHeyHonexDadyousurprisedmeYoudecidewhatyoureinterestedinWelltheresalotofchoicesButyouonlygetoneDoyouevergetboreddoingthesamejobeverydaySonletmetellyouaboutstirringYougrabthatstickandyoujustmoveitaroundandyoustiritaroundYougetyourselfintoarhythmItsabeautifulthingYouknowDadthemoreIthinkaboutitmaybethehoneyfieldjustisntrightformeYouwerethinkingofwhatmakingballoonanimalsThatsabadjobforaguywithastingerJanetyoursonsnotsurehewantstogointohoneyBarryyouaresofunnysometimesImnottryingtobefunnyYourenotfunnyYouregoingintohoneyOursonthestirrerYouregonnabeastirrerNooneslisteningtomeWaittillyouseethesticksIhaveIcouldsayanythingrightnowImgonnagetananttattooLetsopensomehoneyandcelebrateMaybeIllpiercemythoraxShavemyantennaeShackupwithagrasshopperGetagoldtoothandcalleverybodydawgImsoproudWerestartingworktodayTodaysthedayOomeonAllthegoodjobswillbegoneYeahrightPollencountingstuntbeepouringstirrerfrontdeskhairremovalIsitstillavailableHangonTwoleftOneofthemsyoursOongratulationsSteptothesideWhatdyougetPickingcrudoutStellarWowOoupleofnewbiesYessirOurfirstdayWearereadyMakeyourchoiceYouwanttogofirstNoyougoOhmyWhatsavailableRestroomattendantsopennotforthereasonyouthinkAnychanceofgettingtheKrelmanSureyoureonImsorrytheKrelmanjustclosedoutWaxmonkeysalwaysopenTheKrelmanopenedupagainWhathappenedAbeediedMakesanopeningSeeHesdeadAnotherdeadoneDeadyDeadifiedTwomoredeadDeadfromtheneckupDeadfromtheneckdownThatslifeOhthisissohardHeatingcoolingstuntbeepourerstirrerhumminginspectornumbersevenlintcoordinatorstripesupervisormitewranglerBarrywhatdoyouthinkIshouldBarryBarryAllrightwevegotthesunflowerpatchinquadrantnineWhathappenedtoyouWhereareyouImgoingoutOutOutwhereOutthereOhnoIhavetobeforeIgotoworkfortherestofmylifeYouregonnadieYourecrazyHelloAnothercallcominginIfanyonesfeelingbravetheresaKoreandelion83rdthatgetstheirrosestodayHeyguysLookatthatIsntthatthekidwesawyesterdayHolditsonflightdecksrestrictedItsOKLouWeregonnatakehimupReallyFeelingluckyareyouSignherehereJustinitialthatThankyouOKYougotarainadvisorytodayandasyouallknowbeescannotflyinrainSobecarefulAsalwayswatchyourbroomshockeysticksdogsbirdsbearsandbatsAlsoIgotacoupleofreportsofrootbeerbeingpouredonusMurphysinahomebecauseofitbabblinglikeacicadaThatsawfulAndareminderforyourookiesbeelawnumberoneabsolutelynotalkingtohumansAllrightlaunchpositionsBuzzbuzzbuzzbuzzBuzzbuzzbuzzbuzzBuzzbuzzbuzzbuzzBlackandyellowHelloYoureadyforthishotshotYeahYeahbringitonWindcheckAntennaecheckNectarpackcheckWingscheckStingercheckScaredoutofmyshortscheckOKladiesletsmoveitoutPoundthosepetuniasyoustripedstemsuckersAllofyoudrainthoseflowersWowImoutIcantbelieveImoutSoblueIfeelsofastandfreeBoxkiteWowFlowersThisisBlueLeaderWehaverosesvisualBringitaround30degreesandholdRoses30degreesrogerBringingitaroundStandtothesidekidItsgotabitofakickThatisonenectarcollectorEverseepollinationupcloseNosirIpickupsomepollenheresprinkleitoverhereMaybeadashoverthereapinchonthatoneSeethatItsalittlebitofmagicThatsamazingWhydowedothatThatspollenpowerMorepollenmoreflowersmorenectarmorehoneyforusOoolImpickingupalotofbrightyellowOouldbedaisiesDontweneedthoseOopythatvisualWaitOneoftheseflowersseemstobeonthemoveSayagainYourereportingamovingflowerAffirmativeThatwasonthelineThisisthecoolestWhatisitIdontknowbutImlovingthiscolorItsmellsgoodNotlikeaflowerbutIlikeitYeahfuzzyOhemicalyOarefulguysItsalittlegrabbyMysweetlordofbeesOandybraingetoffthereProblemGuysThiscouldb"]
 
 #drive speed variables
-driveSpeed = 75 #125 normal  75 small
+driveSpeed = 50 #115 normal   small
 turnDriveSpeed = 60
-towerDriveSpeed = 180
+towerDriveSpeed = 280 #140
 
 #colors
 silver = 90
 white = 50
-black = 20
+black = 30
 green1 = 12
-green2 = 20
-#other variables
-#once completed rescue changes the variable to 1
-rescueComplete = 0
-lastTurn = None
-ev3.speaker.set_volume(50000)
+green2 = 25
+red = 65
 
-# Write your program here.
+#other variables
+rescueComplete = 0 #once completed rescue changes the variable to 1
+rescueBlockSize = 300
+lastTurn = None
+rescueTime = timeSecs.process_time()
+
+
+#program
 
 #Runs if an obstacle is detected
 def obstacle(distance, speed):
 	robot.stop()
-	robot.straight(-40)
+	robot.straight(-10)
 	robot.turn(-80)
-	robot.drive(towerDriveSpeed, 58)	
-	wait(30)
+	robot.drive(towerDriveSpeed, 75) #37.5	
+	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
+	robot.drive(-50, 0)
+	while lColor.reflection() > black and rColor.reflection() > black:
+		pass
+	robot.stop()
 	robot.turn(-50)
-	robot.straight(10)
+	robot.straight(20)
 	robot.turn(-20)
 			
 def isBlack(side):
@@ -69,137 +80,348 @@ def isBlack(side):
 	else:
 		return False
 
-def rescue():
+def doubleWhite():
+	robot.stop
+	wait(50)
+ 
+	diff = lColor.reflection() - rColor.reflection()
+
+	iteration = 0
+ 
+	uTurn = (lColor.reflection() + rColor.reflection())/2
+ 
+	while lColor.reflection() < black and rColor.reflection() < black:
+		robot.stop()
+		robot.straight(7.5)
+
+		iteration += 1
+		if iteration >= 2:
+			checkGreenCol()
+			if iteration >= 10:
+				robot.drive(10000000, 0)
+				while True:
+					pass
+			move()
+
+def WhiteLine():
 	robot.stop()
-	wait(100)
-	print(robot.angle())
-	print(-(robot.angle() % 90))
-	#robot.turn(-(robot.angle() % 90))
-	startAngle = robot.angle()
-	robot.straight(170)
-	robot.turn(120)
-	robot.drive(0, -40)
 	ev3.speaker.beep()
-
-	while ultraS.distance() > 500:
-		pass
-
-	startAngle2 = robot.angle()
-	endAngle = robot.angle()
-	robot.stop()
-	turnDistance = (startAngle2 - endAngle) / 2
-	robot.turn(turnDistance) 
-	#gets distance of capsule from robot
-	distance = ultraS.distance()
-	robot.turn(-15)
-	#to compensate for distance errors
-	#sin = 32.5/distance
-	#turnDistance = asin(sin) * 100 * distance/200
-	#print("[" + str(timeSecs.time()) + "]: Turn distance is " + turnDistance)
-	#gets the angle that the robot is turned compared to the starting angle
-	angle = startAngle - robot.angle()
-	#moves by the distance of the can
-	robot.straight(distance * 1/4)
-	robot.stop()
-	accDistance = ultraS.distance()
-	robot.straight(accDistance)
-	#closes the claw
-	claw.run_angle(400, clawTurn)
-
-	canDist = robot.distance()
-	robot.drive(100, 0)
-	while lColor.reflection() <= 30 and rColor.reflection() <= 30:
-		pass
-
-	robot.stop()
-
-	claw.run_angle(400, -clawTurn)
-
-	robot.straight(canDist - robot.distance())
-
-	#goes back the distance of the can
-	robot.straight(-(distance*1/4 + accDistance))
-	robot.turn(angle - turnDistance)
-	robot.straight(-180)
-	robot.drive(0, 50)
-	while lColor.reflection() > black:
-		pass
-
-	robot.stop()
-
-	rescueComplete = 1
-			
-#Handles all movement
-def move():
 	while True:
+		compensator = 2 #Amount to multiply output by
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
-		if lColor.reflection() > 95 or rColor.reflection() > 98:
-			if rescueComplete == 1:
+		
+		multiplier = 4.2 #2.5normal 4.2small
+		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
+		if not leftIsBlack and not rightIsBlack:
+				doubleWhite(compensator)
+		#Uncomment for redline
+		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
+		#	redLine()
+		#	pass
+		output = -int(multiplier * diff) #gets degrees to turn by
+		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
+
+def doubleBlack(compensator):
+
+	robot.stop
+	wait(50)
+ 
+	diff = lColor.reflection() - rColor.reflection()
+
+	iteration = 0
+ 
+	uTurn = (lColor.reflection() + rColor.reflection())/2
+ 
+	while lColor.reflection() < black and rColor.reflection() < black:
+		robot.stop()
+		robot.straight(7.5)
+
+		#Uncomment for white line
+		iteration += 1
+		if iteration >= 2:
+			checkGreenCol()
+			if iteration >= 10:
+				robot.drive(10000000, 0)
+				while True:
+					pass
+			whiteLine()
+
+		if diff <= compensator and diff >= -compensator:
+			pass
+
+
+		# Right turn
+		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+			robot.turn(10) #10 small 15 normal
+			robot.drive(100, 0)
+			while lColor.reflection() < black:
+				pass
+			robot.stop()
+			robot.drive(0, 40)
+
+		# Left turn
+		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+			robot.turn(-10) #10 small 15 normal??
+			robot.drive(100, 0)
+			while rColor.reflection() < black:
+				pass
+			robot.stop()
+			robot.drive(0, -40)
+
+		else:
+			pass
+
+def checkGreenCol():
+	if lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
+		robot.straight(30)
+		print('2green')
+		if lColor.color() == Color.BLACK and rColor.color() == Color.BLACK:
+			robot.turn(180)
+			print('180')
+   # move back to check silver??
+		elif lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
+			robot.turn(-15)
+			rescueTime = rescue()
+   
+		else:
+			pass
+
+	if(lColor.color() == Color.GREEN):
+		robot.turn(-15) #15 small 25 normal??
+		robot.drive(100, 0)
+		while rColor.reflection() < black:
+			pass
+		robot.stop()
+		robot.drive(0, -40)
+	elif(rColor.color() == Color.GREEN):
+		robot.turn(15) #15 small 25 normal
+		robot.drive(100, 0)
+		while lColor.reflection() < black:
+			pass
+		robot.stop()
+		robot.drive(0, 40)
+	else:
+		return
+	
+def centerRescue():
+	robot.drive(-25, 0)
+	while lColor.reflection() >= 99 or rColor.reflection() >= 99:
+		pass
+	robot.stop()
+
+	while lColor.reflection() < 99 or rColor.reflection() < 99:
+		if lColor.reflection() < 99 and rColor.reflection() < 99:
+			robot.drive(25, 0)
+		elif lColor.reflection() < 99:
+			robot.drive(0, 25)
+		else:
+			robot.drive(0,-25)
+
+
+
+def rescue():
+	robot.stop()
+
+	centerRescue()
+
+	startAngle = robot.angle()
+ 
+	maxCanDist = 300
+	blockDist = 270
+ 
+	wait(100)
+	robot.straight(220)
+	wait(100)
+	robot.turn(-30)
+	#print(ultraS.distance())
+	#if ultraS.distance() < maxCanDist+50:
+	#	robot.drive(0,-50)
+	#	while ultraS.distance() < maxCanDist+50:
+	#		pass
+	#	robot.stop()
+	#else:
+	#	robot.turn(-30)
+	#	print("couldn't find block")
+	#print(ultraS.distance())
+	wait(50)
+	claw.run_angle(-200, 50)
+ 
+ 
+	robot.drive(0, -20)
+ 
+	while robot.angle() - startAngle < 300:
+		if ultraS.distance() < maxCanDist:
+			canDist = ultraS.distance()
+			robot.stop()
+			wait(1000)
+
+			blockMax = 300
+			blockMin = 200
+			#check if orange
+			#while canDist < blockMax and canDist > blockMin and (robot.angle() - startAngle) < 130 and (robot.angle() - startAngle) > 170:
+			#	robot.drive(0,20)#change
+			#robot.stop()
+			#wait(10)
+
+			#finds center of can
+			robot.turn(-20)
+
+			robot.drive(0,-5)#small turn
+			while ultraS.distance() < maxCanDist:
+				pass
+			robot.stop()
+			canRight = robot.angle()
+			ev3.speaker.beep()
+
+			robot.drive(0,10)
+			while ultraS.distance() > maxCanDist: #turn untill sees can again
+				pass
+			robot.stop()
+
+			robot.drive(0,20)
+			while ultraS.distance() < maxCanDist:
+				pass
+			robot.stop()
+			canLeft = robot.angle()
+			ev3.speaker.beep()
+			#calc center here
+			canCompensation = canRight - canLeft
+			print(canRight,canLeft,canCompensation,canDist)
+			robot.turn(canCompensation/2)
+			
+			robot.straight(canDist - 30)
+			ev3.speaker.beep()
+			robot.stop()
+			wait(20)
+
+			if frontColor.color() == Color.RED or frontColor.reflection == 0:
+				robot.straight(-(canDist - 30))
+				robot.turn(-30)#change this if going forward again
+				robot.drive(0, -20)
+			else:
+				robot.straight(-70)
+				lifter.run_angle(100,90,wait=True)
+				wait(20)
+				robot.straight(45)
+				claw.run_angle(100, 50) #centers it with claw
+				wait(20)
+				claw.run_angle(-100, 50) #reopens claw
+				lifter.run_angle(-100,90,wait=True)
+				robot.straight(30) #forward to check colour
+				if frontColor.reflection() < 10:
+					robot.straight(-canDist+25)
+					robot.turn(-30)#change this if going forward again
+					robot.drive(0, -20)
+				else:
+					robot.straight(-40)
+					lifter.run_angle(100,90,wait=True)
+					robot.straight(20) #might knock can over
+					claw.run(100) #grabs can
+					wait(500)
+					lifter.run_angle(100,-90,wait=True) #lifts can
+					robot.straight(-(canDist-55)) #back to middle
+					robot.turn((startAngle-robot.angle())) #face block
+					robot.straight(blockDist-25) #goto block
+					
+					lifter.run_angle(30,20) #lower lifter
+					wait(750)
+					claw.stop()
+					claw.run_angle(-100,50,wait=True) #drop can
+					robot.straight(-460)
+					lifter.run_until_stalled(200)
+					lifter.run_angle(100,-90)
+					claw.run_angle(50, 50,wait=True)
+					
+					robot.turn(150)
+
+					robot.drive(0, 75)
+					while lColor.reflection() > black:
+						pass
+
+					robot.stop()
+					robot.turn(-30)
+					robot.straight(20)
+
+					return timeSecs.process_time() + 50
+def checkRescue():
+	testDist = 50
+	robot.stop()
+	robot.straight(testDist)
+	if lColor.reflection() < black and rColor.reflection() < black:
+		robot.drive(-10,0)
+		robot.straight(-testDist)
+		rescueTime = rescue()
+	else:
+		robot.straight(-50)
+		rescueTime = timeSecs.process_time() + 0.1
+	return rescueTime
+
+def redLine():
+	robot.stop()
+	wait(300)
+	robot.straight(5)
+	if (lColor.color() == Color.RED or rColor.color() == Color.RED):
+		sys.exit()
+
+#Handles all movement
+def move():
+	robot.stop()
+	rescueTime = timeSecs.process_time()
+	ev3.speaker.beep()
+	while True:
+		compensator = 2 #Amount to multiply output by
+		leftIsBlack = isBlack(lColor)
+		rightIsBlack = isBlack(rColor)
+		if lColor.reflection() > 99 or rColor.reflection() > 99:
+			if timeSecs.process_time() < rescueTime:
 				pass
 			else:
-				rescue()
+				rescueTime = checkRescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		#Amount to multiply output by
-		compensator = 2
-		multiplier = 3 #2.5 normal  2.8 small
-		
-		#finds the difference between the reflections
-		error = lColor.reflection() - rColor.reflection()
+		multiplier = 4.2 #2.5normal 4.2small
+		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
-			#TODO: White lines
-			robot.stop()
-			robot.straight(10)
+				doubleBlack(compensator)
+		#Uncomment for redline
+		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
+		#	redLine()
+		#	pass
+		output = int(multiplier * diff) #gets degrees to turn by
+		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
-			error = lColor.reflection() - rColor.reflection()
-			
-			if error <= compensator and error >= -compensator:
-				robot.drive(driveSpeed, 0)
-			#	print (lastTurn)
-			#	if lastTurn == 0:
-			#		error = -1000
-			#	else:
-			#		error = 1000
 
-			elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-				robot.turn(30)
-				robot.straight(60)
-				robot.drive(0, 40)
-				#while lColor.reflection() > black:
-				#	pass
-				#robot.stop()
-				#robot.turn(-20)
-			elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-				robot.turn(-30)
-				robot.straight(60)
-				robot.drive(0, -40)
-				#while rColor.reflection() > black:
-				#	pass
-				#robot.stop()
-				#robot.turn(20)
-			else:
-				robot.drive(turnDriveSpeed, 0)
-		#gets degrees to turn by
-		output = int(multiplier * error)
+def startMessage():
+	ev3.speaker.set_speech_options(voice="m7")
+	ev3.speaker.set_volume(10000)
+	#Arguments should be 1 and the number of possible outcomes
+	rand = random.randint(0, len(helloMessages) - 1)
+	ev3.speaker.say(helloMessages[rand])
 
-		if error <= compensator and error >= -compensator:
-			error = 0
+def initiate():
+	startMessage()
+	lifter.run_angle(100,-90)
+	claw.run_until_stalled(50)
+	#ev3.speaker.say("Close the claw you nons")
+	ev3.speaker.beep()
+	#while len(ev3.buttons.pressed()) == 0:
+	#	pass
+	move()
 
-		if output < 0:
-			lastTurn = 0
-		else:
-			lastTurn = 1
-		#output may need to be limited to within -180, 180
-		robot.drive(driveSpeed, output)
 
 def test():
-	while True:
-		ev3.speaker.beep(ultraS.distance(), 1)
-		ev3.screen.print(ultraS.distance())
-		#ev3.screen.print(str(lColor.reflection()) + ", " + str(rColor.reflection()))
+	lifter.run_angle(100,-20)#up
+	wait(5000)
+	claw.run(100)#close
+	wait(3000)
+	lifter.run_angle(100,-70)#up more
+	wait(1000)
+
+
 
 #testThread = threading.Thread(target=test)
 #testThread.start()
-move()
+
 #test()
+initiate()
