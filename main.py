@@ -24,6 +24,7 @@ frontColor = ColorSensor(Port.S3)
 ultraS = UltrasonicSensor(Port.S2)
 ultraSLimit = 90
 maxCanDist = 400
+rescueBlockDist = 300
 
 #motors
 lMotor = Motor(Port.C)
