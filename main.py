@@ -37,7 +37,7 @@ clawTurn = -90
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "Uh Will what are you doing", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "JAMES GET OFF MINECRAFT", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue", "It's over 9000!", "hahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahaha that wasted a lot of time lol"]
 
 #drive speed variables
-driveSpeed = 115 #115 normal  85 small
+driveSpeed = 50 #115 normal  85 small
 turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
 
@@ -112,7 +112,7 @@ def doubleBlack(compensator):
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(15) #10 small 15 normal
+			robot.turn(10) #10 small 15 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -121,7 +121,7 @@ def doubleBlack(compensator):
 
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(-15)
+			robot.turn(-10) #10 small 15 normal??
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -147,7 +147,7 @@ def checkGreenCol():
 			pass
 
 	if(lColor.color() == Color.GREEN):
-		robot.turn(-15)
+		robot.turn(-15) #15 small 25 normal??
 		robot.drive(100, 0)
 		while rColor.reflection() < black:
 			pass
@@ -339,7 +339,7 @@ def move():
 				rescueTime = checkRescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 4.7 #2.5normal 4.7small
+		multiplier = 4.2 #2.5normal 4.2small
 		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 				doubleBlack(compensator)
