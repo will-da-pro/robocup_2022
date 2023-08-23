@@ -4,5 +4,6 @@
 	"debug.openDebug": "neverOpen",
 	"python.linting.enabled": false,
 	"python.languageServer": "Pylance",
-	"python.formatting.provider": "black"
+	"python.formatting.provider": "black",
+	"python.analysis.typeCheckingMode": "basic"
 }
