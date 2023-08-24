@@ -41,7 +41,8 @@ driveSpeed = 120 #115 normal 50  small with hills
 turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
 driveTurnSpeed = 40 
-turnLimit = 110
+speedLimit = 110
+rangeLimit = 90
 
 #colors
 silver = 90
@@ -259,7 +260,7 @@ def rescue():
 	claw.run_angle(-200, 50)
  
  
-	robot.drive(0, -50)
+	robot.drive(0, -60)
  
 	while robot.angle() - startAngle < 300:
 		if ultraS.distance() < maxCanDist:
@@ -315,9 +316,9 @@ def rescue():
 				lifter.run_angle(100,90,wait=True)
 				wait(20)
 				robot.straight(45)
-				claw.run_angle(80, 50) #centers it with claw
+				claw.run_angle(75, 50) #centers it with claw
 				wait(20)
-				claw.run_angle(-80, 50) #reopens claw
+				claw.run_angle(-75, 50) #reopens claw
 				lifter.run_angle(-100,90,wait=True)
 				robot.straight(30) #forward to check colour
 				if frontColor.reflection() < 10:
@@ -326,11 +327,11 @@ def rescue():
 					robot.drive(0, -20)
 				else:
 					robot.straight(-40)
-					lifter.run_angle(100,90,wait=True)
+					lifter.run_angle(95,90,wait=True)
 					robot.straight(20) #might knock can over
 					claw.run(100) #grabs can
 					wait(500)
-					lifter.run_angle(100,-90,wait=True) #lifts can
+					lifter.run_angle(95,-90,wait=True) #lifts can
 					robot.straight(-(canDist-55)) #back to middle
 					robot.turn((startAngle-robot.angle())) #face block
 					robot.straight(blockDist-20) #goto block
@@ -408,15 +409,17 @@ def move(cal):
 		output2 = output
 		print(output)
 
-		if output > turnLimit:
-			output2 = turnLimit
-		elif output < -turnLimit:
-			output2= -turnLimit
+		if output > rangeLimit:
+			output2 = speedLimit - 60
+		elif output < -rangeLimit:
+			output2 = -speedLimit + 60
+		else:
+			pass
 
 		if output > 0:
-			driveTurnSpeed = turnLimit - output2
+			driveTurnSpeed = speedLimit - output2
 		else:
-			driveTurnSpeed = turnLimit + output2
+			driveTurnSpeed = speedLimit + output2
 		robot.drive(driveTurnSpeed, output)
 
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
