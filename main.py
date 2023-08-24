@@ -34,12 +34,14 @@ lifter = Motor(Port.A)
 robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
 clawTurn = -90
 
-helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "Uh Will what are you doing", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "JAMES GET OFF MINECRAFT", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue", "It's over 9000!", "hahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahaha that wasted a lot of time lol", "I AM DANTE. MY VOICE IS THUNDER. MY SPEECH IS LAW. MY SKIN IS TOUGHER THAN A THOUSAND ARMORS. I AM DANTE AND THE WORLD QUAKES BENEATH ME. YOU HAD A CHOICE AND YOU CHOSE DEATH. BEFORE YOUR END WITNESS MY FURY. I WILL TRANSFORM YOUR VILLAGE INTO DUST. STARTING WITH THE COMMUNITY CENTER. IT'S DOOM O'CLOCK. TIME TO REPENT. ORDER. SECURITY. FREEDOM. VALUES. JUSTICE. NO MORE BANK. NO MORE AUCTIONS. WORTHLESS. DISTRACTIONS. I AM DANTE. THE SAVIOR OF THE WORLD. YOU VOTED FOR ME MY SWEET CHILDS. BUT TECHNOBLADE CORRUPTED YOU. CAN'T YOU SEE? I AM BUILT DIFFERENT. PEACE ISN'T EARNED. PEACE IS TAKEN BY FORCE. I AM DANTE. I AM STRENGTH. THE COLOSSEUM WILL BE NO MORE. WATCH. THIS IS HOW AN ERA ENDS. DID YOU REALLY THINK YOU COULD WIN? I'M NOT DONE. I WILL NOW TAKE DOWN THIS USELESS WIZARD TOWER. I AM DANTE. THE WORLD WILL END.", "Dante best"]
+helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "Uh Will what are you doing", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "JAMES GET OFF MINECRAFT", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue", "It's over 9000!", "Dante best"]
 
 #drive speed variables
-driveSpeed = 50 #115 normal  85 small
+driveSpeed = 120 #115 normal 50  small with hills
 turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
+driveTurnSpeed = 40 
+turnLimit = 110
 
 #colors
 silver = 90
@@ -54,6 +56,7 @@ rescueComplete = 0 #once completed rescue changes the variable to 1
 rescueBlockSize = 300
 lastTurn = None
 rescueTime = timeSecs.process_time()
+output2 = 0
 
 
 #program
@@ -81,7 +84,56 @@ def isBlack(side):
 	else:
 		return False
 
-def doubleBlack(compensator):
+def doubleWhite(cal):
+	robot.stop
+	wait(50)
+ 
+	diff = lColor.reflection() - rColor.reflection()
+
+	iteration = 0
+ 
+	uTurn = (lColor.reflection() + rColor.reflection())/2
+ 
+	while lColor.reflection() > black and rColor.reflection() > black:
+		robot.stop()
+		robot.straight(7.5)
+
+		iteration += 1
+		if iteration >= 2:
+			checkGreenCol()
+			if iteration >= 10:
+				robot.drive(10000000, 0)
+				while True:
+					pass
+			move(cal)
+
+def whiteLine(cal):
+	robot.stop()
+	ev3.speaker.beep()
+	while True:
+		compensator = 2 #Amount to multiply output by
+		leftIsBlack = isBlack(lColor)
+		rightIsBlack = isBlack(rColor)
+		
+		multiplier = 4.2 #2.5normal 4.2small
+		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
+		if not leftIsBlack and not rightIsBlack:
+				doubleWhite(cal)
+		#Uncomment for redline
+		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
+		#	redLine()
+		#	pass
+		output = -int(multiplier * diff) #gets degrees to turn by
+
+		print(output)
+
+		if output > -20 and output < 20:
+			robot.drive(driveSpeed, output)
+		else:
+			robot.drive(driveTurnSpeed, output)
+		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
+
+def doubleBlack(compensator, cal):
 
 	robot.stop
 	wait(50)
@@ -100,14 +152,14 @@ def doubleBlack(compensator):
 		iteration += 1
 		if iteration >= 2:
 			checkGreenCol()
-		#	if iteration >= 10:
-		#		robot.drive(10000000, 0)
-		#		while True:
-		#			pass
-		#	whiteLine()
+			if iteration >= 10:
+				robot.drive(10000000, 0)
+				while True:
+					pass
+			whiteLine(cal)
 
-		#if diff <= compensator and diff >= -compensator:
-		#	pass
+		if diff <= compensator and diff >= -compensator:
+			pass
 
 
 		# Right turn
@@ -207,7 +259,7 @@ def rescue():
 	claw.run_angle(-200, 50)
  
  
-	robot.drive(0, -20)
+	robot.drive(0, -50)
  
 	while robot.angle() - startAngle < 300:
 		if ultraS.distance() < maxCanDist:
@@ -233,7 +285,7 @@ def rescue():
 			canRight = robot.angle()
 			ev3.speaker.beep()
 
-			robot.drive(0,10)
+			robot.drive(0,15)
 			while ultraS.distance() > maxCanDist: #turn untill sees can again
 				pass
 			robot.stop()
@@ -256,21 +308,21 @@ def rescue():
 
 			if frontColor.color() == Color.RED or frontColor.reflection == 0:
 				robot.straight(-(canDist - 30))
-				robot.turn(-30)#change this if going forward again
+				robot.turn(-40)#change this if going forward again
 				robot.drive(0, -20)
 			else:
 				robot.straight(-70)
 				lifter.run_angle(100,90,wait=True)
 				wait(20)
 				robot.straight(45)
-				claw.run_angle(100, 50) #centers it with claw
+				claw.run_angle(80, 50) #centers it with claw
 				wait(20)
-				claw.run_angle(-100, 50) #reopens claw
+				claw.run_angle(-80, 50) #reopens claw
 				lifter.run_angle(-100,90,wait=True)
 				robot.straight(30) #forward to check colour
 				if frontColor.reflection() < 10:
 					robot.straight(-canDist+25)
-					robot.turn(-30)#change this if going forward again
+					robot.turn(-40)#change this if going forward again
 					robot.drive(0, -20)
 				else:
 					robot.straight(-40)
@@ -281,8 +333,13 @@ def rescue():
 					lifter.run_angle(100,-90,wait=True) #lifts can
 					robot.straight(-(canDist-55)) #back to middle
 					robot.turn((startAngle-robot.angle())) #face block
-					robot.straight(blockDist-25) #goto block
+					robot.straight(blockDist-20) #goto block
 					
+					if frontColor.color() != Color.RED:
+						while frontColor.color() != Color.RED:
+							robot.drive(0,-20)
+						robot.stop()
+
 					lifter.run_angle(30,20) #lower lifter
 					wait(750)
 					claw.stop()
@@ -324,7 +381,7 @@ def redLine():
 		sys.exit()
 
 #Handles all movement
-def move():
+def move(cal):
 	robot.stop()
 	rescueTime = timeSecs.process_time()
 	ev3.speaker.beep()
@@ -339,16 +396,35 @@ def move():
 				rescueTime = checkRescue()
 		if (ultraS.distance() < ultraSLimit):
 			obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 4.2 #2.5normal 4.2small
-		diff = lColor.reflection() - rColor.reflection() #finds the difference between the reflections
+		multiplier = 2.5 #2.5normal 4.2small with hills
+		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
-				doubleBlack(compensator)
+				doubleBlack(compensator, cal)
 		#Uncomment for redline
 		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
 		#	redLine()
 		#	pass
 		output = int(multiplier * diff) #gets degrees to turn by
-		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
+		output2 = output
+		print(output)
+
+		if output > turnLimit:
+			output2 = turnLimit
+		elif output < -turnLimit:
+			output2= -turnLimit
+
+		if output > 0:
+			driveTurnSpeed = turnLimit - output2
+		else:
+			driveTurnSpeed = turnLimit + output2
+		robot.drive(driveTurnSpeed, output)
+
+		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
+		#a = -0.00339506
+		#b = 0
+		#c = 120
+		#driveTurnSpeed =(a*output) + (b*output) + c
+		#robot.drive(driveTurnSpeed, output)
 
 
 def startMessage():
@@ -356,8 +432,11 @@ def startMessage():
 	ev3.speaker.set_volume(10000)
 	#Arguments should be 1 and the number of possible outcomes
 	rand = random.randint(0, len(helloMessages) - 1)
-	#ev3.speaker.say(helloMessages[rand])
-	ev3.speaker.say("I AM DANTE. MY VOICE IS THUNDER. MY SPEECH IS LAW. MY SKIN IS TOUGHER THAN A THOUSAND ARMORS. I AM DANTE AND THE WORLD QUAKES BENEATH ME. YOU HAD A CHOICE AND YOU CHOSE DEATH. BEFORE YOUR END WITNESS MY FURY. I WILL TRANSFORM YOUR VILLAGE INTO DUST. STARTING WITH THE COMMUNITY CENTER. IT'S DOOM O'CLOCK. TIME TO REPENT. ORDER. SECURITY. FREEDOM. VALUES. JUSTICE. NO MORE BANK. NO MORE AUCTIONS. WORTHLESS. DISTRACTIONS. I AM DANTE. THE SAVIOR OF THE WORLD. YOU VOTED FOR ME MY SWEET CHILDS. BUT TECHNOBLADE CORRUPTED YOU. CAN'T YOU SEE? I AM BUILT DIFFERENT. PEACE ISN'T EARNED. PEACE IS TAKEN BY FORCE. I AM DANTE. I AM STRENGTH. THE COLOSSEUM WILL BE NO MORE. WATCH. THIS IS HOW AN ERA ENDS. DID YOU REALLY THINK YOU COULD WIN? I'M NOT DONE. I WILL NOW TAKE DOWN THIS USELESS WIZARD TOWER. I AM DANTE. THE WORLD WILL END.")
+	ev3.speaker.say(helloMessages[rand])
+
+def cal():
+	dif = lColor.reflection() - rColor.reflection()
+	return dif
 
 def initiate():
 	startMessage()
@@ -367,7 +446,12 @@ def initiate():
 	ev3.speaker.beep()
 	#while len(ev3.buttons.pressed()) == 0:
 	#	pass
-	move()
+	dif = cal()
+	print(dif)
+	wait(40)
+	ev3.speaker.beep()
+
+	move(dif)
 
 
 def test():
