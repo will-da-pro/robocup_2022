@@ -50,7 +50,8 @@ white = 50
 black = 30
 green1 = 12
 green2 = 25
-red = 65
+redA = 70
+redB = 55
 
 #other variables
 rescueComplete = 0 #once completed rescue changes the variable to 1
@@ -124,8 +125,6 @@ def whiteLine(cal):
 		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
 		#	redLine()
 		#	pass
-		if lColor.reflection() < red and lColor.reflection() > black:
-			leftDetour()
 		output = -int(multiplier * diff) #gets degrees to turn by
 
 		print(output)
@@ -137,10 +136,16 @@ def whiteLine(cal):
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def leftDetour():
-	ev3.light(Color.YELLOW)
+	#ev3.light(Color.RED)
+	ev3.speaker.beep(1000,500)
 	wait(40)
-	ev3.light(Color.GREEN)
-	robot.turn(90)
+	#ev3.light(Color.GREEN)
+	robot.turn(60)
+
+def rightDetour():
+	ev3.speaker.beep(600,500)
+	wait(40)
+	robot.turn(-60)
 
 
 def doubleBlack(compensator, cal):
@@ -437,6 +442,14 @@ def move(cal):
 		#c = 120
 		#driveTurnSpeed =(a*output) + (b*output) + c
 		#robot.drive(driveTurnSpeed, output)
+
+		if lColor.reflection() < redA and lColor.reflection() > redB:
+			if lColor.color() == Color.RED:
+				leftDetour()
+
+		if rColor.reflection() < redA and rColor.reflection() > redB:
+			if rColor.color() == Color.RED:
+				rightDetour()
 
 
 def startMessage():
