@@ -41,8 +41,8 @@ driveSpeed = 120 #115 normal 50  small with hills
 turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
 driveTurnSpeed = 40 
-speedLimit = 110
-rangeLimit = 90
+speedLimit = 120
+rangeLimit = 100
 
 #colors
 silver = 90
@@ -59,8 +59,7 @@ rescueBlockSize = 300
 lastTurn = None
 rescueTime = timeSecs.process_time()
 output2 = 0
-
-
+detourDone = 0
 #program
 
 #Runs if an obstacle is detected
@@ -140,12 +139,12 @@ def leftDetour():
 	ev3.speaker.beep(1000,500)
 	wait(40)
 	#ev3.light(Color.GREEN)
-	robot.turn(60)
+	robot.turn(70)
 
 def rightDetour():
 	ev3.speaker.beep(600,500)
 	wait(40)
-	robot.turn(-60)
+	robot.turn(-70)
 
 
 def doubleBlack(compensator, cal):
@@ -397,6 +396,7 @@ def redLine():
 
 #Handles all movement
 def move(cal):
+	global detourDone
 	robot.stop()
 	rescueTime = timeSecs.process_time()
 	ev3.speaker.beep()
@@ -442,14 +442,18 @@ def move(cal):
 		#c = 120
 		#driveTurnSpeed =(a*output) + (b*output) + c
 		#robot.drive(driveTurnSpeed, output)
+		#if detourDone == 0:
+			#if lColor.reflection() < redA and lColor.reflection() > redB:
+				#if lColor.color() == Color.RED:
+					#leftDetour()
+					#detourDone = 1
 
-		if lColor.reflection() < redA and lColor.reflection() > redB:
-			if lColor.color() == Color.RED:
-				leftDetour()
+			#if rColor.reflection() < redA and rColor.reflection() > redB:
+				#if rColor.color() == Color.RED:
+					#rightDetour()
+					#detourDone = 1
+					#NARROW DOWN RANGE!!!!!!!!
 
-		if rColor.reflection() < redA and rColor.reflection() > redB:
-			if rColor.color() == Color.RED:
-				rightDetour()
 
 
 def startMessage():
@@ -457,7 +461,7 @@ def startMessage():
 	ev3.speaker.set_volume(10000)
 	#Arguments should be 1 and the number of possible outcomes
 	rand = random.randint(0, len(helloMessages) - 1)
-	ev3.speaker.say(helloMessages[rand])
+	#ev3.speaker.say(helloMessages[rand])
 
 def cal():
 	dif = lColor.reflection() - rColor.reflection()
@@ -478,7 +482,7 @@ def initiate():
 	while len(ev3.buttons.pressed()) == 0:
 		pass
 
-	ev3.speaker.beep()
+	ev3.speaker.beep(200,50)
 
 	move(dif)
 
