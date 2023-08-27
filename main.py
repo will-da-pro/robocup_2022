@@ -12,6 +12,15 @@ import time as timeSecs
 #from math import sqrt, asin
 import threading
 
+#WHAT IS IN COURSE????
+waterTowerCount = 0
+rescueCount = 1
+whiteLineCount = 0
+detourCount = 0
+redLineCount = 0
+cansCount = 1
+blackCanCount = 1
+
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
 
 #objects
@@ -37,12 +46,12 @@ clawTurn = -90
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "Uh Will what are you doing", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "JAMES GET OFF MINECRAFT", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue", "It's over 9000!", "Dante best"]
 
 #drive speed variables
-driveSpeed = 120 #115 normal 50  small with hills
+driveSpeed = 100 #115 normal 50  small with hills
 turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
-driveTurnSpeed = 40 
-speedLimit = 120
-rangeLimit = 100
+driveTurnSpeed = 60
+midTurnSpeed = 75
+turningSpeed = 69
 
 #colors
 silver = 90
@@ -58,7 +67,6 @@ rescueComplete = 0 #once completed rescue changes the variable to 1
 rescueBlockSize = 300
 lastTurn = None
 rescueTime = timeSecs.process_time()
-output2 = 0
 detourDone = 0
 #program
 
@@ -126,12 +134,16 @@ def whiteLine(cal):
 		#	pass
 		output = -int(multiplier * diff) #gets degrees to turn by
 
-		print(output)
+		if output >= 100 or output <= -100:
+			turningSpeed = turnDriveSpeed
+		elif output < 100 and output >= 20 or output > -100 and output <= -20:
+			turningSpeed = midTurnSpeed
+		elif output < 20 and output > -20:
+			turningSpeed = driveSpeed
+			
+		print(output, ',', turningSpeed, 'white')	
+		robot.drive(turningSpeed, output)
 
-		if output > -20 and output < 20:
-			robot.drive(driveSpeed, output)
-		else:
-			robot.drive(driveTurnSpeed, output)
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def leftDetour():
@@ -167,10 +179,11 @@ def doubleBlack(compensator, cal):
 		if iteration >= 2:
 			checkGreenCol()
 			if iteration >= 10:
-				robot.drive(10000000, 0)
+				#robot.drive(10000000, 0)
 				while True:
 					pass
-			whiteLine(cal)
+			if whiteLineCount > 0:
+				whiteLine(cal)
 
 		if diff <= compensator and diff >= -compensator:
 			pass
@@ -246,13 +259,14 @@ def centerRescue():
 
 
 def rescue():
+	global rescueCount
 	robot.stop()
 
 	centerRescue()
 
 	startAngle = robot.angle()
  
-	maxCanDist = 320
+	maxCanDist = 250
 	blockDist = 270
  
 	wait(100)
@@ -273,7 +287,7 @@ def rescue():
 	claw.run_angle(-200, 50)
  
  
-	robot.drive(0, -60)
+	robot.drive(0, -30)
  
 	while robot.angle() - startAngle < 300:
 		if ultraS.distance() < maxCanDist:
@@ -300,6 +314,7 @@ def rescue():
 			ev3.speaker.beep()
 
 			robot.drive(0,15)
+			wait(50)
 			while ultraS.distance() > maxCanDist: #turn untill sees can again
 				pass
 			robot.stop()
@@ -329,11 +344,13 @@ def rescue():
 				lifter.run_angle(100,90,wait=True)
 				wait(20)
 				robot.straight(45)
-				claw.run_angle(70, 50) #centers it with claw
-				wait(20)
-				claw.run_angle(-70, 50) #reopens claw
+				
+				claw.run_time(100,1000,wait=True) #centers it with claw
+				claw.run_angle(-70,50,wait=True) #reopens claw
+				claw.stop()
+				robot.straight(-24)
 				lifter.run_angle(-100,90,wait=True)
-				robot.straight(30) #forward to check colour
+				robot.straight(50) #forward to check colour
 				if frontColor.reflection() < 10:
 					robot.straight(-canDist+25)
 					robot.turn(-40)#change this if going forward again
@@ -343,8 +360,11 @@ def rescue():
 					lifter.run_angle(95,90,wait=True)
 					robot.straight(20) #might knock can over
 					claw.run(100) #grabs can
+					wait(2000)
+					robot.straight(-24)
 					wait(500)
 					lifter.run_angle(95,-90,wait=True) #lifts can
+					robot.straight(24)
 					robot.straight(-(canDist-55)) #back to middle
 					robot.turn((startAngle-robot.angle())) #face block
 					robot.straight(blockDist-20) #goto block
@@ -364,6 +384,7 @@ def rescue():
 					claw.run_angle(50, 50,wait=True)
 					
 					robot.turn(150)
+					robot.straight(10)
 
 					robot.drive(0, 75)
 					while lColor.reflection() > black:
@@ -372,6 +393,8 @@ def rescue():
 					robot.stop()
 					robot.turn(-30)
 					robot.straight(20)
+
+					rescueCount -= 1
 
 					return timeSecs.process_time() + 50
 def checkRescue():
@@ -404,14 +427,16 @@ def move(cal):
 		compensator = 2 #Amount to multiply output by
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
-		if lColor.reflection() > 99 or rColor.reflection() > 99:
-			if timeSecs.process_time() < rescueTime:
-				pass
-			else:
-				rescueTime = checkRescue()
-		if (ultraS.distance() < ultraSLimit):
-			obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 2.5 #2.5normal 4.2small with hills
+		if rescueCount >= 1:
+			if lColor.reflection() > 99 or rColor.reflection() > 99:
+				if timeSecs.process_time() < rescueTime:
+					pass
+				else:
+					rescueTime = checkRescue()
+		if waterTowerCount >= 1:
+			if (ultraS.distance() < ultraSLimit):
+				obstacle(ultraS.distance, turnDriveSpeed)
+		multiplier = 2.4 #2.5normal 4.2small with hills
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 				doubleBlack(compensator, cal)
@@ -420,21 +445,17 @@ def move(cal):
 		#	redLine()
 		#	pass
 		output = int(multiplier * diff) #gets degrees to turn by
-		output2 = output
 		print(output)
 
-		if output > rangeLimit:
-			output2 = speedLimit - 60
-		elif output < -rangeLimit:
-			output2 = -speedLimit + 60
-		else:
-			pass
-
-		if output > 0:
-			driveTurnSpeed = speedLimit - output2
-		else:
-			driveTurnSpeed = speedLimit + output2
-		robot.drive(driveTurnSpeed, output)
+		if output >= 100 or output <= -100:
+			turningSpeed = turnDriveSpeed
+		elif output < 100 and output >= 20 or output > -100 and output <= -20:
+			turningSpeed = midTurnSpeed
+		elif output < 20 and output > -20:
+			turningSpeed = driveSpeed
+			
+		print(output, ',', turningSpeed)	
+		robot.drive(turningSpeed, output)
 
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 		#a = -0.00339506
@@ -461,28 +482,28 @@ def startMessage():
 	ev3.speaker.set_volume(10000)
 	#Arguments should be 1 and the number of possible outcomes
 	rand = random.randint(0, len(helloMessages) - 1)
-	#ev3.speaker.say(helloMessages[rand])
+	ev3.speaker.say(helloMessages[rand])
 
 def cal():
 	dif = lColor.reflection() - rColor.reflection()
 	return dif
 
 def initiate():
-	startMessage()
-	lifter.run_angle(100,-90)
+	#startMessage()
 	claw.run_until_stalled(50)
+	lifter.run_angle(100,-90)
 	#ev3.speaker.say("Close the claw you nons")
-	ev3.speaker.beep()
+	ev3.speaker.beep(54, 623)
 	#while len(ev3.buttons.pressed()) == 0:
 	#	pass
 	dif = cal()
 	print(dif)
 	wait(40)
-	ev3.speaker.beep()
+	ev3.speaker.beep(4556, 1058)
 	while len(ev3.buttons.pressed()) == 0:
 		pass
 
-	ev3.speaker.beep(200,50)
+	ev3.speaker.beep(100,50)
 
 	move(dif)
 
