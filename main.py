@@ -13,14 +13,14 @@ import time as timeSecs
 import threading
 
 #WHAT IS IN COURSE????
-waterTowerCount = 6
-rescueCount = 2
-whiteLineCount = 1
+waterTowerCount = 0
+rescueCount = 1
+whiteLineCount = 0
 detourCount = 0
 redLineCount = 0
-cansCount = 3
-blackCanCount = 1
-blockPos = 0
+cansCount = 1
+blackCanCount = 0
+blockPos = 0 #changing doesn't do anything
 funnyBlok = 0
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
@@ -48,12 +48,15 @@ clawTurn = -90
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "Uh Will what are you doing", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "JAMES GET OFF MINECRAFT", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue", "It's over 9000!", "Dante best"]
 
 #drive speed variables
-driveSpeed = 110 #115 normal 50  small with hills
 turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
-driveTurnSpeed = 50
-midTurnSpeed = 65
-turningSpeed = 69
+driveSpeed = 115 #115 normal 50  small with hills
+#midTurnSpeed = 65
+#driveTurnSpeed = 50
+maxTurnSpeed = 115
+turningSpeed = 69 #changing doesn't do anything
+turner = 0.04
+multiplier = 3 #2.5normal 4.2small
 
 #colors
 silver = 90
@@ -70,6 +73,7 @@ rescueBlockSize = 300
 lastTurn = None
 rescueTime = timeSecs.process_time()
 detourDone = 0
+
 #program
 
 #Runs if an obstacle is detected
@@ -121,7 +125,6 @@ def whiteLine(cal):
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
 		
-		multiplier = 4.2 #2.5normal 4.2small
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		if not leftIsBlack and not rightIsBlack:
 				doubleWhite(cal)
@@ -131,15 +134,12 @@ def whiteLine(cal):
 		#	pass
 		output = -int(multiplier * diff) #gets degrees to turn by
 
-		if output >= 100 or output <= -100:
-			turningSpeed = turnDriveSpeed
-		elif output < 100 and output >= 20 or output > -100 and output <= -20:
-			turningSpeed = midTurnSpeed
-		elif output < 20 and output > -20:
-			turningSpeed = driveSpeed
-			
-		print(output, ',', turningSpeed, 'white')	
+		turningSpeed = -(turner*output)^3.2 + maxTurnSpeed
+  
+		print(turningSpeed, ',', output, 'inverted')
+  
 		robot.drive(turningSpeed, output)
+  
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def leftDetour():
@@ -220,33 +220,17 @@ def checkGreenCol():
 		else:
 			pass
 
-	if(lColor.color() == Color.GREEN):
-		robot.turn(-15) #15 small 25 normal??
-		robot.drive(100, 0)
-		while rColor.reflection() < black:
-			pass
-		robot.stop()
-		robot.drive(0, -40)
-	elif(rColor.color() == Color.GREEN):
-		robot.turn(15) #15 small 25 normal
-		robot.drive(100, 0)
-		while lColor.reflection() < black:
-			pass
-		robot.stop()
-		robot.drive(0, 40)
-	else:
-		return
 	
 
 	if(lColor.color() == Color.GREEN):
-		robot.turn(-15) #15 small 25 normal??
+		robot.turn(-20) #15 small 25 normal??
 		robot.drive(100, 0)
 		while rColor.reflection() < black:
 			pass
 		robot.stop()
 		robot.drive(0, -40)
 	elif(rColor.color() == Color.GREEN):
-		robot.turn(15) #15 small 25 normal
+		robot.turn(20) #15 small 25 normal
 		robot.drive(100, 0)
 		while lColor.reflection() < black:
 			pass
@@ -274,6 +258,7 @@ def centerRescue():
 def rescue():
 	global rescueCount
 	robot.stop()
+	claw.run_angle(-200, 50)
 
 	centerRescue()
 
@@ -282,9 +267,9 @@ def rescue():
 	maxCanDist = 250
 	blockDist = 270
  
-	wait(100)
+	wait(20)
 	robot.straight(220)
-	wait(100)
+	wait(20)
 	robot.turn(-30)
 	#print(ultraS.distance())
 	#if ultraS.distance() < maxCanDist+50:
@@ -296,11 +281,11 @@ def rescue():
 	#	robot.turn(-30)
 	#	print("couldn't find block")
 	#print(ultraS.distance())
-	wait(50)
-	claw.run_angle(-200, 50)
+	wait(10)
+	
  
  
-	robot.drive(0, -30)
+	#robot.drive(0, -30)
  
 	while (startAngle - robot.angle()) < 360:
 		robot.drive(0, -30)
@@ -466,6 +451,7 @@ def redLine():
 #Handles all movement
 def move(cal):
 	global detourDone
+	global multiplier
 	robot.stop()
 	rescueTime = timeSecs.process_time()
 	ev3.speaker.beep()
@@ -482,7 +468,6 @@ def move(cal):
 		if waterTowerCount >= 1:
 			if (ultraS.distance() < ultraSLimit):
 				obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 4.2 #2.5normal 4.2small with hills
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 				doubleBlack(compensator, cal)
@@ -492,22 +477,14 @@ def move(cal):
 		#	pass
 		output = int(multiplier * diff) #gets degrees to turn by
 
-		if output >= 100 or output <= -100:
-			turningSpeed = turnDriveSpeed
-		elif output < 100 and output >= 20 or output > -100 and output <= -20:
-			turningSpeed = midTurnSpeed
-		elif output < 20 and output > -20:
-			turningSpeed = driveSpeed
-			
-		#print(output, ',', turningSpeed, 'normal')	
-		robot.drive(turningSpeed, output)
+		
 		
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
-		#a = -0.00339506
-		#b = 0
-		#c = 120
-		#driveTurnSpeed =(a*output) + (b*output) + c
-		#robot.drive(driveTurnSpeed, output)
+
+		turningSpeed = -(turner*output)^3.2 + maxTurnSpeed
+  
+		print(turningSpeed, ',', output, 'normal')
+		robot.drive(turningSpeed, output)
 		#if detourDone == 0:
 			#if lColor.reflection() < redA and lColor.reflection() > redB:
 				#if lColor.color() == Color.RED:
