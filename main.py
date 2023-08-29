@@ -13,14 +13,15 @@ import time as timeSecs
 import threading
 
 #WHAT IS IN COURSE????
-waterTowerCount = 0
-rescueCount = 1
-whiteLineCount = 0
+waterTowerCount = 6
+rescueCount = 2
+whiteLineCount = 1
 detourCount = 0
 redLineCount = 0
-cansCount = 1
-blackCanCount = 0
+cansCount = 3
+blackCanCount = 1
 blockPos = 0
+funnyBlok = 0
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
 
@@ -47,7 +48,7 @@ clawTurn = -90
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "Uh Will what are you doing", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "JAMES GET OFF MINECRAFT", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue", "It's over 9000!", "Dante best"]
 
 #drive speed variables
-driveSpeed = 100 #115 normal 50  small with hills
+driveSpeed = 110 #115 normal 50  small with hills
 turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
 driveTurnSpeed = 50
@@ -110,10 +111,6 @@ def doubleWhite(cal):
 		iteration += 1
 		if iteration >= 2:
 			checkGreenCol()
-			if iteration >= 10:
-				robot.drive(10000000, 0)
-				while True:
-					pass
 			move(cal)
 
 def whiteLine(cal):
@@ -124,7 +121,7 @@ def whiteLine(cal):
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
 		
-		multiplier = 2.5 #2.5normal 4.2small
+		multiplier = 4.2 #2.5normal 4.2small
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		if not leftIsBlack and not rightIsBlack:
 				doubleWhite(cal)
@@ -161,12 +158,13 @@ def rightDetour():
 def doubleBlack(compensator, cal):
 
 	robot.stop
-	wait(20)
+	wait(50)
  
 	diff = lColor.reflection() - rColor.reflection()
 
 	iteration = 0
  
+	uTurn = (lColor.reflection() + rColor.reflection())/2
  
 	while lColor.reflection() < black and rColor.reflection() < black:
 		robot.stop()
@@ -176,19 +174,11 @@ def doubleBlack(compensator, cal):
 		iteration += 1
 		if iteration >= 2:
 			checkGreenCol()
-			if iteration >= 10:
-				#robot.drive(10000000, 0)
-				while True:
-					pass
-			if whiteLineCount > 0:
-				whiteLine(cal)
-
-		#if lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
-		#	robot.straight(30)
-		#	print('2green')
-		#if lColor.color() == Color.BLACK and rColor.color() == Color.BLACK:
-		#	robot.turn(180)
-		#	print('180')
+			#if iteration >= 10:
+			#	robot.drive(10000000, 0)
+				#while True:
+				#	pass
+			whiteLine(cal)
 
 		if diff <= compensator and diff >= -compensator:
 			pass
@@ -196,7 +186,7 @@ def doubleBlack(compensator, cal):
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(15) #10 small 15 normal
+			robot.turn(10) #10 small 15 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -205,7 +195,7 @@ def doubleBlack(compensator, cal):
 
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(-15) #10 small 15 normal??
+			robot.turn(-10) #10 small 15 normal??
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -215,26 +205,48 @@ def doubleBlack(compensator, cal):
 		else:
 			pass
 
-def checkGreenCol(): #DO NOT USE
+def checkGreenCol():
 	if lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
 		robot.straight(30)
-		print('actual2green')
+		print('2green')
 		if lColor.color() == Color.BLACK and rColor.color() == Color.BLACK:
 			robot.turn(180)
 			print('180')
+   # move back to check silver??
+		elif lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
+			robot.turn(-15)
+			rescueTime = rescue()
    
 		else:
 			pass
 
 	if(lColor.color() == Color.GREEN):
-		robot.turn(-25) #15 small 25 normal??
+		robot.turn(-15) #15 small 25 normal??
 		robot.drive(100, 0)
 		while rColor.reflection() < black:
 			pass
 		robot.stop()
 		robot.drive(0, -40)
 	elif(rColor.color() == Color.GREEN):
-		robot.turn(25) #15 small 25 normal
+		robot.turn(15) #15 small 25 normal
+		robot.drive(100, 0)
+		while lColor.reflection() < black:
+			pass
+		robot.stop()
+		robot.drive(0, 40)
+	else:
+		return
+	
+
+	if(lColor.color() == Color.GREEN):
+		robot.turn(-15) #15 small 25 normal??
+		robot.drive(100, 0)
+		while rColor.reflection() < black:
+			pass
+		robot.stop()
+		robot.drive(0, -40)
+	elif(rColor.color() == Color.GREEN):
+		robot.turn(15) #15 small 25 normal
 		robot.drive(100, 0)
 		while lColor.reflection() < black:
 			pass
@@ -370,21 +382,18 @@ def rescue():
 					robot.straight(24)
 					robot.straight(-(canDist-55)) #back to middle
 					robot.turn((startAngle-robot.angle())) #face block
-					#if ultraS.distance() >= blockMin and ultraS.distance() <= blockMax:
-					#	blockPos = 0
-					#else:
-					#	robot.turn(90)
-					#	if ultraS.distance() >= blockMin and ultraS.distance() <= blockMax:
-					#		blockPos = 90
-					#	else:
-					#		robot.turn(-180)
-					#		if ultraS.distance() >= blockMin and ultraS.distance() <= blockMax:
-					#			blockPos = -90
+					if funnyBlok == 1:
+						if ultraS.distance() <= blockMax:
+							blockPos = 0
+						else:
+							robot.turn(90)
+							if ultraS.distance() <= blockMax:
+								blockPos = 90
+							else:
+								robot.turn(-180)
+								if ultraS.distance() <= blockMax:
+									blockPos = -90
 
-					#if blockPos == 0:
-					#	pass
-					#else:
-					#	robot.turn(blockPos)
 
 					robot.straight(blockDist-20) #goto block
 					
@@ -400,18 +409,27 @@ def rescue():
 					lifter.run_angle(30,-20)
 					robot.straight(-blockDist+20)
 					robot.turn(-30)
-	robot.turn(-15)
-	robot.straight(-460+blockDist-20)
+
+	if funnyBlok == 1:
+		if blockPos == 0:
+			robot.turn(180)
+		else:
+			robot.turn(blockPos)
+	else:
+		robot.turn(180)
+
+	robot.drive(100, 0)
+	while lColor.reflection() < 70:
+		pass
+	robot.stop()
+	robot.straight(20)
 	lifter.run_until_stalled(200)
 	lifter.run_angle(100,-90)
 	claw.run_angle(50, 50,wait=True)
 					
-					#if blockPos == 0:
-					#	robot.turn(150)
-					#else:
-					#	robot.turn(blockPos)
 
-	robot.turn(150)
+
+	#robot.turn(150)
 	robot.straight(10)
 
 	robot.drive(0, 75)
@@ -424,7 +442,7 @@ def rescue():
 
 	rescueCount -= 1
 
-	return timeSecs.process_time() + 50
+	return timeSecs.process_time() + 5
 def checkRescue():
 	testDist = 50
 	robot.stop()
@@ -464,7 +482,7 @@ def move(cal):
 		if waterTowerCount >= 1:
 			if (ultraS.distance() < ultraSLimit):
 				obstacle(ultraS.distance, turnDriveSpeed)
-		multiplier = 2.5 #2.5normal 4.2small with hills
+		multiplier = 4.2 #2.5normal 4.2small with hills
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 				doubleBlack(compensator, cal)
@@ -474,17 +492,17 @@ def move(cal):
 		#	pass
 		output = int(multiplier * diff) #gets degrees to turn by
 
-#		if output >= 100 or output <= -100:
-#			turningSpeed = turnDriveSpeed
-#		elif output < 100 and output >= 20 or output > -100 and output <= -20:
-#			turningSpeed = midTurnSpeed
-#		elif output < 20 and output > -20:
-#			turningSpeed = driveSpeed
+		if output >= 100 or output <= -100:
+			turningSpeed = turnDriveSpeed
+		elif output < 100 and output >= 20 or output > -100 and output <= -20:
+			turningSpeed = midTurnSpeed
+		elif output < 20 and output > -20:
+			turningSpeed = driveSpeed
 			
 		#print(output, ',', turningSpeed, 'normal')	
-		#robot.drive(turningSpeed, output)
+		robot.drive(turningSpeed, output)
 		
-		robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
+		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 		#a = -0.00339506
 		#b = 0
 		#c = 120
