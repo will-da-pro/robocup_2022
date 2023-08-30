@@ -90,12 +90,14 @@ def obstacle(distance):
 	robot.turn(-20)
 			
 def isBlack(side):
+	print('isblack', side)
 	if side.reflection() <= black:
 		return True
 	else:
 		return False
 
 def doubleWhite(cal):
+	print('doublewhite')
 	robot.stop
 	wait(50)
  
@@ -114,6 +116,7 @@ def doubleWhite(cal):
 			move(cal)
 
 def whiteLine(cal):
+	print('whiteline')
 	robot.stop()
 	ev3.speaker.beep()
 	while True:
@@ -152,15 +155,14 @@ def rightDetour():
 
 
 def doubleBlack(compensator, cal):
-
+	print('doubleblack', compensator)
 	robot.stop
 	wait(50)
  
 	diff = lColor.reflection() - rColor.reflection()
 
 	iteration = 0
- 
-	uTurn = (lColor.reflection() + rColor.reflection())/2
+
  
 	while lColor.reflection() < black and rColor.reflection() < black:
 		robot.stop()
@@ -182,7 +184,8 @@ def doubleBlack(compensator, cal):
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(10) #10 small 15 normal
+			print('right1')
+			robot.turn(12) #10 small 15 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -191,7 +194,7 @@ def doubleBlack(compensator, cal):
 
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
-			robot.turn(-10) #10 small 15 normal??
+			robot.turn(-12) #10 small 15 normal??
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -202,6 +205,7 @@ def doubleBlack(compensator, cal):
 			pass
 
 def checkGreenCol():
+	print('bruh')
 	if lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
 		robot.straight(30)
 		print('2green')
@@ -288,7 +292,7 @@ def rescue():
 		if ultraS.distance() < maxCanDist:
 			canDist = ultraS.distance()
 			robot.stop()
-			wait(1000)
+			wait(50)
 
 			blockMax = 300
 			blockMin = 200
