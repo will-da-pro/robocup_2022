@@ -10,7 +10,6 @@ from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 import time as timeSecs
 #from math import sqrt, asin
-import threading
 
 #WHAT IS IN COURSE????
 waterTowerCount = 0
@@ -48,11 +47,8 @@ clawTurn = -90
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "Uh Will what are you doing", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "JAMES GET OFF MINECRAFT", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue", "It's over 9000!", "Dante best"]
 
 #drive speed variables
-turnDriveSpeed = 60
 towerDriveSpeed = 280 #140
 driveSpeed = 115 #115 normal 50  small with hills
-#midTurnSpeed = 65
-#driveTurnSpeed = 50
 maxTurnSpeed = 115
 turningSpeed = 69 #changing doesn't do anything
 turner = 0.04
@@ -77,11 +73,11 @@ detourDone = 0
 #program
 
 #Runs if an obstacle is detected
-def obstacle(distance, speed):
+def obstacle(distance):
 	robot.stop()
 	robot.straight(-10)
 	robot.turn(-80)
-	robot.drive(towerDriveSpeed, 75) #37.5	
+	robot.drive(towerDriveSpeed, distance+69) #37.5	
 	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
@@ -288,7 +284,7 @@ def rescue():
 	#robot.drive(0, -30)
  
 	while (startAngle - robot.angle()) < 360:
-		robot.drive(0, -30)
+		robot.drive(0, -50)
 		if ultraS.distance() < maxCanDist:
 			canDist = ultraS.distance()
 			robot.stop()
@@ -305,7 +301,7 @@ def rescue():
 			#finds center of can
 			robot.turn(-20)
 
-			robot.drive(0,-5)#small turn
+			robot.drive(0,-10)#small turn
 			while ultraS.distance() < maxCanDist:
 				pass
 			robot.stop()
@@ -313,7 +309,7 @@ def rescue():
 			ev3.speaker.beep()
 			robot.turn(20)
 
-			robot.drive(0,15)
+			robot.drive(0,20)
 			wait(50)
 			while ultraS.distance() > maxCanDist: #turn untill sees can again
 				pass
@@ -350,34 +346,37 @@ def rescue():
 				claw.stop()
 				robot.straight(-24)
 				lifter.run_angle(-100,90,wait=True)
-				robot.straight(50) #forward to check colour
-				if frontColor.reflection() < 10:
-					robot.straight(-canDist+25)
-					robot.turn(-40)#change this if going forward again
-					robot.drive(0, -20)
-				else:
-					robot.straight(-40)
-					lifter.run_angle(95,90,wait=True)
-					robot.straight(20) #might knock can over
-					claw.run(100) #grabs can
-					wait(1000)
-					robot.straight(-24)
-					wait(500)
-					lifter.run_angle(95,-90,wait=True) #lifts can
-					robot.straight(24)
-					robot.straight(-(canDist-55)) #back to middle
-					robot.turn((startAngle-robot.angle())) #face block
-					if funnyBlok == 1:
+				#robot.straight(50) #forward to check colour
+#				if frontColor.reflection() < 10:
+#					robot.straight(-canDist+25)
+#					robot.turn(-40)#change this if going forward again
+#					robot.drive(0, -20)
+#				else:
+				#robot.straight(-40)
+				robot.straight(10)
+				lifter.run_angle(95,90,wait=True)
+				robot.straight(20) #might knock can over
+				claw.run(100) #grabs can
+				wait(500)
+				robot.straight(-24)
+				wait(50)
+				lifter.run_angle(95,-90,wait=True) #lifts can
+				robot.straight(24)
+				robot.straight(-(canDist-55)) #back to middle
+				robot.turn((startAngle-robot.angle())) #face block
+				if funnyBlok == 1:
+					if ultraS.distance() <= blockMax:
+						blockPos = 0
+					else:
+						robot.turn(90)
 						if ultraS.distance() <= blockMax:
-							blockPos = 0
+							blockPos = 90
 						else:
-							robot.turn(90)
+							robot.turn(-180)
 							if ultraS.distance() <= blockMax:
-								blockPos = 90
+								blockPos = -90
 							else:
-								robot.turn(-180)
-								if ultraS.distance() <= blockMax:
-									blockPos = -90
+								sys.exit()
 
 
 					robot.straight(blockDist-20) #goto block
@@ -388,7 +387,7 @@ def rescue():
 	#					robot.stop()
 
 					lifter.run_angle(30,20) #lower lifter
-					wait(750)
+					wait(250)
 					claw.stop()
 					claw.run_angle(-100,50,wait=True) #drop can
 					lifter.run_angle(30,-20)
@@ -467,7 +466,7 @@ def move(cal):
 					rescueTime = checkRescue()
 		if waterTowerCount >= 1:
 			if (ultraS.distance() < ultraSLimit):
-				obstacle(ultraS.distance, turnDriveSpeed)
+				obstacle(ultraS.distance)
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 				doubleBlack(compensator, cal)
@@ -512,46 +511,30 @@ def cal():
 
 def initiate():
 	#startMessage()
-	claw.run_until_stalled(50)
-	lifter.run_angle(100,-90)
+	lifter.run_angle(100,-90, wait=False)
+	claw.run_until_stalled(100, duty_limit=20)
 	#ev3.speaker.say("Close the claw you nons")
 	ev3.speaker.beep()
 	while len(ev3.buttons.pressed()) == 0:
 		pass
 	dif = cal()
 	print(dif)
-	wait(500)
+	wait(50)
 	ev3.speaker.beep()
 	while len(ev3.buttons.pressed()) == 0:
 		pass
 
-	ev3.speaker.beep(100,50)
+	ev3.speaker.beep(200,20)
 
 	move(dif)
 
 
 def test():
-	ev3.speaker.say('ghrksjzdfkuysuzejddcuyzjtsehdcbvsyjegdhcbvusdyjzgdkhczx b djzsydhxc djzgfhvxbyuxdjhf vystjdfhzbv dgysjfzhdbvdsgjzhsbcyvstdgjhzbfuysejzgh')
-	ev3.speaker.beep(5230,5002)
-	ev3.speaker.beep(10,502)
-	ev3.speaker.beep(10340,502)
-	ev3.speaker.beep(4580,502)
-	ev3.speaker.beep(19,502)
-	ev3.speaker.beep(4257,502)
-	ev3.speaker.beep(70,502)
-	ev3.speaker.beep(1005,502)
-	lifter.run_angle(100,-20)#up
-	print("done")
-	wait(5000)
 	claw.run(100)#close
 	wait(3000)
 	lifter.run_angle(100,-70)#up more
 	wait(1000)
 
-
-
-#testThread = threading.Thread(target=test)
-#testThread.start()
 
 #test()
 initiate()
