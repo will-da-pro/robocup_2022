@@ -51,7 +51,7 @@ towerDriveSpeed = 280 #140
 driveSpeed = 115 #115 normal 50  small with hills
 maxTurnSpeed = 115
 turningSpeed = 69 #changing doesn't do anything
-turner = 0.04
+a = 0.04
 multiplier = 3 #2.5normal 4.2small
 
 #colors
@@ -133,7 +133,7 @@ def whiteLine(cal):
 		#	pass
 		output = -int(multiplier * diff) #gets degrees to turn by
 
-		turningSpeed = -(turner*output)^3.2 + maxTurnSpeed
+		turningSpeed = -(a*output)**3.2 + maxTurnSpeed
   
 		print(turningSpeed, ',', output, 'inverted')
   
@@ -484,7 +484,7 @@ def move(cal):
 		
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
-		turningSpeed = -(turner*output)^3.2 + maxTurnSpeed
+		turningSpeed = -(a * output)**3.2 + maxTurnSpeed
   
 		print(turningSpeed, ',', output, 'normal')
 		robot.drive(turningSpeed, output)
