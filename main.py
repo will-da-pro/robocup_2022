@@ -484,6 +484,7 @@ def move(cal):
 				obstacle(ultraS.distance, turnDriveSpeed)
 		multiplier = 4.2 #2.5normal 4.2small with hills
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
+		driveSpeed = 100/(abs(0.05*diff)+1)
 		if leftIsBlack and rightIsBlack:
 				doubleBlack(compensator, cal)
 		#Uncomment for redline
@@ -492,15 +493,15 @@ def move(cal):
 		#	pass
 		output = int(multiplier * diff) #gets degrees to turn by
 
-		if output >= 100 or output <= -100:
-			turningSpeed = turnDriveSpeed
-		elif output < 100 and output >= 20 or output > -100 and output <= -20:
-			turningSpeed = midTurnSpeed
-		elif output < 20 and output > -20:
-			turningSpeed = driveSpeed
+		#if output >= 100 or output <= -100:
+		#	turningSpeed = turnDriveSpeed
+		#elif output < 100 and output >= 20 or output > -100 and output <= -20:
+		#	turningSpeed = midTurnSpeed
+		#elif output < 20 and output > -20:
+		#	turningSpeed = driveSpeed
 			
 		#print(output, ',', turningSpeed, 'normal')	
-		robot.drive(turningSpeed, output)
+		robot.drive(driveSpeed, output)
 		
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 		#a = -0.00339506
