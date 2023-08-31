@@ -516,7 +516,7 @@ def cal():
 def initiate():
 	#startMessage()
 	lifter.run_angle(100,-90, wait=False)
-	claw.run_until_stalled(100, duty_limit=20)
+	claw.run_until_stalled(100)
 	#ev3.speaker.say("Close the claw you nons")
 	ev3.speaker.beep()
 	while len(ev3.buttons.pressed()) == 0:
