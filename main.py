@@ -18,7 +18,7 @@ whiteLineCount = 0
 detourCount = 0
 redLineCount = 0
 cansCount = 1
-blackCanCount = 0
+#blackCanCount = 0
 blockPos = 0 #changing doesn't do anything
 funnyBlok = 0
 
@@ -288,7 +288,7 @@ def rescue():
 	#robot.drive(0, -30)
  
 	while (startAngle - robot.angle()) < 360:
-		robot.drive(0, -50)
+		robot.drive(0, -40)
 		if ultraS.distance() < maxCanDist:
 			canDist = ultraS.distance()
 			robot.stop()
@@ -305,7 +305,7 @@ def rescue():
 			#finds center of can
 			robot.turn(-20)
 
-			robot.drive(0,-10)#small turn
+			robot.drive(0,-15)#small turn
 			while ultraS.distance() < maxCanDist:
 				pass
 			robot.stop()
@@ -313,13 +313,13 @@ def rescue():
 			ev3.speaker.beep()
 			robot.turn(20)
 
-			robot.drive(0,20)
+			robot.drive(0,25)
 			wait(50)
 			while ultraS.distance() > maxCanDist: #turn untill sees can again
 				pass
 			robot.stop()
 
-			robot.drive(0,20)
+			robot.drive(0,25)
 			while ultraS.distance() < maxCanDist:
 				pass
 			robot.stop()
@@ -335,10 +335,10 @@ def rescue():
 			robot.stop()
 			wait(20)
 
-			if frontColor.color() == Color.RED or frontColor.reflection == 0:
+			if frontColor.color() == Color.RED: # or frontColor.reflection == 0:
 				robot.straight(-(canDist - 30))
 				robot.turn(-40)#change this if going forward again
-				robot.drive(0, -20)
+				robot.drive(0, -50)
 			else:
 				robot.straight(-70)
 				lifter.run_angle(100,90,wait=True)
@@ -347,7 +347,7 @@ def rescue():
 				
 				claw.run_time(100,1000,wait=True) #centers it with claw
 				claw.run_angle(-70,50,wait=True) #reopens claw
-				claw.stop()
+#				claw.stop()
 				robot.straight(-24)
 				lifter.run_angle(-100,90,wait=True)
 				#robot.straight(50) #forward to check colour
