@@ -12,12 +12,12 @@ import time as timeSecs
 #from math import sqrt, asin
 
 #WHAT IS IN COURSE????
-waterTowerCount = 0
-rescueCount = 1
-whiteLineCount = 0
+waterTowerCount = 1
+rescueCount = 2
+whiteLineCount = 1
 detourCount = 0
 redLineCount = 0
-cansCount = 1
+cansCount = 10
 #blackCanCount = 0
 blockPos = 0 #changing doesn't do anything
 funnyBlok = 0
@@ -51,8 +51,8 @@ towerDriveSpeed = 280 #140
 driveSpeed = 115 #115 normal 50  small with hills
 maxTurnSpeed = 115
 turningSpeed = 69 #changing doesn't do anything
-a = 0.04
-multiplier = 3 #2.5normal 4.2small
+a = 0.05
+multiplier = 3.2 #2.5normal 4.2small
 
 #colors
 silver = 90
@@ -90,7 +90,7 @@ def obstacle(distance):
 	robot.turn(-20)
 			
 def isBlack(side):
-	print('isblack', side)
+	#print('isblack')
 	if side.reflection() <= black:
 		return True
 	else:
@@ -133,7 +133,7 @@ def whiteLine(cal):
 		#	pass
 		output = -int(multiplier * diff) #gets degrees to turn by
 
-		turningSpeed = -(a*output)**3.2 + maxTurnSpeed
+		turningSpeed = -(a*output)**2 + maxTurnSpeed
   
 		print(turningSpeed, ',', output, 'inverted')
   
@@ -381,6 +381,8 @@ def rescue():
 								blockPos = -90
 							else:
 								sys.exit()
+				else:
+					pass
 
 
 					robot.straight(blockDist-20) #goto block
@@ -484,7 +486,7 @@ def move(cal):
 		
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
-		turningSpeed = -(a * output)**3.2 + maxTurnSpeed
+		turningSpeed = -(a * output)**2 + maxTurnSpeed
   
 		print(turningSpeed, ',', output, 'normal')
 		robot.drive(turningSpeed, output)
@@ -523,7 +525,7 @@ def initiate():
 		pass
 	dif = cal()
 	print(dif)
-	wait(50)
+	wait(200)
 	ev3.speaker.beep()
 	while len(ev3.buttons.pressed()) == 0:
 		pass
