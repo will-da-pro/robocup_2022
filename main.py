@@ -547,6 +547,9 @@ def test():
 
 		#turningSpeed = -(a * output)**2 + maxTurnSpeed
 		turningSpeed = -math.floor((a * output)** 2 + maxTurnSpeed)
+  
+		print(turningSpeed)
+  
 		if turningSpeed < 15:
 			turningSpeed = 15
   
