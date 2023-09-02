@@ -9,6 +9,7 @@ from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 import time as timeSecs
+import math
 #from math import sqrt, asin
 
 #WHAT IS IN COURSE????
@@ -532,15 +533,29 @@ def initiate():
 
 	ev3.speaker.beep(200,20)
 
-	move(dif)
+	#move(dif)
 
 
 def test():
-	claw.run(100)#close
-	wait(3000)
-	lifter.run_angle(100,-70)#up more
-	wait(1000)
+	initiate()
+	while True:
+		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
+  
+		output = int(multiplier * diff) #gets degrees to turn by
+  
+		print(lColor.reflection(), rColor.reflection(), output, diff)
+
+		#turningSpeed = -(a * output)**2 + maxTurnSpeed
+		turningSpeed = -math.floor((a * output)** 2 + maxTurnSpeed)
+		if turningSpeed < 15:
+			turningSpeed = 15
+  
+		print(turningSpeed)
+  
+		wait(100)
+  
+		robot.drive(turningSpeed, output)
 
 
-#test()
-initiate()
+test()
+#initiate()
