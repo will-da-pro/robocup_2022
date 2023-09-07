@@ -134,7 +134,8 @@ def whiteLine(cal):
 		#	pass
 		output = -int(multiplier * diff) #gets degrees to turn by
 
-		turningSpeed = -(a*output)**2 + maxTurnSpeed
+		turningSpeed = math.floor(maxTurnSpeed/(abs(a*diff)+1))
+
   
 		print(turningSpeed, ',', output, 'inverted')
   
@@ -487,7 +488,7 @@ def move(cal):
 		
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
-		turningSpeed = -(a * output)**2 + maxTurnSpeed
+		turningSpeed = math.floor(maxTurnSpeed/(abs(a*diff)+1))
   
 		print(turningSpeed, ',', output, 'normal')
 		robot.drive(turningSpeed, output)
