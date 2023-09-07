@@ -534,11 +534,11 @@ def initiate():
 
 	ev3.speaker.beep(200,20)
 
-	#move(dif)
+	move(dif)
 
 
 def test():
-	initiate()
+	#initiate()
 	while True:
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
   
@@ -561,5 +561,5 @@ def test():
 		robot.drive(turningSpeed, output)
 
 
-test()
-#initiate()
+#test()
+initiate()
