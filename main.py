@@ -52,8 +52,8 @@ towerDriveSpeed = 280 #140
 driveSpeed = 115 #115 normal 50  small with hills
 maxTurnSpeed = 115
 turningSpeed = 69 #changing doesn't do anything
-a = 0.05
-multiplier = 3.2 #2.5normal 4.2small
+a = 0.02
+multiplier = 2.5 #2.5normal 4.2small
 
 #colors
 silver = 90
@@ -78,7 +78,7 @@ def obstacle(distance):
 	robot.stop()
 	robot.straight(-10)
 	robot.turn(-80)
-	robot.drive(towerDriveSpeed, distance+69) #37.5	
+	robot.drive(towerDriveSpeed, 80)#-distance) #37.5	
 	wait(300)
 	while not isBlack(lColor) and not isBlack(rColor):
 		pass
@@ -350,8 +350,8 @@ def rescue():
 				claw.run_time(100,1000,wait=True) #centers it with claw
 				claw.run_angle(-70,50,wait=True) #reopens claw
 #				claw.stop()
-				robot.straight(-24)
-				lifter.run_angle(-100,90,wait=True)
+				#robot.straight(-24)
+				#lifter.run_angle(-100,90,wait=True)
 				#robot.straight(50) #forward to check colour
 #				if frontColor.reflection() < 10:
 #					robot.straight(-canDist+25)
@@ -359,15 +359,15 @@ def rescue():
 #					robot.drive(0, -20)
 #				else:
 				#robot.straight(-40)
-				robot.straight(10)
-				lifter.run_angle(95,90,wait=True)
-				robot.straight(20) #might knock can over
+				#robot.straight(10)
+				#lifter.run_angle(95,90,wait=True)
+				robot.straight(10) #might knock can over
 				claw.run(100) #grabs can
 				wait(500)
-				robot.straight(-24)
-				wait(50)
+				robot.straight(-14)
+				wait(20)
 				lifter.run_angle(95,-90,wait=True) #lifts can
-				robot.straight(24)
+				robot.straight(14)
 				robot.straight(-(canDist-55)) #back to middle
 				robot.turn((startAngle-robot.angle())) #face block
 				if funnyBlok == 1:
@@ -382,12 +382,12 @@ def rescue():
 							if ultraS.distance() <= blockMax:
 								blockPos = -90
 							else:
-								sys.exit()
+								pass #sys.exit()
 				else:
 					pass
 
 
-					robot.straight(blockDist-20) #goto block
+					robot.straight(blockDist-25) #goto block
 					
 	#				if frontColor.color() != Color.RED:
 	#					while frontColor.color() != Color.RED:
@@ -399,7 +399,7 @@ def rescue():
 					claw.stop()
 					claw.run_angle(-100,50,wait=True) #drop can
 					lifter.run_angle(30,-20)
-					robot.straight(-blockDist+20)
+					robot.straight(-blockDist+25)
 					robot.turn(-30)
 
 	if funnyBlok == 1:
@@ -416,13 +416,13 @@ def rescue():
 	robot.stop()
 	robot.straight(20)
 	lifter.run_until_stalled(200)
+	claw.run_angle(50, 50)
 	lifter.run_angle(100,-90)
-	claw.run_angle(50, 50,wait=True)
 					
 
 
 	#robot.turn(150)
-	robot.straight(10)
+	robot.straight(20)
 
 	robot.drive(0, 75)
 	while lColor.reflection() > black:
@@ -474,7 +474,7 @@ def move(cal):
 					rescueTime = checkRescue()
 		if waterTowerCount >= 1:
 			if (ultraS.distance() < ultraSLimit):
-				obstacle(ultraS.distance)
+				obstacle(ultraS.distance())
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		if leftIsBlack and rightIsBlack:
 				doubleBlack(compensator, cal)
