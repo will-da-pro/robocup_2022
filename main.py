@@ -348,7 +348,7 @@ def rescue():
 				robot.straight(45)
 				
 				claw.run_time(100,1000,wait=True) #centers it with claw
-				claw.run_angle(-70,50,wait=True) #reopens claw
+				claw.run_angle(-20,50,wait=True) #reopens claw
 #				claw.stop()
 				#robot.straight(-24)
 				#lifter.run_angle(-100,90,wait=True)
@@ -361,13 +361,13 @@ def rescue():
 				#robot.straight(-40)
 				#robot.straight(10)
 				#lifter.run_angle(95,90,wait=True)
-				robot.straight(10) #might knock can over
+				robot.straight(8) #might knock can over
 				claw.run(100) #grabs can
 				wait(500)
-				robot.straight(-14)
-				wait(20)
+				#robot.straight(-12)
+				#wait(20)
 				lifter.run_angle(95,-90,wait=True) #lifts can
-				robot.straight(14)
+				#robot.straight(14)
 				robot.straight(-(canDist-55)) #back to middle
 				robot.turn((startAngle-robot.angle())) #face block
 				if funnyBlok == 1:
@@ -387,7 +387,7 @@ def rescue():
 					pass
 
 
-					robot.straight(blockDist-25) #goto block
+					robot.straight(blockDist-21) #goto block
 					
 	#				if frontColor.color() != Color.RED:
 	#					while frontColor.color() != Color.RED:
@@ -399,7 +399,7 @@ def rescue():
 					claw.stop()
 					claw.run_angle(-100,50,wait=True) #drop can
 					lifter.run_angle(30,-20)
-					robot.straight(-blockDist+25)
+					robot.straight(-blockDist+21)
 					robot.turn(-30)
 
 	if funnyBlok == 1:
