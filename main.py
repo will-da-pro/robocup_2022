@@ -119,13 +119,17 @@ def doubleWhite(cal):
 def whiteLine(cal):
 	print('whiteline')
 	robot.stop()
+	robot.drive(-20, 0)
+	while(lColor.reflection() < 30 or rColor.reflection() < 30):
+		pass
+	robot.stop()
 	ev3.speaker.beep()
 	while True:
 		compensator = 2 #Amount to multiply output by
 		leftIsBlack = isBlack(lColor)
 		rightIsBlack = isBlack(rColor)
 		
-		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
+		diff = lColor.reflection() - rColor.reflection() + cal #finds the difference between the reflections
 		if not leftIsBlack and not rightIsBlack:
 				doubleWhite(cal)
 		#Uncomment for redline (stop and turn around)
@@ -172,7 +176,7 @@ def doubleBlack(compensator, cal):
 
 		#Uncomment for white line
 		iteration += 1
-		if iteration >= 2:
+		if iteration >= 3:
 			checkGreenCol()
 			#if iteration >= 10:
 			#	robot.drive(10000000, 0)
@@ -347,8 +351,8 @@ def rescue():
 				wait(20)
 				robot.straight(45)
 				
-				claw.run_time(100,1000,wait=True) #centers it with claw
-				claw.run_angle(-20,50,wait=True) #reopens claw
+				#claw.run_time(100,1000,wait=True) #centers it with claw
+				#claw.run_angle(-20,50,wait=True) #reopens claw
 #				claw.stop()
 				#robot.straight(-24)
 				#lifter.run_angle(-100,90,wait=True)
@@ -361,7 +365,7 @@ def rescue():
 				#robot.straight(-40)
 				#robot.straight(10)
 				#lifter.run_angle(95,90,wait=True)
-				robot.straight(8) #might knock can over
+				#robot.straight(8) #might knock can over
 				claw.run(100) #grabs can
 				wait(500)
 				#robot.straight(-12)
@@ -424,7 +428,7 @@ def rescue():
 	#robot.turn(150)
 	robot.straight(20)
 
-	robot.drive(0, 75)
+	robot.drive(0, 90)
 	while lColor.reflection() > black:
 		pass
 
