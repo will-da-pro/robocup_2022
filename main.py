@@ -336,7 +336,7 @@ def rescue():
 			print(canRight,canLeft,canCompensation,canDist)
 			robot.turn(canCompensation/2)
 			
-			robot.straight(canDist - 30)
+			robot.straight(canDist - 100)
 			ev3.speaker.beep()
 			robot.stop()
 			wait(20)
@@ -346,7 +346,6 @@ def rescue():
 				robot.turn(-40)#change this if going forward again
 				robot.drive(0, -50)
 			else:
-				robot.straight(-70)
 				lifter.run_angle(100,90,wait=True)
 				wait(20)
 				robot.straight(45)
