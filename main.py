@@ -10,14 +10,16 @@ from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 import time as timeSecs
 import math
+import threading
 #from math import sqrt, asin
 
 #WHAT IS IN COURSE????
 waterTowerCount = 1
 rescueCount = 2
 whiteLineCount = 1
-detourCount = 0
-redLineCount = 0
+detourCount = 1
+redLineCount = 1
+blueLineCount = 1
 cansCount = 10
 #blackCanCount = 0
 blockPos = 0 #changing doesn't do anything
@@ -61,8 +63,8 @@ white = 50
 black = 30
 green1 = 12
 green2 = 25
-redA = 70
-redB = 55
+redA = 50
+redB = 35
 
 #other variables
 rescueComplete = 0 #once completed rescue changes the variable to 1
@@ -119,11 +121,25 @@ def doubleWhite(cal):
 def whiteLine(cal):
 	print('whiteline')
 	robot.stop()
+	if blueLineCount >=1:
+		if lColor.color() == Color.BLUE and rColor.color() == Color.BLUE:
+			robot.straight(50)
+			while lColor.color() != Color.BLUE and rColor.color() != Color.BLUE:
+				diff = lColor.reflection() - rColor.reflection() + cal
+				output = int(multiplier * diff) #gets degrees to turn by
+				turningSpeed = math.floor(maxTurnSpeed/(abs(a*diff)+1))-60
+				if turningSpeed <= 10:
+					turningSpeed = 10
+				print(turningSpeed, ',', output, 'blu')
+				robot.drive(turningSpeed, output)
+			print('LANDONNNN')
+
 	robot.drive(-20, 0)
 	while(lColor.reflection() < 30 or rColor.reflection() < 30):
 		pass
 	robot.stop()
-	ev3.speaker.beep()
+	robot.straight(-10)
+	#ev3.speaker.beep()
 	while True:
 		compensator = 2 #Amount to multiply output by
 		leftIsBlack = isBlack(lColor)
@@ -133,8 +149,8 @@ def whiteLine(cal):
 		if not leftIsBlack and not rightIsBlack:
 				doubleWhite(cal)
 		#Uncomment for redline (stop and turn around)
-		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
-		#	redLine()
+		if lColor.reflection() < redA and lColor.reflection() > redB and rColor.reflection() < redA and rColor.reflection() > redB and diff <= 10 and diff >= -10:
+			redLine()
 		#	pass
 		output = -int(multiplier * diff) #gets degrees to turn by
 
@@ -148,17 +164,42 @@ def whiteLine(cal):
 		#robot.drive(driveSpeed, output) #output may need to be limited to within -180, 180 (?)
 
 def leftDetour():
+	print('leftdet', detourDone, lColor.reflection())
 	#ev3.light(Color.RED)
-	ev3.speaker.beep(1000,400)
+	#ev3.speaker.beep(1000,400)
 	wait(20)
 	#ev3.light(Color.GREEN)
 	robot.turn(70)
 
 def rightDetour():
-	ev3.speaker.beep(600,400)
+	print('rightdet', detourDone, rColor.reflection())
+	#ev3.speaker.beep(600,400)
 	wait(20)
 	robot.turn(-70)
 
+def redLine():
+	
+	if (lColor.color() == Color.RED or rColor.color() == Color.RED):
+		sys.exit()
+
+# Left turn
+	elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+		print('right1')
+		robot.turn(-50) #10 small 15 normal
+		robot.drive(100, 0)
+		while lColor.reflection() < black:
+			pass
+		robot.stop()
+		robot.drive(0, 40)
+
+	# Right turn
+	elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+		robot.turn(50) #10 small 15 normal??
+		robot.drive(100, 0)
+		while rColor.reflection() < black:
+			pass
+		robot.stop()
+		robot.drive(0, -40)
 
 def doubleBlack(compensator, cal):
 	print('doubleblack', compensator)
@@ -173,6 +214,9 @@ def doubleBlack(compensator, cal):
 	while lColor.reflection() < black and rColor.reflection() < black:
 		robot.stop()
 		robot.straight(7.5)
+
+		if (lColor.color() == Color.RED or rColor.color() == Color.RED):
+			redLine()
 
 		#Uncomment for white line
 		iteration += 1
@@ -212,6 +256,7 @@ def doubleBlack(compensator, cal):
 
 def checkGreenCol():
 	print('bruh')
+
 	if lColor.color() == Color.GREEN and rColor.color() == Color.GREEN:
 		robot.straight(30)
 		print('2green')
@@ -316,7 +361,7 @@ def rescue():
 				pass
 			robot.stop()
 			canRight = robot.angle()
-			ev3.speaker.beep()
+			#ev3.speaker.beep()
 			robot.turn(20)
 
 			robot.drive(0,25)
@@ -330,14 +375,14 @@ def rescue():
 				pass
 			robot.stop()
 			canLeft = robot.angle()
-			ev3.speaker.beep()
+			#ev3.speaker.beep()
 			#calc center here
 			canCompensation = canRight - canLeft
 			print(canRight,canLeft,canCompensation,canDist)
 			robot.turn(canCompensation/2)
 			
 			robot.straight(canDist - 100)
-			ev3.speaker.beep()
+			#ev3.speaker.beep()
 			robot.stop()
 			wait(20)
 
@@ -453,10 +498,12 @@ def checkRescue():
 
 def redLine():
 	robot.stop()
-	wait(200)
-	robot.turn(180)
-	#if (lColor.color() == Color.RED or rColor.color() == Color.RED):
-	#	sys.exit()
+	# robot.straight(-50)
+	# wait(20)
+	# robot.turn(180)
+	if (lColor.color() == Color.RED or rColor.color() == Color.RED):
+		ev3.speaker.say("finally the suffering is over")
+		sys.exit()
 
 #Handles all movement
 def move(cal):
@@ -464,7 +511,7 @@ def move(cal):
 	global multiplier
 	robot.stop()
 	rescueTime = timeSecs.process_time()
-	ev3.speaker.beep()
+	#ev3.speaker.beep()
 	while True:
 		compensator = 2 #Amount to multiply output by
 		leftIsBlack = isBlack(lColor)
@@ -479,11 +526,13 @@ def move(cal):
 			if (ultraS.distance() < ultraSLimit):
 				obstacle(ultraS.distance())
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
+		
+		if lColor.reflection() < redA and lColor.reflection() > redB and rColor.reflection() < redA and rColor.reflection() > redB and diff <= 10 and diff >= -10:
+			redLine()
 		if leftIsBlack and rightIsBlack:
 				doubleBlack(compensator, cal)
 		#Uncomment for redline
-		#if lColor.reflection() < red and lColor.reflection() > black and rColor.reflection() < red and rColor.reflection() > black:
-		#	redLine()
+		
 		#	pass
 		output = int(multiplier * diff) #gets degrees to turn by
 
@@ -495,16 +544,20 @@ def move(cal):
   
 		print(turningSpeed, ',', output, 'normal')
 		robot.drive(turningSpeed, output)
-		#if detourDone == 0:
-			#if lColor.reflection() < redA and lColor.reflection() > redB:
-				#if lColor.color() == Color.RED:
-					#leftDetour()
-					#detourDone = 1
+		# if detourDone <= 1:
+		# 	if lColor.reflection() < redA and lColor.reflection() > redB:
+		# 		robot.stop()
+		# 		wait(20)
+		# 		if lColor.color() == Color.RED:
+		# 			leftDetour()
+		# 			detourDone = detourDone + 1
 
-			#if rColor.reflection() < redA and rColor.reflection() > redB:
-				#if rColor.color() == Color.RED:
-					#rightDetour()
-					#detourDone = 1
+		# 	if rColor.reflection() < redA and rColor.reflection() > redB:
+		# 		robot.stop()
+		# 		wait(20)
+		# 		if rColor.color() == Color.RED:
+		# 			rightDetour()
+		# 			detourDone = detourDone + 1
 					#NARROW DOWN RANGE!!!!!!!!
 
 
@@ -525,20 +578,179 @@ def initiate():
 	lifter.run_angle(100,-90, wait=False)
 	claw.run_until_stalled(100)
 	#ev3.speaker.say("Close the claw you nons")
-	ev3.speaker.beep()
+	#ev3.speaker.beep()
 	while len(ev3.buttons.pressed()) == 0:
 		pass
 	dif = cal()
 	print(dif)
 	wait(200)
-	ev3.speaker.beep()
+	#ev3.speaker.beep()
 	while len(ev3.buttons.pressed()) == 0:
 		pass
 
-	ev3.speaker.beep(200,20)
+	#ev3.speaker.beep(200,20)
 
 	move(dif)
 
+def landon():
+	ev3.speaker.set_speech_options(voice="m7")
+	ev3.speaker.set_volume(100)
+
+	bees = """
+	According to all known laws
+of aviation,
+there is no way a bee
+should be able to fly.
+Its wings are too small to get
+its fat little body off the ground.
+The bee, of course, flies anyway
+because bees don't care
+what humans think is impossible.
+Yellow, black. Yellow, black.
+Yellow, black. Yellow, black.
+Ooh, black and yellow!
+Let's shake it up a little.
+Barry! Breakfast is ready!
+Ooming!
+Hang on a second.
+Hello?
+- Barry?
+- Adam?
+- Oan you believe this is happening?
+- I can't. I'll pick you up.
+Looking sharp.
+Use the stairs. Your father
+paid good money for those.
+Sorry. I'm excited.
+Here's the graduate.
+We're very proud of you, son.
+A perfect report card, all B's.
+Very proud.
+Ma! I got a thing going here.
+- You got lint on your fuzz.
+- Ow! That's me!
+- Wave to us! We'll be in row 118,000.
+- Bye!
+Barry, I told you,
+stop flying in the house!
+- Hey, Adam.
+- Hey, Barry.
+- Is that fuzz gel?
+- A little. Special day, graduation.
+Never thought I'd make it.
+Three days grade school,
+three days high school.
+Those were awkward.
+Three days college. I'm glad I took
+a day and hitchhiked around the hive.
+You did come back different.
+- Hi, Barry.
+- Artie, growing a mustache? Looks good.
+- Hear about Frankie?
+- Yeah.
+- You going to the funeral?
+- No, I'm not going.
+Everybody knows,
+sting someone, you die.
+Don't waste it on a squirrel.
+Such a hothead.
+I guess he could have
+just gotten out of the way.
+I love this incorporating
+an amusement park into our day.
+That's why we don't need vacations.
+Boy, quite a bit of pomp...
+under the circumstances.
+- Well, Adam, today we are men.
+- We are!
+- Bee-men.
+- Amen!
+Hallelujah!
+Students, faculty, distinguished bees,
+please welcome Dean Buzzwell.
+Welcome, New Hive Oity
+graduating class of...
+...9:15.
+That concludes our ceremonies.
+And begins your career
+at Honex Industries!
+Will we pick ourjob today?
+I heard it's just orientation.
+Heads up! Here we go.
+Keep your hands and antennas
+inside the tram at all times.
+- Wonder what it'll be like?
+- A little scary.
+Welcome to Honex,
+a division of Honesco
+and a part of the Hexagon Group.
+This is it!
+Wow.
+Wow.
+We know that you, as a bee,
+have worked your whole life
+to get to the point where you
+can work for your whole life.
+Honey begins when our valiant Pollen
+Jocks bring the nectar to the hive.
+Our top-secret formula
+is automatically color-corrected,
+scent-adjusted and bubble-contoured
+into this soothing sweet syrup
+with its distinctive
+golden glow you know as...
+Honey!
+- That girl was hot.
+- She's my cousin!
+- She is?
+- Yes, we're all cousins.
+- Right. You're right.
+- At Honex, we constantly strive
+to improve every aspect
+of bee existence.
+These bees are stress-testing
+a new helmet technology.
+- What do you think he makes?
+- Not enough.
+Here we have our latest advancement,
+the Krelman.
+- What does that do?
+- Oatches that little strand of honey
+that hangs after you pour it.
+Saves us millions.
+Oan anyone work on the Krelman?
+Of course. Most bee jobs are
+small ones. But bees know
+that every small job,
+if it's done well, means a lot.
+But choose carefully
+because you'll stay in the job
+you pick for the rest of your life.
+The same job the rest of your life?
+I didn't know that.
+What's the difference?
+You'll be happy to know that bees,
+as a species, haven't had one day off
+in 27 million years.
+So you'll just work us to death?
+We'll sure try.
+Wow! That blew my mind!
+"What's the difference?"
+How can you say that?
+One job forever?
+That's an insane choice to have to make.
+I'm relieved. Now we only have
+to make one decision in life.
+But, Adam, how could they
+never have told us that?
+Why would you question anything?
+YOUR MOTHER IS RATHER SUSPISIOUSOISUS BUT YOUR ARE ACTUALLY GAY LMAO ANDREW DHARMA THE FARMER
+We're bees.
+"""
+	#ev3.speaker.say(bees)
+	#while True:
+	#	ev3.speaker.beep(lColor.reflection()*6, random.randint(0, 50))
+	ev3.speaker.play_file('necron.mp3')
 
 def test():
 	#initiate()
@@ -563,6 +775,9 @@ def test():
   
 		robot.drive(turningSpeed, output)
 
+funnythread = threading.Thread(target=landon)
 
 #test()
+funnythread.start()
 initiate()
+#landon()
