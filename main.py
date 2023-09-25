@@ -14,12 +14,12 @@ import threading
 #from math import sqrt, asin
 
 #WHAT IS IN COURSE????
-waterTowerCount = 1
+waterTowerCount = 0
 rescueCount = 2
-whiteLineCount = 1
-detourCount = 1
-redLineCount = 1
-blueLineCount = 1
+whiteLineCount = 0
+detourCount = 0
+redLineCount = 0
+blueLineCount = 0
 cansCount = 10
 #blackCanCount = 0
 blockPos = 0 #changing doesn't do anything
@@ -55,7 +55,7 @@ driveSpeed = 115 #115 normal 50  small with hills
 maxTurnSpeed = 115
 turningSpeed = 69 #changing doesn't do anything
 a = 0.02
-multiplier = 2.5 #2.5normal 4.2small
+multiplier = 3.5 #2.5normal 4.2small
 
 #colors
 silver = 90
@@ -750,7 +750,7 @@ We're bees.
 	#ev3.speaker.say(bees)
 	#while True:
 	#	ev3.speaker.beep(lColor.reflection()*6, random.randint(0, 50))
-	ev3.speaker.play_file('necron.mp3')
+	#ev3.speaker.play_file('necron.mp3')
 
 def test():
 	#initiate()
@@ -775,9 +775,9 @@ def test():
   
 		robot.drive(turningSpeed, output)
 
-funnythread = threading.Thread(target=landon)
+##funnythread = threading.Thread(target=landon)
 
 #test()
-funnythread.start()
+#funnythread.start()
 initiate()
 #landon()
