@@ -18,13 +18,14 @@ waterTowerCount = 0
 rescueCount = 2
 whiteLineCount = 0
 redLineCount = 0
-detourCount = 0
+detourCount = 1
 cansCount = 10
 #blackCanCount = 0
 blockPos = 0 #changing doesn't do anything
 funnyBlok = 0
 animalCrossings = 0
 animalCrossingsDone = 0
+uturn = 0
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
 
@@ -61,7 +62,7 @@ multiplier = 3.5 #2.5normal 4.2small
 #colors
 silver = 90
 white = 50
-black = 30
+black = 25
 green1 = 12
 green2 = 25
 redA = 50
@@ -131,7 +132,9 @@ def whiteLine(cal):
   
 
 def redLine():
-	print('redline')
+	global detourDone, detourCount, redLineCount
+	print('redline', detourDone)
+	robot.straight(10)
 	robot.stop()
 
 	if frontColor.color() == Color.RED and redLineCount == 1:
@@ -140,33 +143,61 @@ def redLine():
 		robot.straight(-50)
 		wait(20)
 		robot.turn(180)
+		redLineCount =+ 1
 
-	elif lColor.color() == Color.RED and detourCount == 1:
+	elif lColor.color() == Color.RED and detourCount == 1 and detourDone == 0:
 		print('right red')
-		robot.turn(70) #10 small 15 normal
+		ev3.speaker.beep(69,69)
+		robot.straight(30)
+		robot.turn(70)
 		robot.drive(100, 0)
 		while rColor.reflection() < black:
 			pass
 		robot.stop()
 		robot.drive(0, 40)
+		detourDone =+ 1
 
 	# Left turn
-	elif rColor.color() == Color.RED and detourCount == 1:
+	elif rColor.color() == Color.RED and detourCount == 1 and detourDone == 0:
 		print("left red")
-		robot.turn(-70) #10 small 15 normal??
+		ev3.speaker.beep(69,420)
+		robot.straight(30)
+		robot.turn(-70)
 		robot.drive(100, 0)
 		while lColor.reflection() < black:
 			pass
 		robot.stop()
 		robot.drive(0, -40)
+		detourDone =+ 1
 	
-	elif detourCount == 1:
-		print('returned')
-		robot.straight(-5)
+	elif lColor.color() == Color.RED and detourCount == 1 and detourDone == 1:
+		print('right red')
+		ev3.speaker.beep(69,69)
+		robot.straight(25)
+		robot.turn(-70)
+		robot.drive(100, 0)
+		while rColor.reflection() < black:
+			pass
+		robot.stop()
+		robot.drive(0, 40)
+		detourDone =+ 1
+
+	# Left turn
+	elif rColor.color() == Color.RED and detourCount == 1 and detourDone == 1:
+		print("left red")
+		ev3.speaker.beep(69,420)
+		robot.straight(25)
+		robot.turn(70)
+		robot.drive(100, 0)
+		while lColor.reflection() < black:
+			pass
+		robot.stop()
+		robot.drive(0, -40)
+		detourDone =+ 1
 	
 	else:
 		print('lanond')
-		robot.straight(-5)
+		robot.straight(-10)
 
 def AnimalCrossing(cal):
 	global animalCrossingsDone
@@ -177,21 +208,23 @@ def AnimalCrossing(cal):
 	print('animalcrossing', animalCrossingsDone)
 	robot.stop()
 	ev3.speaker.beep()
-	robot.straight(40)
+	robot.straight(50)
 	ev3.speaker.beep()
 	while True:
-		leftIsBlack = isBlack(lColor)
-		rightIsBlack = isBlack(rColor)
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		
-		if frontColor.color() == Color.BLUE:
-			robot.straight(40)
+		leftIsBlack = isBlack(lColor)
+		rightIsBlack = isBlack(rColor)
+
+		if frontColor.color() == Color.BLUE and leftIsBlack and rightIsBlack:
+			print('donewithanimals')
+			robot.straight(50)
 			animalCrossingsDone =+ 1
 			return
 		
 		output = int(multiplier * diff) #gets degrees to turn by
 
-		turningSpeed = math.floor(maxTurnSpeed/(abs(a*diff)+1))/2
+		turningSpeed = (math.floor(maxTurnSpeed/(abs(a*diff)+1)))/3
 
 		if turningSpeed <= 10:
 			turningSpeed = 10
@@ -208,30 +241,40 @@ def doubleBlack(compensator, cal):
 
 	iteration = 0
 
+#	if detourCount == 1:
+#		robot.straight(-40)
+#		if frontColor.color() == Color.RED:
+#			redLine()
+
 	while lColor.reflection() < black and rColor.reflection() < black:
 		robot.stop()
 		robot.straight(6)
 
-		
-		if (lColor.color() == Color.GREEN and rColor.color() == Color.GREEN and frontColor.color() != Color.WHITE):
+		if detourCount == 1 and detourDone == 0:
+			robot.straight(-30)
+			if lColor.color == Color.RED or rColor.color() == Color.RED:
+				print('maybe')
+				redLine()
+
+		if (lColor.color() == Color.GREEN and rColor.color() == Color.GREEN and frontColor.color() == Color.BLACK and uturn == 1):
 			print('uturn1')
+			robot.straight(-50)
 			robot.turn(180)
-			robot.straight(40)
 			return
 
 		#Uncomment for white line
 		iteration += 1
-		if iteration >= 3:
+		if iteration >= 3 and whiteLineCount == 1:
 			#checkGreenCol()
 			whiteLine(cal)
 
 		if diff <= compensator and diff >= -compensator:
-			pass
+			print('compensator pass')
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 			print('right1')
-			robot.turn(12) #10 small 15 normal
+			robot.turn(15) #10 small 15 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -241,7 +284,7 @@ def doubleBlack(compensator, cal):
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 			print('left1')
-			robot.turn(-12) #10 small 15 normal??
+			robot.turn(-15) #10 small 15 normal??
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -463,11 +506,6 @@ def move(cal):
 	rescueTime = timeSecs.process_time()
 	#ev3.speaker.beep()
 	while True:
-		if frontColor.color() == Color.RED:
-			redLine()
-		
-		if frontColor.color() == Color.BLUE:
-			AnimalCrossing(cal)
 
 		compensator = 2 #Amount to multiply output by
 		leftIsBlack = isBlack(lColor)
@@ -483,8 +521,12 @@ def move(cal):
 				obstacle(ultraS.distance())
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		
-		if lColor.reflection() < redA and lColor.reflection() > redB and rColor.reflection() < redA and rColor.reflection() > redB and diff <= 10 and diff >= -10:
+		if diff <= 10 and diff >= -10 and frontColor.color() == Color.RED:
 			redLine()
+
+		if frontColor.color() == Color.BLUE and animalCrossings == 1 and leftIsBlack and rightIsBlack:
+			AnimalCrossing(cal)
+
 		if leftIsBlack and rightIsBlack:
 			doubleBlack(compensator, cal)
 	
