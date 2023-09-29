@@ -26,7 +26,7 @@ funnyBlok = 0
 animalCrossings = 0
 animalCrossingsDone = 0
 uturn = 0
-diversion = 1
+diversion = 0
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
 
@@ -64,7 +64,7 @@ multiplier = 3.5 #2.5normal 4.2small
 silver = 90
 white = 50
 black = 25
-yellow = 80
+yellow = 80 #check if small tiles and diversion
 
 #other variables
 rescueComplete = 0 #once completed rescue changes the variable to 1
@@ -363,6 +363,9 @@ def doubleBlack(compensator, cal):
 			robot.stop()
 			robot.drive(0, -40)
 
+		elif frontColor.color() ==Color.GREEN and rColor.reflection() > 99 and lColor.reflection() > 99:
+			rescueTime = rescue()
+
 		else:
 			print('bruh2')
 
@@ -420,6 +423,7 @@ def centerRescue():
 
 def rescue():
 	global rescueCount
+	print('rescueee')
 	robot.stop()
 	claw.run_angle(-200, 50)
 
@@ -558,21 +562,22 @@ def rescue():
 
 	return timeSecs.process_time() + 5
 def checkRescue():
-	testDist = 50
+	print('check!', frontColor.color())
+	testDist = 10
 	robot.stop()
 	robot.straight(testDist)
-	if frontColor.color() == Color.GREEN:
-		robot.drive(-10,0)
+	if frontColor.color() == Color.GREEN or frontColor.color() == Color.BLACK:
+		#robot.drive(-10,0)
 		robot.straight(-testDist)
+		#robot.straight(-10)
 		rescueTime = rescue()
 	else:
-		robot.straight(-50)
+		robot.straight(-testDist)
 		rescueTime = timeSecs.process_time() + 0.1
 	return rescueTime
 
 #Handles all movement
 def move(cal):
-	global detourDone
 	global multiplier
 	robot.stop()
 	rescueTime = timeSecs.process_time()
@@ -599,7 +604,7 @@ def move(cal):
 			if rightYellow or leftYellow:
 				diversionLine(rightYellow, leftYellow, cal)
 
-		if frontColor.color() == Color.RED: #between -10 and 10
+		if frontColor.color() == Color.RED and (redLineCount >= 1 or detourCount >=1): #between -10 and 10
 			redLine()
 
 		if frontColor.color() == Color.BLUE and animalCrossings == 1 and leftIsBlack and rightIsBlack:
