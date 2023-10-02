@@ -396,7 +396,9 @@ def centerRescue():
 
 
 def rescue():
-	global rescueCount, blockPos
+	global rescueCount, blockPos, cansRescued
+ 
+	cansRescued = 0
 	print('rescueee')
 	robot.stop()
 	claw.run_angle(-200, 50)
@@ -498,16 +500,17 @@ def rescue():
 				pass
 
 
-				robot.straight(blockDist-21) #goto block
+			robot.straight(blockDist-21) #goto block
 				
-				lifter.run_angle(30,20) #lower lifter
-				wait(100)
-				claw.stop()
-				claw.run_angle(-100,50,wait=True) #drop can
-				lifter.run_angle(30,-20)
-				robot.straight(-blockDist+21)
-				cansRescued =+1
-				robot.turn(-30)
+			lifter.run_angle(30,20) #lower lifter
+			wait(100)
+			claw.stop()
+			claw.run_angle(-100,50,wait=True) #drop can
+			lifter.run_angle(30,-20)
+			robot.straight(-blockDist+21)
+			cansRescued =+1
+			robot.turn(-blockPos)
+			robot.turn(-30)
 
 	if funnyBlok == 1:
 		if blockPos == 0:
