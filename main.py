@@ -165,13 +165,13 @@ def redLine():
 	robot.stop()
 
 	if frontColor.color() == Color.RED:
-		print("did it get herer?")
+		#print("did it get herer?")
 		if startedDetour == True:
-			print("what about here")
+			#print("what about here")
 			if lastDetour == 1:
 				robot.drive(100,120)
 				timeSecs.sleep(1)#need to change
-				print('surely')
+			#	print('surely')
 			elif lastDetour == 2:
 				robot.drive(100,-40)
 				timeSecs.sleep(1)
@@ -185,6 +185,7 @@ def redLine():
 			wait(20)
 			robot.turn(180)
 			redLineCount =+ 1
+
 
 	elif lColor.color() == Color.RED and detourCount >= 1 and startedDetour == False :
 		print('right red, going left')
