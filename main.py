@@ -56,7 +56,6 @@ helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr 
 towerDriveSpeed = 280 #140
 driveSpeed = 115 #115 normal 50  small with hills
 maxTurnSpeed = 115
-turningSpeed = 69 #changing doesn't do anything
 a = 0.02
 multiplier = 3.5 #2.5normal 4.2small
 
@@ -73,6 +72,7 @@ lastTurn = None
 rescueTime = timeSecs.process_time()
 startedDetour = False
 lastDetour = 0
+turningSpeed = 69 #changing doesn't do anything
 #program
 
 #Runs if an obstacle is detected
@@ -217,34 +217,6 @@ def redLine():
 		startedDetour = True
 		lastDetour = 2
 
-	
-#	elif lColor.color() == Color.RED and detourCount >= 1 and detourDone == 1:
-#		print('right red')
-#		ev3.speaker.beep(69,69)
-#		robot.turn(-30)
-#		robot.straight(30)
-#		wait(20)
-#		robot.drive(50, -100)
-#		while rColor.reflection() > 50:
-#			pass
-#		robot.stop()
-#		#robot.drive(0, 40)
-#		detourDone =+ 1
-#
-#	# Left turn
-#	elif rColor.color() == Color.RED and detourCount >= 1 and detourDone == 1:
-#		print("left red")
-#		ev3.speaker.beep(69,420)
-#		robot.turn(30)
-#		robot.straight(30)
-#		wait(20)
-#		robot.drive(50, 100)
-#		while lColor.reflection() > 50:
-#			pass
-#		robot.stop()
-	#	robot.drive(0, -40)
-#		detourDone =+ 1
-	
 	else:
 		print('lanond')
 		robot.straight(-10)
