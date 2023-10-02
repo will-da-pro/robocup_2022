@@ -73,6 +73,7 @@ rescueTime = timeSecs.process_time()
 startedDetour = False
 lastDetour = 0
 turningSpeed = 69 #changing doesn't do anything
+cansRescued = 0
 #program
 
 #Runs if an obstacle is detected
@@ -474,15 +475,21 @@ def rescue():
 			#robot.straight(14)
 			robot.straight(-(canDist-55)) #back to middle
 			robot.turn((startAngle-robot.angle())) #face block
-			if funnyBlok == 1:
+			robot.stop()
+			if funnyBlok == 1 and cansRescued == 0:
+				wait(100)
 				if ultraS.distance() <= blockMax:
 					blockPos = 0
 				else:
+					wait(20)
 					robot.turn(90)
+					wait(100)
 					if ultraS.distance() <= blockMax:
 						blockPos = 90
 					else:
+						wait(20)
 						robot.turn(-180)
+						wait(100)
 						if ultraS.distance() <= blockMax:
 							blockPos = -90
 						else:
@@ -494,11 +501,12 @@ def rescue():
 				robot.straight(blockDist-21) #goto block
 				
 				lifter.run_angle(30,20) #lower lifter
-				wait(250)
+				wait(100)
 				claw.stop()
 				claw.run_angle(-100,50,wait=True) #drop can
 				lifter.run_angle(30,-20)
 				robot.straight(-blockDist+21)
+				cansRescued =+1
 				robot.turn(-30)
 
 	if funnyBlok == 1:
