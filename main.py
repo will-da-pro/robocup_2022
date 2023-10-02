@@ -538,8 +538,8 @@ def checkRescue():
 	print('check!', frontColor.color())
 	testDist = 10
 	robot.stop()
-	robot.straight(testDist)
-	if frontColor.color() == Color.GREEN or frontColor.color() == Color.BLACK:
+	#robot.straight(testDist)
+	if frontColor.color() == Color.BLUE or frontColor.color() == Color.GREEN or frontColor.color() == Color.BLACK:
 		#robot.drive(-10,0)
 		robot.straight(-testDist)
 		#robot.straight(-10)
