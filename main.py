@@ -22,7 +22,7 @@ detourCount = 0
 cansCount = 10
 #blackCanCount = 0
 blockPos = 0 #changing doesn't do anything
-funnyBlok = 0
+funnyBlok = 1
 animalCrossings = 0
 animalCrossingsDone = 0
 uturn = 0
@@ -395,7 +395,7 @@ def centerRescue():
 
 
 def rescue():
-	global rescueCount
+	global rescueCount, blockPos
 	print('rescueee')
 	robot.stop()
 	claw.run_angle(-200, 50)
