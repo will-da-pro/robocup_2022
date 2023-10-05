@@ -55,7 +55,7 @@ helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr 
 #drive speed variables
 towerDriveSpeed = 280 #140
 driveSpeed = 115 #115 normal 50  small with hills
-maxTurnSpeed = 115
+maxTurnSpeed = 125
 a = 0.02
 multiplier = 3.5 #2.5normal 4.2small
 
