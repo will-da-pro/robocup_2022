@@ -1,3 +1,3 @@
-# robocup_2022
+# Robocup Open Rescue Line - 2022/23
 
-We coding, we building, we rebuilding on competition day (for real).
+Coding, building, and testing a Lego Ev3 robot running EV3DEV and Micropython, coded in Visual Studio Code.
