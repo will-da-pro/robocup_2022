@@ -16,13 +16,13 @@ import threading
 #WHAT IS IN COURSE????
 waterTowerCount = 0
 rescueCount = 2
-whiteLineCount = 0
+whiteLineCount = 1
 redLineCount = 0
 detourCount = 0
 cansCount = 10
 #blackCanCount = 0
 blockPos = 0 #changing doesn't do anything
-funnyBlok = 1
+funnyBlok = 0
 animalCrossings = 0
 animalCrossingsDone = 0
 uturn = 0
@@ -55,15 +55,16 @@ helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr 
 #drive speed variables
 towerDriveSpeed = 280 #140
 driveSpeed = 115 #115 normal 50  small with hills
-maxTurnSpeed = 125
+maxTurnSpeed = 115
 a = 0.02
-multiplier = 3.5 #2.5normal 4.2small
+multiplier = 3.5 #so now... #2.5normal 4.2small
 
 #colors
 silver = 90
 white = 50
 black = 25
 yellow = 80 #check if small tiles and diversion
+#green is 16 - ree
 
 #other variables
 rescueComplete = 0 #once completed rescue changes the variable to 1
