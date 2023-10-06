@@ -39,15 +39,17 @@ rColor = ColorSensor(Port.S1)
 frontColor = ColorSensor(Port.S3)
 ultraS = UltrasonicSensor(Port.S2)
 ultraSLimit = 90
-maxCanDist = 400
+maxCanDist = 250 #250?
 rescueBlockDist = 300
+blockMin = 200
+blockMax = 300
 
 #motors
 lMotor = Motor(Port.C)
 rMotor = Motor(Port.B)
 claw = Motor(Port.D)
 lifter = Motor(Port.A)
-robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130) #fixed
+robot = DriveBase(lMotor, rMotor, wheel_diameter=55, axle_track=130)
 clawTurn = -90
 
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "Uh Will what are you doing", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "JAMES GET OFF MINECRAFT", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue", "It's over 9000!", "Dante best"]
@@ -297,7 +299,7 @@ def doubleBlack(compensator, cal):
 #			robot.straight(-30)
 
 
-
+#moana lisa
 
 		if lColor.color() == Color.BLUE and rColor.color() == Color.BLUE and frontColor.color() == Color.BLUE:
 			print('AC2')
@@ -315,8 +317,8 @@ def doubleBlack(compensator, cal):
 			#checkGreenCol()
 			whiteLine(cal)
 
-		if diff <= 5 and diff >= -5:
-			print(' pass')
+#		if diff <= 2 and diff >= -2:
+#			print(' pass')
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
@@ -340,6 +342,9 @@ def doubleBlack(compensator, cal):
 
 		elif frontColor.color() ==Color.GREEN and rColor.reflection() > 99 and lColor.reflection() > 99:
 			rescueTime = rescue()
+
+		elif diff <= 2 and diff >= -2:
+			print(' pass')
 
 		else:
 			print('bruh2')
@@ -397,7 +402,7 @@ def centerRescue():
 
 
 def rescue():
-	global rescueCount, blockPos, cansRescued
+	global rescueCount, blockPos, cansRescued, maxCanDist, rescueBlockDist
  
 	cansRescued = 0
 	print('rescueee')
@@ -408,13 +413,14 @@ def rescue():
 
 	startAngle = robot.angle()
  
-	maxCanDist = 250
-	blockDist = 270
+	#maxCanDist = 250
+	#blockDist = 270
  
 	wait(20)
 	robot.straight(220)
 	wait(20)
-	robot.turn(-30)
+	if funnyBlok == 0:
+		robot.turn(-30)
 	
 	wait(10)
 	
@@ -424,9 +430,6 @@ def rescue():
 			canDist = ultraS.distance()
 			robot.stop()
 			wait(50)
-
-			blockMax = 300
-			blockMin = 200
 		
 			#finds center of can
 			robot.turn(-20)
@@ -455,7 +458,14 @@ def rescue():
 			canCompensation = canRight - canLeft
 			print(canRight,canLeft,canCompensation,canDist)
 			robot.turn(canCompensation/2)
-			
+			wait(20)
+			canDist = ultraS.distance()
+
+			print(canDist)
+
+			if canCompensation >= 100 or canCompensation <= -100:
+				return
+
 			robot.straight(canDist - 100)
 			ev3.speaker.beep()
 			robot.stop()
@@ -467,7 +477,7 @@ def rescue():
 			robot.straight(45)
 			
 			claw.run_time(100,1000,wait=True) #centers it with claw
-			claw.run_angle(-20,50,wait=True) #reopens claw
+			claw.run_time(100,100,wait=True) #reopens claw
 			claw.stop()
 			robot.straight(8) #might knock can over
 			claw.run(100) #grabs can
@@ -481,19 +491,19 @@ def rescue():
 			robot.stop()
 			if funnyBlok == 1 and cansRescued == 0:
 				wait(100)
-				if ultraS.distance() <= blockMax:
+				if ultraS.distance() <= blockMax and ultraS.distance() >= blockMin:
 					blockPos = 0
 				else:
 					wait(20)
 					robot.turn(90)
 					wait(100)
-					if ultraS.distance() <= blockMax:
+					if ultraS.distance() <= blockMax and ultraS.distance() >= blockMin:
 						blockPos = 90
 					else:
 						wait(20)
 						robot.turn(-180)
 						wait(100)
-						if ultraS.distance() <= blockMax:
+						if ultraS.distance() <= blockMax and ultraS.distance() >= blockMin:
 							blockPos = -90
 						else:
 							pass #sys.exit()
@@ -501,14 +511,14 @@ def rescue():
 				pass
 
 
-			robot.straight(blockDist-21) #goto block
+			robot.straight(rescueBlockDist-41) #goto block
 				
 			lifter.run_angle(30,20) #lower lifter
 			wait(100)
 			claw.stop()
 			claw.run_angle(-100,50,wait=True) #drop can
 			lifter.run_angle(30,-20)
-			robot.straight(-blockDist+21)
+			robot.straight(-rescueBlockDist+21)
 			cansRescued =+1
 			robot.turn(-blockPos)
 			robot.turn(-30)
@@ -548,7 +558,7 @@ def rescue():
 	return timeSecs.process_time() + 5
 def checkRescue():
 	print('check!', frontColor.color())
-	testDist = 10
+	testDist = 20
 	robot.stop()
 	#robot.straight(testDist)
 	if frontColor.color() == Color.BLUE or frontColor.color() == Color.GREEN or frontColor.color() == Color.BLACK:
@@ -601,6 +611,7 @@ def move(cal):
 		output = int(multiplier * diff) #gets degrees to turn by
 
 		turningSpeed = math.floor(maxTurnSpeed/(abs(a*diff)+1))
+		#turningSpeed = math.floor(math.sqrt(10000-diff*diff))
   
 		#print(turningSpeed, ',', output, 'normal')
 		robot.drive(turningSpeed, output)
@@ -613,7 +624,7 @@ def startMessage():
 	ev3.speaker.say(helloMessages[rand])
 
 def cal():
-	dif = lColor.reflection() - rColor.reflection()
+	dif = lColor.reflection() - rColor.reflection() #- frontColor.reflection()
 	return dif
 
 def initiate():
@@ -638,6 +649,8 @@ def initiate():
 
 def test():
 	#initiate()
+	while True:
+		print(ultraS.distance())
 	while True:
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
   
