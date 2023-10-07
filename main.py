@@ -28,7 +28,7 @@ animalCrossingsDone = 0
 uturn = 0
 diversion = 0
 
-# This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
+# This program requires LEGO EV3 MicroPyton v2.0 or higher. (INSTALLED)
 
 #objects
 ev3 = EV3Brick()
