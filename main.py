@@ -14,8 +14,8 @@ import threading
 #from math import sqrt, asin
 
 #WHAT IS IN COURSE????
-waterTowerCount = 2
-rescueCount = 2
+waterTowerCount = 1
+rescueCount = 1
 whiteLineCount = 0
 redLineCount = 0
 detourCount = 0
@@ -23,12 +23,12 @@ cansCount = 69420
 #blackCanCount = 0
 blockPos = 0 #changing doesn't do anything
 funnyBlok = 0
-animalCrossings = 0
+animalCrossings = 1
 animalCrossingsDone = 0
 uturn = 0
 diversion = 0
 
-# This program requires LEGO EV3 MicroPyton v2.0 or higher. (INSTALLED)
+# This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
 
 #objects
 ev3 = EV3Brick()
@@ -259,8 +259,7 @@ def AnimalCrossing(cal):
 		robot.straight(-10)
 		print('depression')
 		return
-	else:
-		pass
+	
 
 	print('animalcrossing', animalCrossingsDone)
 	robot.stop()
