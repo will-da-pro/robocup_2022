@@ -19,7 +19,7 @@ rescueCount = 2
 whiteLineCount = 1
 redLineCount = 0
 detourCount = 0
-cansCount = 10
+cansCount = 69420
 #blackCanCount = 0
 blockPos = 0 #changing doesn't do anything
 funnyBlok = 0
@@ -55,7 +55,7 @@ clawTurn = -90
 helloMessages = ["Hello there", "Hello mr Dharma", "YOU NILLY SUSAN", "Hello mr Hu", "Uh Will what are you doing", "GET RICKROLLED", "JELLY", "POTATOES", "REFRACTION BEST", "HACK ON 2B2T PLS", "COMMUNISM", "What do you think you are doing", "More start messages means more lag", "JAMES GET OFF MINECRAFT", "yes", "parp", "kathmandu", "what you doing", "hypixel skyblock hype is op", "water tower", "you mrs leech", "you mrs walnut", "hello smoothiedrew", "gas", "andrew's toxic gas", "whale", "scatha", "will is good", "worms", "thats long", "ratfraction is cal but on vape", "rise client is meta", "now for water tower", "wheres the water tower", "laughing", "why are you making so many", "failure", "stop now its too long", "this is smooth", "more start messages means more life", "Jellybean is mid", "FORTNITE BATTLE PASS", "get the ems", "prot 4 bois", "dont waste your money on a subzero wisp PLEASE", "6b9t is best", "nah I don't know what to say", "UR MUM", "it's getting pretty long", "deez nuts are more reflective", "we may need to change some variables", "It should be running the code", "You know what you could add instead? Double rescue", "It's over 9000!", "Dante best"]
 
 #drive speed variables
-towerDriveSpeed = 280 #140
+towerDriveSpeed = 350 #140
 driveSpeed = 115 #115 normal 50  small with hills
 maxTurnSpeed = 115
 a = 0.02
@@ -120,6 +120,22 @@ def doubleWhite(cal):
 def whiteLine(cal):
 	print('whiteline')
 	robot.stop()
+
+	robot.drive(-25, 0)
+	while lColor.reflection() < black and rColor.reflection() < black:
+		pass
+	robot.stop()
+
+	while lColor.reflection() < black or rColor.reflection() < black:
+		if lColor.reflection() < black and rColor.reflection() < black:
+			robot.drive(-25,0)
+		elif lColor.reflection() < black:
+			robot.drive(0,25)
+		elif rColor.reflection() < black:
+			robot.drive(0,-25)
+			
+	robot.stop()
+	robot.straight(10)
 
 	while True:
 		compensator = 2 #Amount to multiply output by
@@ -317,13 +333,13 @@ def doubleBlack(compensator, cal):
 			#checkGreenCol()
 			whiteLine(cal)
 
-#		if diff <= 2 and diff >= -2:
-#			print(' pass')
+		if diff <= 2 and diff >= -2:
+			print(' pass')
 
 		# Right turn
 		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 			print('right1')
-			robot.turn(15) #10 small 15 normal
+			robot.turn(10) #10 small 15 normal
 			robot.drive(100, 0)
 			while lColor.reflection() < black:
 				pass
@@ -333,7 +349,7 @@ def doubleBlack(compensator, cal):
 		# Left turn
 		elif (rColor.reflection() < lColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 			print('left1')
-			robot.turn(-15) #10 small 15 normal??
+			robot.turn(-10) #10 small 15 normal??
 			robot.drive(100, 0)
 			while rColor.reflection() < black:
 				pass
@@ -387,14 +403,14 @@ def checkGreenCol():
 	
 def centerRescue():
 	robot.drive(-25, 0)
-	while lColor.reflection() >= 99 or rColor.reflection() >= 99:
+	while lColor.reflection() >= 97 or rColor.reflection() >= 97:
 		pass
 	robot.stop()
 
-	while lColor.reflection() < 99 or rColor.reflection() < 99:
-		if lColor.reflection() < 99 and rColor.reflection() < 99:
+	while lColor.reflection() < 97 or rColor.reflection() < 97:
+		if lColor.reflection() < 97 and rColor.reflection() < 97:
 			robot.drive(25, 0)
-		elif lColor.reflection() < 99:
+		elif lColor.reflection() < 97:
 			robot.drive(0, 25)
 		else:
 			robot.drive(0,-25)
@@ -463,10 +479,12 @@ def rescue():
 
 			print(canDist)
 
-			if canCompensation >= 100 or canCompensation <= -100:
-				return
-
-			robot.straight(canDist - 100)
+			#if canCompensation >= 100 or canCompensation <= -100:
+			#	return
+			if canDist <= 50:
+				robot.straight(canDist - 20)
+			else:
+				robot.straight(canDist - 50)
 			ev3.speaker.beep()
 			robot.stop()
 			wait(20)
@@ -479,14 +497,18 @@ def rescue():
 			claw.run_time(100,1000,wait=True) #centers it with claw
 			claw.run_time(100,100,wait=True) #reopens claw
 			claw.stop()
-			robot.straight(8) #might knock can over
+			robot.straight(10) #might knock can over
 			claw.run(100) #grabs can
 			wait(200)
 			#robot.straight(-12)
 			#wait(20)
 			lifter.run_angle(95,-90,wait=True) #lifts can
 			#robot.straight(14)
-			robot.straight(-(canDist-55)) #back to middle
+			if canDist <= 50:
+				robot.straight(-(canDist - 30))
+			else:
+				robot.straight(-(canDist+5)) #back to middle
+				
 			robot.turn((startAngle-robot.angle())) #face block
 			robot.stop()
 			if funnyBlok == 1 and cansRescued == 0:
