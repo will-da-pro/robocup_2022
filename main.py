@@ -14,9 +14,9 @@ import threading
 #from math import sqrt, asin
 
 #WHAT IS IN COURSE????
-waterTowerCount = 0
+waterTowerCount = 2
 rescueCount = 2
-whiteLineCount = 1
+whiteLineCount = 0
 redLineCount = 0
 detourCount = 0
 cansCount = 69420
@@ -59,13 +59,13 @@ towerDriveSpeed = 350 #140
 driveSpeed = 115 #115 normal 50  small with hills
 maxTurnSpeed = 115
 a = 0.02
-multiplier = 3.5 #so now... #2.5normal 4.2small
+multiplier = 3.2 #so now... #2.5normal 4.2small
 
 #colors
 silver = 90
 white = 50
 black = 25
-yellow = 80 #check if small tiles and diversion
+yellow = 85 #check if small tiles and diversion
 #green is 16 - ree
 
 #other variables
@@ -111,10 +111,16 @@ def isYellow(side):
 
 def doubleWhite(cal):
 	print('doublewhite')
-	robot.stop
-	wait(20)
+	robot.stop()
+	iteration = 1
 
-	move(cal)
+	while not isBlack(lColor) and not isBlack(rColor):
+		if iteration == 2:
+			move(cal)
+		else:
+			iteration+=1
+
+		robot.straight(10)
  
 
 def whiteLine(cal):
@@ -144,7 +150,7 @@ def whiteLine(cal):
 		
 		diff = lColor.reflection() - rColor.reflection() + cal #finds the difference between the reflections
 		if not leftIsBlack and not rightIsBlack:
-				doubleWhite(cal)
+			doubleWhite(cal)
 		output = -int(multiplier * diff) #gets degrees to turn by
 
 		turningSpeed = math.floor(maxTurnSpeed/(abs(a*diff)+1))
@@ -337,7 +343,7 @@ def doubleBlack(compensator, cal):
 			print(' pass')
 
 		# Right turn
-		elif (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
+		if (lColor.reflection() < rColor.reflection()) and (isBlack(lColor) and isBlack(rColor)):
 			print('right1')
 			robot.turn(10) #10 small 15 normal
 			robot.drive(100, 0)
@@ -508,7 +514,7 @@ def rescue():
 				robot.straight(-(canDist - 30))
 			else:
 				robot.straight(-(canDist+5)) #back to middle
-				
+
 			robot.turn((startAngle-robot.angle())) #face block
 			robot.stop()
 			if funnyBlok == 1 and cansRescued == 0:
