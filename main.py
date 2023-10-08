@@ -13,20 +13,7 @@ import math
 import threading
 #from math import sqrt, asin
 
-#WHAT IS IN COURSE????
-waterTowerCount = 1
-rescueCount = 1
-whiteLineCount = 0
-redLineCount = 0
-detourCount = 0
-cansCount = 69420
-#blackCanCount = 0
-blockPos = 0 #changing doesn't do anything
-funnyBlok = 0
-animalCrossings = 1
-animalCrossingsDone = 0
-uturn = 0
-diversion = 0
+
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher. (INSTALLED)
 
@@ -252,10 +239,7 @@ def AnimalCrossing(cal):
 
 	leftIsBlack = isBlack(lColor)
 	rightIsBlack = isBlack(rColor)
-	if (animalCrossingsDone == animalCrossings):
-		print('canceld')
-		return
-	elif leftIsBlack == False and rightIsBlack == False:
+	if leftIsBlack == False and rightIsBlack == False:
 		robot.straight(-10)
 		print('depression')
 		return
@@ -326,7 +310,7 @@ def doubleBlack(compensator, cal):
 			print('AC2')
 			AnimalCrossing(cal)
 
-		elif (lColor.color() == Color.GREEN and rColor.color() == Color.GREEN and frontColor.color() == Color.BLACK and uturn == 1):
+		elif (lColor.color() == Color.GREEN and rColor.color() == Color.GREEN and frontColor.color() == Color.BLACK):
 			print('uturn1')
 			robot.straight(-50)
 			robot.turn(180)
@@ -334,7 +318,7 @@ def doubleBlack(compensator, cal):
 
 		#Uncomment for white line
 		iteration += 1
-		if iteration >= 3 and whiteLineCount == 1:
+		if iteration >= 3:
 			#checkGreenCol()
 			whiteLine(cal)
 
@@ -440,8 +424,6 @@ def rescue():
 	wait(20)
 	robot.straight(220)
 	wait(20)
-	if funnyBlok == 0:
-		robot.turn(-30)
 	
 	wait(10)
 	
@@ -483,11 +465,13 @@ def rescue():
 			canDist = ultraS.distance()
 
 			print(canDist)
+			lifter.run_angle(100,90,wait=True)
+			wait(20)
 
 			#if canCompensation >= 100 or canCompensation <= -100:
 			#	return
 			if canDist <= 50:
-				robot.straight(canDist - 20)
+				robot.straight(canDist - 40)
 			else:
 				robot.straight(canDist - 50)
 			ev3.speaker.beep()
@@ -495,14 +479,11 @@ def rescue():
 			wait(20)
 
 		
-			lifter.run_angle(100,90,wait=True)
-			wait(20)
-			robot.straight(45)
+			
 			
 			claw.run_time(100,1000,wait=True) #centers it with claw
 			claw.run_time(100,100,wait=True) #reopens claw
 			claw.stop()
-			robot.straight(10) #might knock can over
 			claw.run(100) #grabs can
 			wait(200)
 			#robot.straight(-12)
@@ -510,13 +491,13 @@ def rescue():
 			lifter.run_angle(95,-90,wait=True) #lifts can
 			#robot.straight(14)
 			if canDist <= 50:
-				robot.straight(-(canDist - 30))
+				robot.straight(-(canDist -40))
 			else:
-				robot.straight(-(canDist+5)) #back to middle
+				robot.straight(-(canDist-50)) #back to middle
 
 			robot.turn((startAngle-robot.angle())) #face block
 			robot.stop()
-			if funnyBlok == 1 and cansRescued == 0:
+			if cansRescued == 0:
 				wait(100)
 				if ultraS.distance() <= blockMax and ultraS.distance() >= blockMin:
 					blockPos = 0
@@ -550,13 +531,10 @@ def rescue():
 			robot.turn(-blockPos)
 			robot.turn(-30)
 
-	if funnyBlok == 1:
-		if blockPos == 0:
-			robot.turn(180)
-		else:
-			robot.turn(blockPos)
-	else:
+	if blockPos == 0:
 		robot.turn(180)
+	else:
+		robot.turn(blockPos)
 
 	robot.drive(100, 0)
 	while lColor.reflection() < 70:
@@ -614,22 +592,20 @@ def move(cal):
 					pass
 				else:
 					rescueTime = checkRescue()
-		if waterTowerCount >= 1:
-			if (ultraS.distance() < ultraSLimit):
-				obstacle(ultraS.distance())
+		if (ultraS.distance() < ultraSLimit):
+			obstacle(ultraS.distance())
 		diff = lColor.reflection() - rColor.reflection() - cal #finds the difference between the reflections
 		
-		if diversion >= 1:
-			rightYellow = isYellow(rColor)
-			leftYellow = isYellow(lColor)
+		rightYellow = isYellow(rColor)
+		leftYellow = isYellow(lColor)
 
-			if rightYellow or leftYellow:
-				diversionLine(rightYellow, leftYellow, cal)
+		if rightYellow or leftYellow:
+			diversionLine(rightYellow, leftYellow, cal)
 
 		if frontColor.color() == Color.RED and (redLineCount >= 1 or detourCount >=1): #between -10 and 10
 			redLine()
 
-		if frontColor.color() == Color.BLUE and animalCrossings == 1 and leftIsBlack and rightIsBlack:
+		if frontColor.color() == Color.BLUE and leftIsBlack and rightIsBlack:
 			AnimalCrossing(cal)
 
 		if leftIsBlack and rightIsBlack:
